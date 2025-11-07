@@ -85,6 +85,23 @@ const ListOpportunity = () => {
     setAdditionalRequirements(additionalRequirements.filter((_, i) => i !== index));
   };
 
+  const formatPhoneNumber = (value: string): string => {
+    // Remove all non-numeric characters
+    const phoneNumber = value.replace(/\D/g, "");
+    
+    // Limit to 10 digits
+    const limitedNumber = phoneNumber.slice(0, 10);
+    
+    // Format as xxx-xxx-xxxx
+    if (limitedNumber.length <= 3) {
+      return limitedNumber;
+    } else if (limitedNumber.length <= 6) {
+      return `${limitedNumber.slice(0, 3)}-${limitedNumber.slice(3)}`;
+    } else {
+      return `${limitedNumber.slice(0, 3)}-${limitedNumber.slice(3, 6)}-${limitedNumber.slice(6)}`;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -428,7 +445,9 @@ const ListOpportunity = () => {
                   type="tel"
                   required
                   value={formData.orgPhone}
-                  onChange={(e) => setFormData({ ...formData, orgPhone: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, orgPhone: formatPhoneNumber(e.target.value) })}
+                  placeholder="555-555-5555"
+                  maxLength={12}
                 />
               </div>
             </div>
