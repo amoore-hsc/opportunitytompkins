@@ -215,10 +215,12 @@ const ListOpportunity = () => {
             <Label htmlFor="hours">Hours Available per Week *</Label>
             <Input
               id="hours"
+              type="number"
               required
+              min="1"
               value={formData.hoursAvailable}
               onChange={(e) => setFormData({ ...formData, hoursAvailable: e.target.value })}
-              placeholder="e.g., 20 hours/week"
+              placeholder="e.g., 20"
             />
           </div>
 
