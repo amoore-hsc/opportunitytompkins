@@ -299,42 +299,24 @@ const ListOpportunity = () => {
                   <div className="space-y-3 pl-6 animate-fade-in">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Start Time:</span>
-                        <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].startTime)}</span>
+                        <div>
+                          <span className="text-muted-foreground">Start: </span>
+                          <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].startTime)}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">End: </span>
+                          <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].endTime)}</span>
+                        </div>
                       </div>
                       <Slider
-                        value={[daySchedule[day.key].startTime]}
-                        onValueChange={([value]) =>
+                        value={[daySchedule[day.key].startTime, daySchedule[day.key].endTime]}
+                        onValueChange={([start, end]) =>
                           setDaySchedule({
                             ...daySchedule,
                             [day.key]: { 
                               ...daySchedule[day.key], 
-                              startTime: value,
-                              endTime: Math.max(value + 1, daySchedule[day.key].endTime)
-                            }
-                          })
-                        }
-                        min={0}
-                        max={23}
-                        step={1}
-                        className="w-full"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">End Time:</span>
-                        <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].endTime)}</span>
-                      </div>
-                      <Slider
-                        value={[daySchedule[day.key].endTime]}
-                        onValueChange={([value]) =>
-                          setDaySchedule({
-                            ...daySchedule,
-                            [day.key]: { 
-                              ...daySchedule[day.key], 
-                              endTime: value,
-                              startTime: Math.min(value - 1, daySchedule[day.key].startTime)
+                              startTime: start,
+                              endTime: end
                             }
                           })
                         }
