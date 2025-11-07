@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
@@ -21,18 +22,49 @@ const addressSchema = z.string()
     { message: "Please enter a complete address with street, city, and state (e.g., 123 Main St, Ithaca, NY)" }
   );
 
+type DaySchedule = {
+  [key: string]: {
+    selected: boolean;
+    startTime: number;
+    endTime: number;
+  };
+};
+
+const DAYS_OF_WEEK = [
+  { key: "monday", label: "Monday" },
+  { key: "tuesday", label: "Tuesday" },
+  { key: "wednesday", label: "Wednesday" },
+  { key: "thursday", label: "Thursday" },
+  { key: "friday", label: "Friday" },
+  { key: "saturday", label: "Saturday" },
+  { key: "sunday", label: "Sunday" },
+];
+
+const formatTimeFromHour = (hour: number): string => {
+  const period = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  return `${displayHour}:00 ${period}`;
+};
+
 const ListOpportunity = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [locationError, setLocationError] = useState("");
+  
+  const [daySchedule, setDaySchedule] = useState<DaySchedule>(
+    DAYS_OF_WEEK.reduce((acc, day) => ({
+      ...acc,
+      [day.key]: { selected: false, startTime: 9, endTime: 17 }
+    }), {})
+  );
+  
   const [formData, setFormData] = useState({
     type: "",
     description: "",
     location: "",
     onBusRoute: false,
     hoursAvailable: "",
-    daysTimesAvailable: "",
     additionalRequirements: "",
     orgName: "",
     orgEmail: "",
@@ -52,6 +84,17 @@ const ListOpportunity = () => {
       return;
     }
 
+    // Validate that at least one day is selected
+    const selectedDays = Object.entries(daySchedule).filter(([_, schedule]) => schedule.selected);
+    if (selectedDays.length === 0) {
+      toast({
+        title: "Days required",
+        description: "Please select at least one day of availability.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Validate address
     const addressValidation = addressSchema.safeParse(formData.location);
     if (!addressValidation.success) {
@@ -63,6 +106,12 @@ const ListOpportunity = () => {
       });
       return;
     }
+
+    // Format day schedule into readable string
+    const daysTimesAvailable = selectedDays.map(([day, schedule]) => {
+      const dayLabel = DAYS_OF_WEEK.find(d => d.key === day)?.label;
+      return `${dayLabel}: ${formatTimeFromHour(schedule.startTime)} - ${formatTimeFromHour(schedule.endTime)}`;
+    }).join(", ");
 
     setLoading(true);
 
@@ -76,7 +125,7 @@ const ListOpportunity = () => {
           location: formData.location,
           on_bus_route: formData.onBusRoute,
           hours_available: formData.hoursAvailable,
-          days_times_available: formData.daysTimesAvailable,
+          days_times_available: daysTimesAvailable,
           additional_requirements: formData.additionalRequirements || null,
           org_name: formData.orgName,
           org_email: formData.orgEmail,
@@ -97,7 +146,7 @@ const ListOpportunity = () => {
           location: formData.location,
           onBusRoute: formData.onBusRoute,
           hoursAvailable: formData.hoursAvailable,
-          daysTimesAvailable: formData.daysTimesAvailable,
+          daysTimesAvailable: daysTimesAvailable,
         },
       });
 
@@ -224,15 +273,81 @@ const ListOpportunity = () => {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="daysTimes">Days/Times Available *</Label>
-            <Input
-              id="daysTimes"
-              required
-              value={formData.daysTimesAvailable}
-              onChange={(e) => setFormData({ ...formData, daysTimesAvailable: e.target.value })}
-              placeholder="e.g., Mon-Fri 9am-5pm"
-            />
+          <div className="space-y-4">
+            <Label>Days & Times Available *</Label>
+            <p className="text-sm text-muted-foreground">Select days and set available hours for each day</p>
+            
+            {DAYS_OF_WEEK.map((day) => (
+              <div key={day.key} className="space-y-3 rounded-lg border border-border p-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={day.key}
+                    checked={daySchedule[day.key].selected}
+                    onCheckedChange={(checked) =>
+                      setDaySchedule({
+                        ...daySchedule,
+                        [day.key]: { ...daySchedule[day.key], selected: checked === true }
+                      })
+                    }
+                  />
+                  <Label htmlFor={day.key} className="cursor-pointer font-medium">
+                    {day.label}
+                  </Label>
+                </div>
+                
+                {daySchedule[day.key].selected && (
+                  <div className="space-y-3 pl-6 animate-fade-in">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Start Time:</span>
+                        <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].startTime)}</span>
+                      </div>
+                      <Slider
+                        value={[daySchedule[day.key].startTime]}
+                        onValueChange={([value]) =>
+                          setDaySchedule({
+                            ...daySchedule,
+                            [day.key]: { 
+                              ...daySchedule[day.key], 
+                              startTime: value,
+                              endTime: Math.max(value + 1, daySchedule[day.key].endTime)
+                            }
+                          })
+                        }
+                        min={0}
+                        max={23}
+                        step={1}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">End Time:</span>
+                        <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].endTime)}</span>
+                      </div>
+                      <Slider
+                        value={[daySchedule[day.key].endTime]}
+                        onValueChange={([value]) =>
+                          setDaySchedule({
+                            ...daySchedule,
+                            [day.key]: { 
+                              ...daySchedule[day.key], 
+                              endTime: value,
+                              startTime: Math.min(value - 1, daySchedule[day.key].startTime)
+                            }
+                          })
+                        }
+                        min={0}
+                        max={23}
+                        step={1}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
 
           <div className="space-y-2">
