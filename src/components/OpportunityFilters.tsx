@@ -82,7 +82,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">City</Label>
+            <Label htmlFor="location">Location</Label>
             <Select
               value={filters.location}
               onValueChange={(value) => setFilters({ ...filters, location: value })}
@@ -91,7 +91,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Cities</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
                 {uniqueCities.map((city) => (
                   <SelectItem key={city} value={city}>
                     {city}
