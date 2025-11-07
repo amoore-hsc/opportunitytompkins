@@ -14,7 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      opportunities: {
+        Row: {
+          active: boolean
+          additional_requirements: string | null
+          created_at: string
+          days_times_available: string
+          description: string
+          hours_available: string
+          id: string
+          location: string
+          on_bus_route: boolean
+          org_email: string
+          org_name: string
+          org_phone: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          additional_requirements?: string | null
+          created_at?: string
+          days_times_available: string
+          description: string
+          hours_available: string
+          id?: string
+          location: string
+          on_bus_route?: boolean
+          org_email: string
+          org_name: string
+          org_phone: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          additional_requirements?: string | null
+          created_at?: string
+          days_times_available?: string
+          description?: string
+          hours_available?: string
+          id?: string
+          location?: string
+          on_bus_route?: boolean
+          org_email?: string
+          org_name?: string
+          org_phone?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

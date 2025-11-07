@@ -1,0 +1,123 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Heart, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { OpportunityCard } from "@/components/OpportunityCard";
+import { OpportunityFilters } from "@/components/OpportunityFilters";
+import { useToast } from "@/hooks/use-toast";
+
+export interface Opportunity {
+  id: string;
+  type: string;
+  description: string;
+  location: string;
+  on_bus_route: boolean;
+  hours_available: string;
+  days_times_available: string;
+  additional_requirements: string | null;
+  org_name: string;
+  org_email: string;
+  org_phone: string;
+}
+
+const Opportunities = () => {
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchOpportunities();
+  }, []);
+
+  const fetchOpportunities = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("opportunities")
+        .select("*")
+        .eq("active", true)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      
+      setOpportunities(data || []);
+      setFilteredOpportunities(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error loading opportunities",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border bg-card">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Heart className="h-8 w-8 text-primary" />
+              <h1 className="text-2xl font-bold text-foreground">SNAP ABAWD Opportunity Finder</h1>
+            </div>
+            <Link to="/">
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Home
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h2 className="mb-2 text-3xl font-bold text-foreground">Available Opportunities</h2>
+          <p className="text-muted-foreground">
+            Browse and apply for opportunities that fulfill your SNAP ABAWD work requirements
+          </p>
+        </div>
+
+        <OpportunityFilters
+          opportunities={opportunities}
+          onFilterChange={setFilteredOpportunities}
+        />
+
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading opportunities...</p>
+          </div>
+        ) : filteredOpportunities.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No opportunities found matching your filters.</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredOpportunities.map((opportunity) => (
+              <OpportunityCard key={opportunity.id} opportunity={opportunity} />
+            ))}
+          </div>
+        )}
+      </main>
+
+      <footer className="border-t border-border bg-card py-8 mt-20">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-muted-foreground">
+            Need help? Email{" "}
+            <a href="mailto:amoore@hsctc.org" className="text-primary hover:underline">
+              amoore@hsctc.org
+            </a>
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Powered by SNAP ABAWD Opportunity Finder
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default Opportunities;
