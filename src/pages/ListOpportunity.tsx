@@ -212,7 +212,7 @@ const ListOpportunity = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hours">Hours Available *</Label>
+            <Label htmlFor="hours">Hours Available per Week *</Label>
             <Input
               id="hours"
               required
