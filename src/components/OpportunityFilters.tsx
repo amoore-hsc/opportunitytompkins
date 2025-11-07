@@ -21,6 +21,13 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
     applyFilters();
   }, [filters, opportunities]);
 
+  const extractCity = (location: string): string => {
+    // Extract city from address format like "123 Main St, Ithaca, NY 14850"
+    // City is typically after the first comma
+    const parts = location.split(',').map(part => part.trim());
+    return parts.length > 1 ? parts[1] : parts[0];
+  };
+
   const applyFilters = () => {
     let filtered = [...opportunities];
 
@@ -33,13 +40,13 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
     }
 
     if (filters.location !== "all") {
-      filtered = filtered.filter((opp) => opp.location === filters.location);
+      filtered = filtered.filter((opp) => extractCity(opp.location) === filters.location);
     }
 
     onFilterChange(filtered);
   };
 
-  const uniqueLocations = Array.from(new Set(opportunities.map((opp) => opp.location)));
+  const uniqueCities = Array.from(new Set(opportunities.map((opp) => extractCity(opp.location))));
 
   return (
     <Card className="mb-8">
@@ -63,7 +70,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
+            <Label htmlFor="location">City</Label>
             <Select
               value={filters.location}
               onValueChange={(value) => setFilters({ ...filters, location: value })}
@@ -72,10 +79,10 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                {uniqueLocations.map((location) => (
-                  <SelectItem key={location} value={location}>
-                    {location}
+                <SelectItem value="all">All Cities</SelectItem>
+                {uniqueCities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
                   </SelectItem>
                 ))}
               </SelectContent>
