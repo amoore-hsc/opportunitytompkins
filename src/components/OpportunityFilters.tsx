@@ -22,10 +22,22 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
   }, [filters, opportunities]);
 
   const extractCity = (location: string): string => {
-    // Extract city from address format like "123 Main St, Ithaca, NY 14850"
-    // City is typically after the first comma
+    // Extract city from various address formats:
+    // "324 W Buffalo St, Ithaca, NY 14850" -> "Ithaca"
+    // "Ithaca, NY" -> "Ithaca"
+    // "Ithaca" -> "Ithaca"
     const parts = location.split(',').map(part => part.trim());
-    return parts.length > 1 ? parts[1] : parts[0];
+    
+    if (parts.length >= 3) {
+      // Full address format: Street, City, State ZIP
+      return parts[1];
+    } else if (parts.length === 2) {
+      // City, State format
+      return parts[0];
+    } else {
+      // Just city name
+      return parts[0];
+    }
   };
 
   const applyFilters = () => {
