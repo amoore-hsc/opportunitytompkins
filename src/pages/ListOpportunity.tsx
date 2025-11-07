@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Heart, ArrowLeft } from "lucide-react";
+import { Heart, ArrowLeft, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,18 +59,31 @@ const ListOpportunity = () => {
     }), {})
   );
   
+  const [additionalRequirements, setAdditionalRequirements] = useState<string[]>([]);
+  const [currentRequirement, setCurrentRequirement] = useState("");
+  
   const [formData, setFormData] = useState({
     type: "",
     description: "",
     location: "",
     onBusRoute: false,
     hoursAvailable: "",
-    additionalRequirements: "",
     orgName: "",
     orgEmail: "",
     orgPhone: "",
     acknowledged: false,
   });
+
+  const handleAddRequirement = () => {
+    if (currentRequirement.trim()) {
+      setAdditionalRequirements([...additionalRequirements, currentRequirement.trim()]);
+      setCurrentRequirement("");
+    }
+  };
+
+  const handleRemoveRequirement = (index: number) => {
+    setAdditionalRequirements(additionalRequirements.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,7 +139,7 @@ const ListOpportunity = () => {
           on_bus_route: formData.onBusRoute,
           hours_available: formData.hoursAvailable,
           days_times_available: daysTimesAvailable,
-          additional_requirements: formData.additionalRequirements || null,
+          additional_requirements: additionalRequirements.length > 0 ? additionalRequirements.join("; ") : null,
           org_name: formData.orgName,
           org_email: formData.orgEmail,
           org_phone: formData.orgPhone,
@@ -332,14 +345,55 @@ const ListOpportunity = () => {
             ))}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="requirements">Additional Requirements</Label>
-            <Input
-              id="requirements"
-              value={formData.additionalRequirements}
-              onChange={(e) => setFormData({ ...formData, additionalRequirements: e.target.value })}
-              placeholder="e.g., Driver's license, own transportation"
-            />
+          <div className="space-y-4">
+            <Label>Additional Requirements</Label>
+            <p className="text-sm text-muted-foreground">Add any specific requirements (e.g., Driver's license, background check)</p>
+            
+            <div className="flex gap-2">
+              <Input
+                value={currentRequirement}
+                onChange={(e) => setCurrentRequirement(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddRequirement();
+                  }
+                }}
+                placeholder="e.g., Driver's license required"
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                onClick={handleAddRequirement}
+                size="icon"
+                variant="outline"
+                disabled={!currentRequirement.trim()}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {additionalRequirements.length > 0 && (
+              <div className="space-y-2 animate-fade-in">
+                {additionalRequirements.map((requirement, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border border-border bg-muted px-3 py-2"
+                  >
+                    <span className="text-sm">{requirement}</span>
+                    <Button
+                      type="button"
+                      onClick={() => handleRemoveRequirement(index)}
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="border-t border-border pt-6">
