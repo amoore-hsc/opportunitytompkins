@@ -9,11 +9,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+
+const addressSchema = z.string()
+  .min(1, "Address is required")
+  .refine(
+    (val) => {
+      const parts = val.split(',').map(p => p.trim()).filter(p => p.length > 0);
+      return parts.length >= 2;
+    },
+    { message: "Please enter a complete address with street, city, and state (e.g., 123 Main St, Ithaca, NY)" }
+  );
 
 const ListOpportunity = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [locationError, setLocationError] = useState("");
   const [formData, setFormData] = useState({
     type: "",
     description: "",
@@ -35,6 +47,18 @@ const ListOpportunity = () => {
       toast({
         title: "Acknowledgement required",
         description: "Please confirm that you will complete the required documentation.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate address
+    const addressValidation = addressSchema.safeParse(formData.location);
+    if (!addressValidation.success) {
+      setLocationError(addressValidation.error.errors[0].message);
+      toast({
+        title: "Invalid address",
+        description: addressValidation.error.errors[0].message,
         variant: "destructive",
       });
       return;
@@ -158,9 +182,22 @@ const ListOpportunity = () => {
               id="location"
               required
               value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              placeholder="e.g., 123 Main St, City, State"
+              onChange={(e) => {
+                setFormData({ ...formData, location: e.target.value });
+                setLocationError("");
+              }}
+              onBlur={(e) => {
+                const result = addressSchema.safeParse(e.target.value);
+                if (!result.success && e.target.value) {
+                  setLocationError(result.error.errors[0].message);
+                }
+              }}
+              placeholder="e.g., 123 Main St, Ithaca, NY"
+              className={locationError ? "border-destructive" : ""}
             />
+            {locationError && (
+              <p className="text-sm text-destructive">{locationError}</p>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">
