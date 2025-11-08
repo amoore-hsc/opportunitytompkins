@@ -86,8 +86,8 @@ Opportunity Finder</h1>
           <div className="grid gap-8 md:grid-cols-3">
             {/* Workforce Development */}
             <div className="flex flex-col items-center gap-6">
-              <a href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                <img src={workforceNYLogo} alt="Tompkins Workforce New York Logo" className="w-full max-w-md rounded-lg shadow-md" />
+              <a href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-all hover:scale-105">
+                <img src={workforceNYLogo} alt="Tompkins Workforce New York Logo" className="h-48 w-48 object-contain rounded-lg" />
               </a>
               <a href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
                 Workforce Development
@@ -99,8 +99,8 @@ Opportunity Finder</h1>
 
             {/* Community Health & Resource Network */}
             <div className="flex flex-col items-center gap-6">
-              <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                <img src={chrnLogo} alt="Community Health & Resource Network Logo" className="w-full max-w-md rounded-lg shadow-md" />
+              <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-all hover:scale-105">
+                <img src={chrnLogo} alt="Community Health & Resource Network Logo" className="h-48 w-48 object-contain rounded-lg" />
               </a>
               <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
                 Community Health & Resource Network
@@ -111,8 +111,8 @@ Opportunity Finder</h1>
 
             {/* Food Bank of the Southern Tier */}
             <div className="flex flex-col items-center gap-6">
-              <a href="https://www.foodbankst.org/find-food/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                <img src={foodbankLogo} alt="Food Bank of the Southern Tier Logo" className="w-full max-w-md rounded-lg shadow-md" />
+              <a href="https://www.foodbankst.org/find-food/" target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-all hover:scale-105">
+                <img src={foodbankLogo} alt="Food Bank of the Southern Tier Logo" className="h-48 w-48 object-contain rounded-lg" />
               </a>
               <a href="https://www.foodbankst.org/find-food/" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
                 Food Bank of the Southern Tier
