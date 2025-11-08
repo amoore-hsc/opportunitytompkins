@@ -1,1 +1,4 @@
 project_id = "oosxopnxaivfdtksrvam"
+
+[functions.send-opportunities-email]
+verify_jwt = false

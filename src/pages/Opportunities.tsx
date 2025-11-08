@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { OpportunityCard } from "@/components/OpportunityCard";
 import { OpportunityFilters } from "@/components/OpportunityFilters";
+import { ShareOpportunitiesDialog } from "@/components/ShareOpportunitiesDialog";
+import { PrintableOpportunities } from "@/components/PrintableOpportunities";
 import { useToast } from "@/hooks/use-toast";
 export interface Opportunity {
   id: string;
@@ -73,11 +75,20 @@ const Opportunities = () => {
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h2 className="mb-2 text-3xl font-bold text-foreground">Available Opportunities</h2>
-          <p className="text-muted-foreground">Browse and apply for opportunities that fulfill work requirements</p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h2 className="mb-2 text-3xl font-bold text-foreground">Available Opportunities</h2>
+              <p className="text-muted-foreground">Browse and apply for opportunities that fulfill work requirements</p>
+            </div>
+            {filteredOpportunities.length > 0 && (
+              <ShareOpportunitiesDialog opportunities={filteredOpportunities} />
+            )}
+          </div>
         </div>
 
         <OpportunityFilters opportunities={opportunities} onFilterChange={setFilteredOpportunities} />
+        
+        <PrintableOpportunities opportunities={filteredOpportunities} />
 
         {loading ? <div className="text-center py-12">
             <p className="text-muted-foreground">Loading opportunities...</p>
