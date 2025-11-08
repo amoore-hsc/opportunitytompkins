@@ -38,9 +38,15 @@ export const OpportunityCard = ({
         <div className="flex items-start gap-2 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4 mt-0.5 flex-shrink-0" />
           <div className="flex flex-col gap-1">
-            {opportunity.days_times_available.split(',').map((day, index) => (
-              <span key={index}>{day.trim()}</span>
-            ))}
+            {opportunity.days_times_available.split(',').map((dayTime, index) => {
+              const [day, ...timeParts] = dayTime.trim().split(':');
+              const time = timeParts.join(':');
+              return (
+                <span key={index}>
+                  <strong>{day}:</strong> {time}
+                </span>
+              );
+            })}
           </div>
         </div>
         
