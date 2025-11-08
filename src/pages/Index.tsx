@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Search, ListPlus, Share2 } from "lucide-react";
+import workforceNYLogo from "@/assets/workforce-ny-logo.png";
 const Index = () => {
   return <div className="min-h-screen bg-background">
       {/* Exemption Status Banner */}
@@ -80,7 +81,12 @@ Opportunity Finder</h1>
       <section className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-3xl font-bold text-foreground mb-8">Looking For Additional Resources?</h2>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col items-center gap-6">
+            <img 
+              src={workforceNYLogo} 
+              alt="Tompkins Workforce New York Logo" 
+              className="w-full max-w-md rounded-lg shadow-md"
+            />
             <a 
               href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" 
               target="_blank" 
