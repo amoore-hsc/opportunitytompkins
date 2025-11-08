@@ -85,24 +85,10 @@ Opportunity Finder</h1>
           <div className="grid gap-8 md:grid-cols-2">
             {/* Workforce Development */}
             <div className="flex flex-col items-center gap-6">
-              <a 
-                href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:opacity-80 transition-opacity"
-              >
-                <img 
-                  src={workforceNYLogo} 
-                  alt="Tompkins Workforce New York Logo" 
-                  className="w-full max-w-md rounded-lg shadow-md"
-                />
+              <a href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                <img src={workforceNYLogo} alt="Tompkins Workforce New York Logo" className="w-full max-w-md rounded-lg shadow-md" />
               </a>
-              <a 
-                href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-lg text-primary hover:underline"
-              >
+              <a href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
                 Workforce Development
               </a>
               <p className="text-lg text-foreground">
@@ -112,28 +98,13 @@ Opportunity Finder</h1>
 
             {/* Community Health & Resource Network */}
             <div className="flex flex-col items-center gap-6">
-              <a 
-                href="https://hsctc.org/network/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:opacity-80 transition-opacity"
-              >
-                <img 
-                  src={chrnLogo} 
-                  alt="Community Health & Resource Network Logo" 
-                  className="w-full max-w-md rounded-lg shadow-md"
-                />
+              <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                <img src={chrnLogo} alt="Community Health & Resource Network Logo" className="w-full max-w-md rounded-lg shadow-md" />
               </a>
-              <a 
-                href="https://hsctc.org/network/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-lg text-primary hover:underline"
-              >
+              <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
                 Community Health & Resource Network
               </a>
-              <p className="text-lg text-foreground">
-                2.1.1: <a href="tel:1-877-211-8667" className="text-primary hover:underline">(1.877.211.8667)</a>
+              <p className="text-lg text-foreground">Or Call 2.1.1: (877-211-8667)<a href="tel:1-877-211-8667" className="text-primary hover:underline">(1.877.211.8667)</a>
               </p>
             </div>
           </div>
