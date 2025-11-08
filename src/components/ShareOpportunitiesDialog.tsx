@@ -76,8 +76,9 @@ export const ShareOpportunitiesDialog = ({
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Button onClick={handlePrint} variant="outline" className="w-full justify-start" size="lg">Print List<Printer className="mr-2 h-5 w-5" />
-              Print Opportunities
+            <Button onClick={handlePrint} variant="outline" className="w-full justify-start" size="lg">
+              <Printer className="mr-2 h-5 w-5" />
+              Print List
             </Button>
           </div>
           <div className="relative">
