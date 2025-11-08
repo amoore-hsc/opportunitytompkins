@@ -20,7 +20,7 @@ export const OpportunityCard = ({ opportunity }: OpportunityCardProps) => {
           {opportunity.on_bus_route && (
             <Badge variant="outline" className="flex items-center gap-1">
               <Bus className="h-3 w-3" />
-              Bus Route
+              On Bus Route
             </Badge>
           )}
         </div>
