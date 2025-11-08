@@ -26,9 +26,7 @@ Opportunity Finder</h1>
               <div className="rounded-xl border-2 border-primary bg-card p-8 transition-all hover:scale-105 hover:shadow-lg">
                 <Search className="mx-auto mb-4 h-12 w-12 text-primary" />
                 <h3 className="mb-2 text-xl font-semibold text-foreground">Find an Opportunity</h3>
-                <p className="text-muted-foreground">
-                  Search for volunteer and training opportunities in your area
-                </p>
+                <p className="text-muted-foreground">Search for volunteer, training, and educational  opportunities in your area</p>
                 <Button className="mt-6 w-full" size="lg">
                   Browse Opportunities
                 </Button>
