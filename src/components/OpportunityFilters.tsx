@@ -4,6 +4,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { RotateCcw } from "lucide-react";
 import { Opportunity } from "@/pages/Opportunities";
 
 interface OpportunityFiltersProps {
@@ -88,6 +90,16 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
     }));
   };
 
+  const clearAllFilters = () => {
+    setFilters({
+      type: "all",
+      busRoute: false,
+      location: "all",
+      minHours: 0,
+      daysOfWeek: [],
+    });
+  };
+
   return (
     <Card className="mb-8">
       <CardContent className="pt-6">
@@ -159,7 +171,18 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
         </div>
 
         <div className="mt-6 space-y-3">
-          <Label>Days of the Week</Label>
+          <div className="flex items-center justify-between">
+            <Label>Days of the Week</Label>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearAllFilters}
+              className="gap-2"
+            >
+              <RotateCcw className="h-4 w-4" />
+              Clear All Filters
+            </Button>
+          </div>
           <div className="flex flex-wrap gap-2">
             {daysOfWeek.map((day) => (
               <div key={day} className="flex items-center space-x-2">
