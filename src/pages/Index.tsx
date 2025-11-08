@@ -89,6 +89,9 @@ Opportunity Finder</h1>
             >
               Workforce Development
             </a>
+            <p className="text-lg text-foreground">
+              Career Center: <a href="tel:607-272-7570" className="text-primary hover:underline">(607) 272-7570</a>
+            </p>
           </div>
         </div>
       </section>
