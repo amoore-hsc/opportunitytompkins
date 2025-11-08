@@ -17,6 +17,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
     busRoute: false,
     location: "all",
     minHours: 0,
+    daysOfWeek: [] as string[],
   });
 
   useEffect(() => {
@@ -64,10 +65,28 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
       });
     }
 
+    if (filters.daysOfWeek.length > 0) {
+      filtered = filtered.filter((opp) => {
+        const daysAvailable = opp.days_times_available.toLowerCase();
+        return filters.daysOfWeek.some(day => daysAvailable.includes(day.toLowerCase()));
+      });
+    }
+
     onFilterChange(filtered);
   };
 
   const uniqueCities = Array.from(new Set(opportunities.map((opp) => extractCity(opp.location))));
+  
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+  const toggleDay = (day: string) => {
+    setFilters(prev => ({
+      ...prev,
+      daysOfWeek: prev.daysOfWeek.includes(day)
+        ? prev.daysOfWeek.filter(d => d !== day)
+        : [...prev.daysOfWeek, day]
+    }));
+  };
 
   return (
     <Card className="mb-8">
@@ -136,6 +155,24 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
                 On Bus Route Only
               </Label>
             </div>
+          </div>
+        </div>
+
+        <div className="mt-6 space-y-3">
+          <Label>Days of the Week</Label>
+          <div className="flex flex-wrap gap-2">
+            {daysOfWeek.map((day) => (
+              <div key={day} className="flex items-center space-x-2">
+                <Checkbox
+                  id={day}
+                  checked={filters.daysOfWeek.includes(day)}
+                  onCheckedChange={() => toggleDay(day)}
+                />
+                <Label htmlFor={day} className="cursor-pointer text-sm">
+                  {day}
+                </Label>
+              </div>
+            ))}
           </div>
         </div>
       </CardContent>
