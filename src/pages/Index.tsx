@@ -76,6 +76,13 @@ Opportunity Finder</h1>
         </div>
       </main>
 
+      {/* Additional Resources Section */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="text-3xl font-bold text-foreground mb-8">Looking For Additional Resources?</h2>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-border bg-card py-8 mt-20">
         <div className="container mx-auto px-4 text-center">
