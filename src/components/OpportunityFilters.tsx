@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Bus } from "lucide-react";
 import { Opportunity } from "@/pages/Opportunities";
 
 interface OpportunityFiltersProps {
@@ -178,9 +178,10 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
                   setFilters({ ...filters, busRoute: checked === true })
                 }
               />
-              <Label htmlFor="busRoute" className="cursor-pointer">
-                On Bus Route Only
-              </Label>
+            <Label htmlFor="busRoute" className="cursor-pointer flex items-center gap-2">
+              <Bus className="h-4 w-4" />
+              On Bus Route Only
+            </Label>
             </div>
           </div>
         </div>
