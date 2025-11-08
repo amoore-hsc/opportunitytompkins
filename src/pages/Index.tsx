@@ -4,7 +4,7 @@ import { Search, ListPlus, Share2 } from "lucide-react";
 const Index = () => {
   return <div className="min-h-screen bg-background">
       {/* Exemption Status Banner */}
-      <div className="bg-accent text-accent-foreground py-3 px-4 text-center font-medium hover:bg-accent/90 transition-colors cursor-pointer">You may be exempt from new work requirements. Click Here to Check your Exemption Status.<br />Questions? Contact Tompkins County DSS (607) 274-5680</div>
+      <div className="bg-accent text-accent-foreground py-3 px-4 text-center font-medium hover:bg-accent/90 transition-colors cursor-pointer">You may be exempt from new work requirements. Click Here to Check your Exemption Status.<br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
 
       {/* Header */}
       <header className="border-b border-border bg-card">
