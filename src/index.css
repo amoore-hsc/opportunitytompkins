@@ -30,8 +30,8 @@ All colors MUST be HSL.
     --muted: 200 20% 96%;
     --muted-foreground: 200 15% 45%;
 
-    /* Warm orange accent for CTAs */
-    --accent: 28 88% 55%;
+    /* Vibrant coral accent for CTAs - complementary to teal */
+    --accent: 18 90% 58%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -84,7 +84,7 @@ All colors MUST be HSL.
     --muted: 200 18% 18%;
     --muted-foreground: 200 12% 65%;
 
-    --accent: 28 88% 55%;
+    --accent: 18 90% 58%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 50%;
