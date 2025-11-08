@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Search, ListPlus, Heart } from "lucide-react";
+import { Search, ListPlus, Share2 } from "lucide-react";
 const Index = () => {
   return <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-2">
-            <Heart className="h-8 w-8 text-primary" />
+            <Share2 className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">Tompkins County 
 Opportunity Finder</h1>
           </div>
