@@ -1,16 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Search, ListPlus, Heart } from "lucide-react";
-
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-2">
             <Heart className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">SNAP ABAWD Opportunity Finder</h1>
+            <h1 className="text-2xl font-bold text-foreground">Tompkins County 
+Opportunity Finder</h1>
           </div>
         </div>
       </header>
@@ -99,8 +98,6 @@ const Index = () => {
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
