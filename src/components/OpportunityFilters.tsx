@@ -111,7 +111,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hours">Minimum Hours: {filters.minHours}</Label>
+            <Label htmlFor="hours">Hours per Week: {filters.minHours}</Label>
             <Slider
               id="hours"
               min={0}
