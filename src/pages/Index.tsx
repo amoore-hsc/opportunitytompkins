@@ -104,7 +104,7 @@ Opportunity Finder</h1>
               <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
                 Community Health & Resource Network
               </a>
-              <p className="text-lg text-foreground">Or Call 2.1.1: (877-211-8667)<a href="tel:1-877-211-8667" className="text-primary hover:underline">(1.877.211.8667)</a>
+              <p className="text-lg text-foreground">Dial 211: <a href="tel:1-877-211-8667" className="text-primary hover:underline">877-211-8667</a>
               </p>
             </div>
           </div>
