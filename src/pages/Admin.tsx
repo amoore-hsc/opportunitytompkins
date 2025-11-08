@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Share2, ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { Handshake, ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -155,7 +155,7 @@ const Admin = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
           <div className="mb-6 text-center">
-            <Share2 className="mx-auto h-12 w-12 text-primary mb-4" />
+            <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
             <h1 className="text-2xl font-bold text-foreground">Admin Access</h1>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -189,7 +189,7 @@ const Admin = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Share2 className="h-8 w-8 text-primary" />
+              <Handshake className="h-8 w-8 text-primary" />
               <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
             </div>
             <Link to="/">

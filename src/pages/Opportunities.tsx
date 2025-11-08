@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Share2, ArrowLeft } from "lucide-react";
+import { Handshake, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { OpportunityCard } from "@/components/OpportunityCard";
@@ -60,7 +60,7 @@ const Opportunities = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Share2 className="h-8 w-8 text-primary" />
+              <Handshake className="h-8 w-8 text-primary" />
               <h1 className="text-2xl font-bold text-foreground">Tompkins County Opportunity Finder</h1>
             </div>
             <Link to="/">

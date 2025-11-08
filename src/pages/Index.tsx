@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Search, ListPlus, Share2 } from "lucide-react";
+import { Search, ListPlus, Handshake } from "lucide-react";
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
 import chrnLogo from "@/assets/chrn-logo.jpg";
 import foodbankLogo from "@/assets/foodbank-logo.png";
@@ -13,7 +13,7 @@ const Index = () => {
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-2">
-            <Share2 className="h-8 w-8 text-primary" />
+            <Handshake className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">Tompkins County 
 Opportunity Finder</h1>
           </div>
