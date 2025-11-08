@@ -37,9 +37,7 @@ Opportunity Finder</h1>
               <div className="rounded-xl border-2 border-accent bg-card p-8 transition-all hover:scale-105 hover:shadow-lg">
                 <ListPlus className="mx-auto mb-4 h-12 w-12 text-accent" />
                 <h3 className="mb-2 text-xl font-semibold text-foreground">List an Opportunity</h3>
-                <p className="text-muted-foreground">
-                  Organizations: Post volunteer or training positions
-                </p>
+                <p className="text-muted-foreground">Organizations: Post volunteer or training/ educational positions</p>
                 <Button variant="default" className="mt-6 w-full bg-accent hover:bg-accent/90" size="lg">
                   Post Opportunity
                 </Button>
@@ -68,9 +66,7 @@ Opportunity Finder</h1>
               <div>
                 <div className="mb-2 text-4xl font-bold text-primary">3</div>
                 <h4 className="mb-2 font-semibold text-foreground">Connect</h4>
-                <p className="text-sm text-muted-foreground">
-                  Start fulfilling your SNAP work requirements while helping your community
-                </p>
+                <p className="text-sm text-muted-foreground">Start fulfilling work requirements while helping your community</p>
               </div>
             </div>
           </div>
