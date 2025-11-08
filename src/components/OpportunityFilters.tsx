@@ -91,7 +91,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
   return (
     <Card className="mb-8">
       <CardContent className="pt-6">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="space-y-2">
             <Label htmlFor="type">Opportunity Type</Label>
             <Select
@@ -129,20 +129,20 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="hours">Hours per Week: {filters.minHours}</Label>
-            <Slider
-              id="hours"
-              min={0}
-              max={40}
-              step={1}
-              value={[filters.minHours]}
-              onValueChange={(value) => setFilters({ ...filters, minHours: value[0] })}
-              className="mt-2"
-            />
-          </div>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="hours">Hours per Week: {filters.minHours}</Label>
+              <Slider
+                id="hours"
+                min={0}
+                max={40}
+                step={1}
+                value={[filters.minHours]}
+                onValueChange={(value) => setFilters({ ...filters, minHours: value[0] })}
+                className="mt-2"
+              />
+            </div>
 
-          <div className="flex items-end">
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="busRoute"
