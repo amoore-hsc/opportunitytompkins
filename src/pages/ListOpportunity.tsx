@@ -51,7 +51,6 @@ const formatTimeFromHour = (hour: number): string => {
   const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
   return `${displayHour}:00 ${period}`;
 };
-
 const countWords = (text: string): number => {
   return text.trim().split(/\s+/).filter(word => word.length > 0).length;
 };
@@ -256,14 +255,14 @@ const ListOpportunity = () => {
           <div className="space-y-2">
             <Label htmlFor="description">Short Description (25 words max) *</Label>
             <Textarea id="description" required value={formData.description} onChange={e => {
-              const text = e.target.value;
-              const wordCount = countWords(text);
-              setDescriptionWordCount(wordCount);
-              setFormData({
-                ...formData,
-                description: text
-              });
-            }} placeholder="Describe the opportunity..." rows={4} />
+            const text = e.target.value;
+            const wordCount = countWords(text);
+            setDescriptionWordCount(wordCount);
+            setFormData({
+              ...formData,
+              description: text
+            });
+          }} placeholder="Describe the opportunity..." rows={4} />
             <p className={`text-sm ${descriptionWordCount > 25 ? 'text-destructive' : 'text-muted-foreground'}`}>
               {descriptionWordCount}/25 words
             </p>
@@ -428,9 +427,7 @@ const ListOpportunity = () => {
               amoore@hsctc.org
             </a>
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Powered by SNAP ABAWD Opportunity Finder
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Powered by Tompkins County Opportunity Finder</p>
         </div>
       </footer>
     </div>;
