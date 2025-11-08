@@ -171,8 +171,21 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
         </div>
 
         <div className="mt-6 space-y-3">
-          <div className="flex items-center justify-between">
-            <Label>Days of the Week</Label>
+          <Label>Days of the Week</Label>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap gap-2">
+              {daysOfWeek.map((day) => (
+                <Button
+                  key={day}
+                  variant={filters.daysOfWeek.includes(day) ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => toggleDay(day)}
+                  className="transition-all"
+                >
+                  {day}
+                </Button>
+              ))}
+            </div>
             <Button
               variant="outline"
               size="sm"
@@ -182,19 +195,6 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
               <RotateCcw className="h-4 w-4" />
               Clear All Filters
             </Button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {daysOfWeek.map((day) => (
-              <Button
-                key={day}
-                variant={filters.daysOfWeek.includes(day) ? "default" : "outline"}
-                size="sm"
-                onClick={() => toggleDay(day)}
-                className="transition-all"
-              >
-                {day}
-              </Button>
-            ))}
           </div>
         </div>
       </CardContent>
