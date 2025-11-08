@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { OpportunityCard } from "@/components/OpportunityCard";
 import { OpportunityFilters } from "@/components/OpportunityFilters";
 import { useToast } from "@/hooks/use-toast";
-
 export interface Opportunity {
   id: string;
   type: string;
@@ -20,42 +19,38 @@ export interface Opportunity {
   org_email: string;
   org_phone: string;
 }
-
 const Opportunities = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   useEffect(() => {
     fetchOpportunities();
   }, []);
-
   const fetchOpportunities = async () => {
     try {
-      const { data, error } = await supabase
-        .from("opportunities")
-        .select("*")
-        .eq("active", true)
-        .order("created_at", { ascending: false });
-
+      const {
+        data,
+        error
+      } = await supabase.from("opportunities").select("*").eq("active", true).order("created_at", {
+        ascending: false
+      });
       if (error) throw error;
-      
       setOpportunities(data || []);
       setFilteredOpportunities(data || []);
     } catch (error: any) {
       toast({
         title: "Error loading opportunities",
         description: error.message,
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
     }
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Exemption Status Banner */}
       <div className="bg-accent text-accent-foreground py-3 px-4 text-center font-medium hover:bg-accent/90 transition-colors cursor-pointer">You may be exempt from new work requirements.<br />Click Here to Check your Exemption Status.<br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
 
@@ -64,7 +59,7 @@ const Opportunities = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Share2 className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold text-foreground">SNAP ABAWD Opportunity Finder</h1>
+              <h1 className="text-2xl font-bold text-foreground">Opportunity Finder</h1>
             </div>
             <Link to="/">
               <Button variant="outline" size="sm">
@@ -84,26 +79,15 @@ const Opportunities = () => {
           </p>
         </div>
 
-        <OpportunityFilters
-          opportunities={opportunities}
-          onFilterChange={setFilteredOpportunities}
-        />
+        <OpportunityFilters opportunities={opportunities} onFilterChange={setFilteredOpportunities} />
 
-        {loading ? (
-          <div className="text-center py-12">
+        {loading ? <div className="text-center py-12">
             <p className="text-muted-foreground">Loading opportunities...</p>
-          </div>
-        ) : filteredOpportunities.length === 0 ? (
-          <div className="text-center py-12">
+          </div> : filteredOpportunities.length === 0 ? <div className="text-center py-12">
             <p className="text-muted-foreground">No opportunities found matching your filters.</p>
-          </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredOpportunities.map((opportunity) => (
-              <OpportunityCard key={opportunity.id} opportunity={opportunity} />
-            ))}
-          </div>
-        )}
+          </div> : <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredOpportunities.map(opportunity => <OpportunityCard key={opportunity.id} opportunity={opportunity} />)}
+          </div>}
       </main>
 
       <footer className="border-t border-border bg-card py-8 mt-20">
@@ -119,8 +103,6 @@ const Opportunities = () => {
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Opportunities;
