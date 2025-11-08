@@ -96,9 +96,7 @@ const Opportunities = () => {
               amoore@hsctc.org
             </a>
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Powered by SNAP ABAWD Opportunity Finder
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Powered by Tompkins County Opportunity Finder</p>
         </div>
       </footer>
     </div>;
