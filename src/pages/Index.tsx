@@ -125,9 +125,7 @@ Opportunity Finder</h1>
               amoore@hsctc.org
             </a>
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Powered by SNAP ABAWD Opportunity Finder
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Powered by Tompkkins  CountyOpportunity Finder</p>
         </div>
       </footer>
     </div>;
