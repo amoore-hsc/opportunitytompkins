@@ -81,7 +81,7 @@ Opportunity Finder</h1>
       {/* Additional Resources Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-6xl text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-8">Looking For Additional Resources?</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-8">Looking For Additional Support?</h2>
           <div className="grid gap-8 md:grid-cols-2">
             {/* Workforce Development */}
             <div className="flex flex-col items-center gap-6">
