@@ -187,7 +187,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
               ))}
             </div>
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={clearAllFilters}
               className="gap-2"
