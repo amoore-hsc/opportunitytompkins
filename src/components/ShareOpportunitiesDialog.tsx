@@ -7,46 +7,45 @@ import { Printer, Mail, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/pages/Opportunities";
-
 interface ShareOpportunitiesDialogProps {
   opportunities: Opportunity[];
 }
-
-export const ShareOpportunitiesDialog = ({ opportunities }: ShareOpportunitiesDialogProps) => {
+export const ShareOpportunitiesDialog = ({
+  opportunities
+}: ShareOpportunitiesDialogProps) => {
   const [email, setEmail] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const handlePrint = () => {
     window.print();
     setIsOpen(false);
   };
-
   const handleEmail = async () => {
     if (!email || !email.includes("@")) {
       toast({
         title: "Invalid Email",
         description: "Please enter a valid email address",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     setIsSending(true);
     try {
-      const { error } = await supabase.functions.invoke("send-opportunities-email", {
+      const {
+        error
+      } = await supabase.functions.invoke("send-opportunities-email", {
         body: {
           email,
-          opportunities,
-        },
+          opportunities
+        }
       });
-
       if (error) throw error;
-
       toast({
         title: "Email Sent!",
-        description: `Opportunities list has been sent to ${email}`,
+        description: `Opportunities list has been sent to ${email}`
       });
       setEmail("");
       setIsOpen(false);
@@ -55,15 +54,13 @@ export const ShareOpportunitiesDialog = ({ opportunities }: ShareOpportunitiesDi
       toast({
         title: "Error Sending Email",
         description: error.message || "Failed to send email. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSending(false);
     }
   };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+  return <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Share2 className="mr-2 h-4 w-4" />
@@ -79,8 +76,7 @@ export const ShareOpportunitiesDialog = ({ opportunities }: ShareOpportunitiesDi
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Button onClick={handlePrint} variant="outline" className="w-full justify-start" size="lg">
-              <Printer className="mr-2 h-5 w-5" />
+            <Button onClick={handlePrint} variant="outline" className="w-full justify-start" size="lg">Print List<Printer className="mr-2 h-5 w-5" />
               Print Opportunities
             </Button>
           </div>
@@ -94,14 +90,7 @@ export const ShareOpportunitiesDialog = ({ opportunities }: ShareOpportunitiesDi
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email Address</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="your@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleEmail()}
-            />
+            <Input id="email" type="email" placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && handleEmail()} />
           </div>
         </div>
         <DialogFooter>
@@ -111,6 +100,5 @@ export const ShareOpportunitiesDialog = ({ opportunities }: ShareOpportunitiesDi
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
