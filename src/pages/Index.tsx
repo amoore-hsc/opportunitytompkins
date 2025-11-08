@@ -80,6 +80,16 @@ Opportunity Finder</h1>
       <section className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-3xl font-bold text-foreground mb-8">Looking For Additional Resources?</h2>
+          <div className="flex flex-col gap-4">
+            <a 
+              href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-lg text-primary hover:underline"
+            >
+              Workforce Development
+            </a>
+          </div>
         </div>
       </section>
 
