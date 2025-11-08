@@ -82,11 +82,18 @@ Opportunity Finder</h1>
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-3xl font-bold text-foreground mb-8">Looking For Additional Resources?</h2>
           <div className="flex flex-col items-center gap-6">
-            <img 
-              src={workforceNYLogo} 
-              alt="Tompkins Workforce New York Logo" 
-              className="w-full max-w-md rounded-lg shadow-md"
-            />
+            <a 
+              href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity"
+            >
+              <img 
+                src={workforceNYLogo} 
+                alt="Tompkins Workforce New York Logo" 
+                className="w-full max-w-md rounded-lg shadow-md"
+              />
+            </a>
             <a 
               href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" 
               target="_blank" 
