@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
 import { Opportunity } from "@/pages/Opportunities";
 
 interface OpportunityFiltersProps {
@@ -15,6 +16,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
     type: "all",
     busRoute: false,
     location: "all",
+    minHours: 0,
   });
 
   useEffect(() => {
@@ -55,6 +57,13 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
       filtered = filtered.filter((opp) => extractCity(opp.location) === filters.location);
     }
 
+    if (filters.minHours > 0) {
+      filtered = filtered.filter((opp) => {
+        const hours = parseInt(opp.hours_available) || 0;
+        return hours >= filters.minHours;
+      });
+    }
+
     onFilterChange(filtered);
   };
 
@@ -63,7 +72,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
   return (
     <Card className="mb-8">
       <CardContent className="pt-6">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-2">
             <Label htmlFor="type">Opportunity Type</Label>
             <Select
@@ -99,6 +108,19 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="hours">Minimum Hours: {filters.minHours}</Label>
+            <Slider
+              id="hours"
+              min={0}
+              max={40}
+              step={1}
+              value={[filters.minHours]}
+              onValueChange={(value) => setFilters({ ...filters, minHours: value[0] })}
+              className="mt-2"
+            />
           </div>
 
           <div className="flex items-end">
