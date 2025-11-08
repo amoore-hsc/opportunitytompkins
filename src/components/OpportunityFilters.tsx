@@ -57,7 +57,9 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
     }
 
     if (filters.location !== "all") {
-      filtered = filtered.filter((opp) => extractCity(opp.location) === filters.location);
+      filtered = filtered.filter((opp) => 
+        extractCity(opp.location).toLowerCase() === filters.location.toLowerCase()
+      );
     }
 
     if (filters.minHours > 0) {
@@ -77,7 +79,20 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
     onFilterChange(filtered);
   };
 
-  const uniqueCities = Array.from(new Set(opportunities.map((opp) => extractCity(opp.location))));
+  const normalizeCity = (city: string): string => {
+    // Capitalize first letter of each word
+    return city
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const uniqueCities = Array.from(
+    new Set(
+      opportunities.map((opp) => normalizeCity(extractCity(opp.location)))
+    )
+  ).sort();
   
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
