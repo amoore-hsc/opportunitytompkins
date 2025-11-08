@@ -74,9 +74,7 @@ const Opportunities = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="mb-2 text-3xl font-bold text-foreground">Available Opportunities</h2>
-          <p className="text-muted-foreground">
-            Browse and apply for opportunities that fulfill your SNAP ABAWD work requirements
-          </p>
+          <p className="text-muted-foreground">Browse and apply for opportunities that fulfill work requirements</p>
         </div>
 
         <OpportunityFilters opportunities={opportunities} onFilterChange={setFilteredOpportunities} />
