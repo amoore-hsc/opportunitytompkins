@@ -117,6 +117,9 @@ Opportunity Finder</h1>
               <a href="https://www.foodbankst.org/find-food/" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
                 Food Bank of the Southern Tier
               </a>
+              <p className="text-lg text-foreground">
+                <a href="tel:607-796-6061" className="text-primary hover:underline">(607) 796-6061</a>
+              </p>
             </div>
           </div>
         </div>
