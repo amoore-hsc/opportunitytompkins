@@ -185,16 +185,15 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
           </div>
           <div className="flex flex-wrap gap-2">
             {daysOfWeek.map((day) => (
-              <div key={day} className="flex items-center space-x-2">
-                <Checkbox
-                  id={day}
-                  checked={filters.daysOfWeek.includes(day)}
-                  onCheckedChange={() => toggleDay(day)}
-                />
-                <Label htmlFor={day} className="cursor-pointer text-sm">
-                  {day}
-                </Label>
-              </div>
+              <Button
+                key={day}
+                variant={filters.daysOfWeek.includes(day) ? "default" : "outline"}
+                size="sm"
+                onClick={() => toggleDay(day)}
+                className="transition-all"
+              >
+                {day}
+              </Button>
             ))}
           </div>
         </div>
