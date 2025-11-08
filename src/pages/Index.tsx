@@ -17,13 +17,8 @@ Opportunity Finder</h1>
       {/* Hero Section */}
       <main className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-6 text-4xl font-bold text-foreground sm:text-5xl">
-            Connect with Opportunities That Count
-          </h2>
-          <p className="mb-12 text-lg text-muted-foreground sm:text-xl">
-            Find volunteer or training opportunities that count toward your SNAP ABAWD work requirement — 
-            or post one if you're a community organization.
-          </p>
+          <h2 className="mb-6 text-4xl font-bold text-foreground sm:text-5xl">Connect to Opportunities that Count</h2>
+          <p className="mb-12 text-lg text-muted-foreground sm:text-xl">Find volunteer, training or educational opportunities that count toward the federally mandated SNAP ABAWD work requirement — or post one if you're a community organization.</p>
 
           {/* Main CTAs */}
           <div className="grid gap-6 sm:grid-cols-2">
