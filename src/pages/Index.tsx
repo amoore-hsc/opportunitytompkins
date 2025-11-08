@@ -98,12 +98,11 @@ Opportunity Finder</h1>
         </div>
       </main>
 
-      {/* Additional Resources Section */}
-      <section className="container mx-auto px-4 py-16">
+      {/* Additional Resources Section - Hidden */}
+      {/* <section className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-6xl text-center">
           <h2 className="text-3xl font-bold text-foreground mb-8">Looking For Additional Support?</h2>
           <div className="grid gap-8 md:grid-cols-3">
-            {/* Workforce Development */}
             <div className="flex flex-col items-center gap-6">
               <a href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                 <img src={workforceNYLogo} alt="Tompkins Workforce New York Logo" className="h-48 w-auto object-contain rounded-lg shadow-md" />
@@ -113,7 +112,6 @@ Opportunity Finder</h1>
               </p>
             </div>
 
-            {/* Community Health & Resource Network */}
             <div className="flex flex-col items-center gap-6">
               <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                 <img src={chrnLogo} alt="Community Health & Resource Network Logo" className="h-48 w-auto object-contain rounded-lg shadow-md" />
@@ -122,7 +120,6 @@ Opportunity Finder</h1>
               </p>
             </div>
 
-            {/* Food Bank of the Southern Tier */}
             <div className="flex flex-col items-center gap-6">
               <a href="https://www.foodbankst.org/find-food/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                 <img src={foodbankLogo} alt="Food Bank of the Southern Tier Logo" className="h-48 w-auto object-contain rounded-lg shadow-md" />
@@ -133,7 +130,7 @@ Opportunity Finder</h1>
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Footer */}
       <footer className="border-t border-border bg-card py-8 mt-20">
