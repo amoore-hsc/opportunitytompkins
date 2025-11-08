@@ -89,9 +89,6 @@ Opportunity Finder</h1>
               <a href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                 <img src={workforceNYLogo} alt="Tompkins Workforce New York Logo" className="h-48 w-auto object-contain rounded-lg shadow-md" />
               </a>
-              <a href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
-                Workforce Development
-              </a>
               <p className="text-lg text-foreground">
                 Career Center: <a href="tel:607-272-7570" className="text-primary hover:underline">(607) 272-7570</a>
               </p>
@@ -102,9 +99,6 @@ Opportunity Finder</h1>
               <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                 <img src={chrnLogo} alt="Community Health & Resource Network Logo" className="h-48 w-auto object-contain rounded-lg shadow-md" />
               </a>
-              <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
-                Community Health & Resource Network
-              </a>
               <p className="text-lg text-foreground">Dial 211: <a href="tel:1-877-211-8667" className="text-primary hover:underline">877-211-8667</a>
               </p>
             </div>
@@ -113,9 +107,6 @@ Opportunity Finder</h1>
             <div className="flex flex-col items-center gap-6">
               <a href="https://www.foodbankst.org/find-food/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                 <img src={foodbankLogo} alt="Food Bank of the Southern Tier Logo" className="h-48 w-auto object-contain rounded-lg shadow-md" />
-              </a>
-              <a href="https://www.foodbankst.org/find-food/" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
-                Food Bank of the Southern Tier
               </a>
               <p className="text-lg text-foreground">
                 <a href="tel:607-796-6061" className="text-primary hover:underline">(607) 796-6061</a>
