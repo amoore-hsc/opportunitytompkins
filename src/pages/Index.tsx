@@ -4,8 +4,7 @@ import { Search, ListPlus, Share2 } from "lucide-react";
 const Index = () => {
   return <div className="min-h-screen bg-background">
       {/* Exemption Status Banner */}
-      <div className="bg-accent text-accent-foreground py-3 px-4 text-center font-medium hover:bg-accent/90 transition-colors cursor-pointer">You may be exempt from new work requirements. Click Here to Check your Exemption Status.  
-Questions? Contact Tompkins County DSS (607) 274-5680</div>
+      <div className="bg-accent text-accent-foreground py-3 px-4 text-center font-medium hover:bg-accent/90 transition-colors cursor-pointer">You may be exempt from new work requirements. Click Here to Check your Exemption Status.<br />Questions? Contact Tompkins County DSS (607) 274-5680</div>
 
       {/* Header */}
       <header className="border-b border-border bg-card">
@@ -30,7 +29,7 @@ Opportunity Finder</h1>
               <div className="rounded-xl border-2 border-primary bg-card p-8 transition-all hover:scale-105 hover:shadow-lg">
                 <Search className="mx-auto mb-4 h-12 w-12 text-primary" />
                 <h3 className="mb-2 text-xl font-semibold text-foreground">Find an Opportunity</h3>
-                <p className="text-muted-foreground">Search for volunteer, training, and educational  opportunities in your area</p>
+                <p className="text-muted-foreground">Search for volunteer, training, and educational  opportunities in your area</p>
                 <Button className="mt-6 w-full" size="lg">
                   Browse Opportunities
                 </Button>
