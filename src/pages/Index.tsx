@@ -100,7 +100,7 @@ Opportunity Finder</h1>
             {/* Community Health & Resource Network */}
             <div className="flex flex-col items-center gap-6">
               <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                <img src={chrnLogo} alt="Community Health & Resource Network Logo" className="w-full max-w-md rounded-lg shadow-md" />
+                <img src={chrnLogo} alt="Community Health & Resource Network Logo" className="h-48 w-auto object-contain rounded-lg shadow-md" />
               </a>
               <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="text-lg text-primary hover:underline">
                 Community Health & Resource Network
