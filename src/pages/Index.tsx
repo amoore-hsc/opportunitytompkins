@@ -3,6 +3,11 @@ import { Link } from "react-router-dom";
 import { Search, ListPlus, Share2 } from "lucide-react";
 const Index = () => {
   return <div className="min-h-screen bg-background">
+      {/* Exemption Status Banner */}
+      <div className="bg-accent text-accent-foreground py-3 px-4 text-center font-medium hover:bg-accent/90 transition-colors cursor-pointer">
+        Check Here to Check your Exemption Status
+      </div>
+
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
