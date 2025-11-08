@@ -44,7 +44,7 @@ export const OpportunityCard = ({
         
         {opportunity.additional_requirements && <div className="flex items-start gap-2 text-sm text-muted-foreground">
             <FileText className="h-4 w-4 mt-0.5 flex-shrink-0" />
-            <span><strong>Additional Requirements:</strong> {opportunity.additional_requirements}</span>
+            <span className="font-normal"><strong>Additional Requirements:</strong> {opportunity.additional_requirements}</span>
           </div>}
         
         <ApplicationDialog opportunity={opportunity}>
