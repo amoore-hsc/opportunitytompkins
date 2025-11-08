@@ -51,6 +51,10 @@ const formatTimeFromHour = (hour: number): string => {
   const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
   return `${displayHour}:00 ${period}`;
 };
+
+const countWords = (text: string): number => {
+  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+};
 const ListOpportunity = () => {
   const navigate = useNavigate();
   const {
@@ -58,6 +62,7 @@ const ListOpportunity = () => {
   } = useToast();
   const [loading, setLoading] = useState(false);
   const [locationError, setLocationError] = useState("");
+  const [descriptionWordCount, setDescriptionWordCount] = useState(0);
   const [daySchedule, setDaySchedule] = useState<DaySchedule>(DAYS_OF_WEEK.reduce((acc, day) => ({
     ...acc,
     [day.key]: {
@@ -110,6 +115,16 @@ const ListOpportunity = () => {
       toast({
         title: "Acknowledgement required",
         description: "Please confirm that you will complete the required documentation.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate word count
+    if (descriptionWordCount > 25) {
+      toast({
+        title: "Description too long",
+        description: "Please limit the description to 25 words or less.",
         variant: "destructive"
       });
       return;
@@ -239,11 +254,19 @@ const ListOpportunity = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Short Description *</Label>
-            <Textarea id="description" required value={formData.description} onChange={e => setFormData({
-            ...formData,
-            description: e.target.value
-          })} placeholder="Describe the opportunity..." rows={4} />
+            <Label htmlFor="description">Short Description (25 words max) *</Label>
+            <Textarea id="description" required value={formData.description} onChange={e => {
+              const text = e.target.value;
+              const wordCount = countWords(text);
+              setDescriptionWordCount(wordCount);
+              setFormData({
+                ...formData,
+                description: text
+              });
+            }} placeholder="Describe the opportunity..." rows={4} />
+            <p className={`text-sm ${descriptionWordCount > 25 ? 'text-destructive' : 'text-muted-foreground'}`}>
+              {descriptionWordCount}/25 words
+            </p>
           </div>
 
           <div className="space-y-2">
