@@ -48,7 +48,7 @@ export const OpportunityCard = ({
           </div>}
         
         <ApplicationDialog opportunity={opportunity}>
-          <Button className="w-full mt-4">Apply for this Opportunity</Button>
+          <Button className="w-full mt-4">Apply</Button>
         </ApplicationDialog>
       </CardContent>
     </Card>;
