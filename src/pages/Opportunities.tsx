@@ -59,7 +59,7 @@ const Opportunities = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Share2 className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold text-foreground">Opportunity Finder</h1>
+              <h1 className="text-2xl font-bold text-foreground">Tompkins County Opportunity Finder</h1>
             </div>
             <Link to="/">
               <Button variant="outline" size="sm">
