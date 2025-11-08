@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Search, ListPlus, Share2 } from "lucide-react";
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
+import chrnLogo from "@/assets/chrn-logo.jpg";
 const Index = () => {
   return <div className="min-h-screen bg-background">
       {/* Exemption Status Banner */}
@@ -79,32 +80,62 @@ Opportunity Finder</h1>
 
       {/* Additional Resources Section */}
       <section className="container mx-auto px-4 py-16">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-6xl text-center">
           <h2 className="text-3xl font-bold text-foreground mb-8">Looking For Additional Resources?</h2>
-          <div className="flex flex-col items-center gap-6">
-            <a 
-              href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:opacity-80 transition-opacity"
-            >
-              <img 
-                src={workforceNYLogo} 
-                alt="Tompkins Workforce New York Logo" 
-                className="w-full max-w-md rounded-lg shadow-md"
-              />
-            </a>
-            <a 
-              href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-lg text-primary hover:underline"
-            >
-              Workforce Development
-            </a>
-            <p className="text-lg text-foreground">
-              Career Center: <a href="tel:607-272-7570" className="text-primary hover:underline">(607) 272-7570</a>
-            </p>
+          <div className="grid gap-8 md:grid-cols-2">
+            {/* Workforce Development */}
+            <div className="flex flex-col items-center gap-6">
+              <a 
+                href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src={workforceNYLogo} 
+                  alt="Tompkins Workforce New York Logo" 
+                  className="w-full max-w-md rounded-lg shadow-md"
+                />
+              </a>
+              <a 
+                href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-lg text-primary hover:underline"
+              >
+                Workforce Development
+              </a>
+              <p className="text-lg text-foreground">
+                Career Center: <a href="tel:607-272-7570" className="text-primary hover:underline">(607) 272-7570</a>
+              </p>
+            </div>
+
+            {/* Community Health & Resource Network */}
+            <div className="flex flex-col items-center gap-6">
+              <a 
+                href="https://hsctc.org/network/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src={chrnLogo} 
+                  alt="Community Health & Resource Network Logo" 
+                  className="w-full max-w-md rounded-lg shadow-md"
+                />
+              </a>
+              <a 
+                href="https://hsctc.org/network/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-lg text-primary hover:underline"
+              >
+                Community Health & Resource Network
+              </a>
+              <p className="text-lg text-foreground">
+                2.1.1: <a href="tel:1-877-211-8667" className="text-primary hover:underline">(1.877.211.8667)</a>
+              </p>
+            </div>
           </div>
         </div>
       </section>
