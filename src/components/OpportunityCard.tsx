@@ -37,7 +37,11 @@ export const OpportunityCard = ({
         
         <div className="flex items-start gap-2 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4 mt-0.5 flex-shrink-0" />
-          <span>{opportunity.days_times_available}</span>
+          <div className="flex flex-col gap-1">
+            {opportunity.days_times_available.split(',').map((day, index) => (
+              <span key={index}>{day.trim()}</span>
+            ))}
+          </div>
         </div>
         
         {opportunity.additional_requirements && <div className="flex items-start gap-2 text-sm text-muted-foreground">
