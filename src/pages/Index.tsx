@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Search, ListPlus, Handshake } from "lucide-react";
+import { Search, ListPlus, Handshake, FileCheck, ClipboardCheck } from "lucide-react";
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
 import chrnLogo from "@/assets/chrn-logo.jpg";
 import foodbankLogo from "@/assets/foodbank-logo.png";
@@ -83,11 +83,13 @@ Opportunity Finder</h1>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="flex flex-col items-center">
                 <Button className="w-full max-w-md" size="lg">
+                  <FileCheck className="mr-2 h-5 w-5" />
                   Volunteer Work Experience Verification Form
                 </Button>
               </div>
               <div className="flex flex-col items-center">
                 <Button className="w-full max-w-md" size="lg">
+                  <ClipboardCheck className="mr-2 h-5 w-5" />
                   Training/ Educational Program Verification Form
                 </Button>
               </div>
