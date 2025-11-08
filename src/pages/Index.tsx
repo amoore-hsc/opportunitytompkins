@@ -4,7 +4,7 @@ import { Search, ListPlus, Share2 } from "lucide-react";
 const Index = () => {
   return <div className="min-h-screen bg-background">
       {/* Exemption Status Banner */}
-      <div className="bg-accent text-accent-foreground py-3 px-4 text-center font-medium hover:bg-accent/90 transition-colors cursor-pointer">You may be exempt from new work requirements. Click Here to Check your Exemption Status. 
+      <div className="bg-accent text-accent-foreground py-3 px-4 text-center font-medium hover:bg-accent/90 transition-colors cursor-pointer">You may be exempt from new work requirements. Click Here to Check your Exemption Status.  
 Questions? Contact Tompkins County DSS (607) 274-5680</div>
 
       {/* Header */}
