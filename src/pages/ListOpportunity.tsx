@@ -347,7 +347,7 @@ const ListOpportunity = () => {
           </div>
 
           <div className="space-y-4">
-            <Label>Additional Requirements</Label>
+            <Label>Standard Requirements</Label>
             <p className="text-sm text-muted-foreground">Add any specific requirements (e.g., Driver's license, background check)</p>
             
             <div className="flex gap-2">
