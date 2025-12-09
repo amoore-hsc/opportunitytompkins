@@ -265,51 +265,51 @@ const ListOpportunity = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="administrative">
-                  <div className="flex flex-col items-start">
-                    <span>Administrative & Office Support</span>
-                    <span className="text-xs text-muted-foreground">Clerical tasks, data entry, reception, scheduling</span>
+                  <div className="flex flex-col items-start py-1">
+                    <span className="font-medium">Administrative & Office Support</span>
+                    <span className="text-xs text-foreground/70">Clerical tasks, data entry, reception, scheduling</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="community">
-                  <div className="flex flex-col items-start">
-                    <span>Community Engagement & Public Service</span>
-                    <span className="text-xs text-muted-foreground">Food distribution, neighborhood events, resource navigation</span>
+                  <div className="flex flex-col items-start py-1">
+                    <span className="font-medium">Community Engagement & Public Service</span>
+                    <span className="text-xs text-foreground/70">Food distribution, neighborhood events, resource navigation</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="education">
-                  <div className="flex flex-col items-start">
-                    <span>Education & Mentoring</span>
-                    <span className="text-xs text-muted-foreground">Tutoring, coaching, skill-building, youth programs</span>
+                  <div className="flex flex-col items-start py-1">
+                    <span className="font-medium">Education & Mentoring</span>
+                    <span className="text-xs text-foreground/70">Tutoring, coaching, skill-building, youth programs</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="human-services">
-                  <div className="flex flex-col items-start">
-                    <span>Human & Social Support Services</span>
-                    <span className="text-xs text-muted-foreground">Crisis support, companionship, housing/resource advocacy</span>
+                  <div className="flex flex-col items-start py-1">
+                    <span className="font-medium">Human & Social Support Services</span>
+                    <span className="text-xs text-foreground/70">Crisis support, companionship, housing/resource advocacy</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="physical-outdoor">
-                  <div className="flex flex-col items-start">
-                    <span>Physical, Outdoor & Environmental Work</span>
-                    <span className="text-xs text-muted-foreground">Cleanup, gardening, construction, sustainability projects</span>
+                  <div className="flex flex-col items-start py-1">
+                    <span className="font-medium">Physical, Outdoor & Environmental Work</span>
+                    <span className="text-xs text-foreground/70">Cleanup, gardening, construction, sustainability projects</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="creative-media">
-                  <div className="flex flex-col items-start">
-                    <span>Creative, Media & Communications</span>
-                    <span className="text-xs text-muted-foreground">Social media, design, storytelling, performing arts support</span>
+                  <div className="flex flex-col items-start py-1">
+                    <span className="font-medium">Creative, Media & Communications</span>
+                    <span className="text-xs text-foreground/70">Social media, design, storytelling, performing arts support</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="technology">
-                  <div className="flex flex-col items-start">
-                    <span>Technology & Digital Support</span>
-                    <span className="text-xs text-muted-foreground">Tech troubleshooting, website/app help, data management</span>
+                  <div className="flex flex-col items-start py-1">
+                    <span className="font-medium">Technology & Digital Support</span>
+                    <span className="text-xs text-foreground/70">Tech troubleshooting, website/app help, data management</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="fundraising">
-                  <div className="flex flex-col items-start">
-                    <span>Fundraising & Development</span>
-                    <span className="text-xs text-muted-foreground">Donor outreach, event support, grant support</span>
+                  <div className="flex flex-col items-start py-1">
+                    <span className="font-medium">Fundraising & Development</span>
+                    <span className="text-xs text-foreground/70">Donor outreach, event support, grant support</span>
                   </div>
                 </SelectItem>
               </SelectContent>
