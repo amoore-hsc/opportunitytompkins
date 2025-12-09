@@ -273,31 +273,31 @@ const ListOpportunity = () => {
                 <SelectItem value="community">
                   <div className="flex flex-col items-start">
                     <span>Community Engagement & Public Service</span>
-                    <span className="text-xs text-muted-foreground">Event support, outreach, food pantry, public programs, civic projects</span>
+                    <span className="text-xs text-muted-foreground">Food distribution, neighborhood events, resource navigation</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="education">
                   <div className="flex flex-col items-start">
                     <span>Education & Mentoring</span>
-                    <span className="text-xs text-muted-foreground">Tutoring, classroom support, youth programs, coaching, workshops</span>
+                    <span className="text-xs text-muted-foreground">Tutoring, coaching, skill-building, youth programs</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="human-services">
                   <div className="flex flex-col items-start">
                     <span>Human & Social Support Services</span>
-                    <span className="text-xs text-muted-foreground">Case support, client assistance, caregiving, housing support, crisis response</span>
+                    <span className="text-xs text-muted-foreground">Crisis support, companionship, housing/resource advocacy</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="physical-outdoor">
                   <div className="flex flex-col items-start">
                     <span>Physical, Outdoor & Environmental Work</span>
-                    <span className="text-xs text-muted-foreground">Trail maintenance, gardening, construction, cleaning, landscaping</span>
+                    <span className="text-xs text-muted-foreground">Cleanup, gardening, construction, sustainability projects</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="creative-media">
                   <div className="flex flex-col items-start">
                     <span>Creative, Media & Communications</span>
-                    <span className="text-xs text-muted-foreground">Graphic design, photography, video, writing, social media, marketing</span>
+                    <span className="text-xs text-muted-foreground">Social media, design, storytelling, performing arts support</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="technology">
