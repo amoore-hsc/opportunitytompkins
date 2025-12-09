@@ -29,7 +29,9 @@ const Index = () => {
               </Button>
             </a>
             <p className="text-muted-foreground">
-              Questions? Contact{" "}
+              Questions?
+              <br />
+              Contact{" "}
               <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
                 Tompkins County DSS
               </a>
