@@ -74,6 +74,7 @@ const ListOpportunity = () => {
   const [currentRequirement, setCurrentRequirement] = useState("");
   const [formData, setFormData] = useState({
     type: "",
+    roleClassification: "",
     description: "",
     location: "",
     onBusRoute: false,
@@ -249,6 +250,25 @@ const ListOpportunity = () => {
               <SelectContent>
                 <SelectItem value="volunteer">Volunteer</SelectItem>
                 <SelectItem value="education">Education & Training</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="roleClassification">Role Classification *</Label>
+            <Select required value={formData.roleClassification} onValueChange={value => setFormData({
+            ...formData,
+            roleClassification: value
+          })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select classification" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="entry-level">Entry Level</SelectItem>
+                <SelectItem value="skilled">Skilled</SelectItem>
+                <SelectItem value="professional">Professional</SelectItem>
+                <SelectItem value="administrative">Administrative</SelectItem>
+                <SelectItem value="labor">Labor</SelectItem>
               </SelectContent>
             </Select>
           </div>
