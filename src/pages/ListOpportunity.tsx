@@ -271,7 +271,7 @@ const ListOpportunity = () => {
                       <SelectItem value="administrative">Administrative & Office Support</SelectItem>
                     </TooltipTrigger>
                     <TooltipContent side="right" className="max-w-xs">
-                      <p>Filing, data entry, reception, scheduling, general office tasks</p>
+                      <p>Clerical tasks, data entry, reception, scheduling</p>
                     </TooltipContent>
                   </Tooltip>
                   <Tooltip>
