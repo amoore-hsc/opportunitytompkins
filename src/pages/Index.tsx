@@ -1,13 +1,65 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Search, ListPlus, Handshake, FileCheck, ClipboardCheck } from "lucide-react";
+import { Search, ListPlus, Handshake, FileCheck, ClipboardCheck, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
 import chrnLogo from "@/assets/chrn-logo.jpg";
 import foodbankLogo from "@/assets/foodbank-logo.png";
+
 const Index = () => {
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    // Show popup after a short delay when page loads
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return <div className="min-h-screen bg-background">
-      {/* Exemption Status Banner */}
-      <div className="text-accent-foreground py-3 px-4 text-center font-medium transition-colors cursor-pointer bg-[#eeeeee]">You may be exempt from new work requirements.<br />Click Here to Check your Exemption Status.<br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
+      {/* Exemption Status Popup */}
+      <Dialog open={showPopup} onOpenChange={setShowPopup}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl text-primary">Important Notice</DialogTitle>
+          </DialogHeader>
+          <div className="text-center space-y-4 py-4">
+            <p className="text-lg font-medium text-foreground">
+              You may be exempt from new work requirements.
+            </p>
+            <a 
+              href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block"
+            >
+              <Button className="text-base">
+                Click Here to Check your Exemption Status
+              </Button>
+            </a>
+            <p className="text-muted-foreground">
+              Questions? Contact{" "}
+              <a 
+                href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-primary underline hover:no-underline"
+              >
+                Tompkins County DSS
+              </a>
+              <br />
+              <a href="tel:607-274-5680" className="text-primary hover:underline">(607) 274-5680</a>
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Header */}
       <header className="border-b border-border bg-[#eeeeee]">
