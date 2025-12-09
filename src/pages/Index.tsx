@@ -7,7 +7,7 @@ import foodbankLogo from "@/assets/foodbank-logo.png";
 const Index = () => {
   return <div className="min-h-screen bg-background">
       {/* Exemption Status Banner */}
-      <div className="bg-accent text-accent-foreground py-3 px-4 text-center font-medium hover:bg-accent/90 transition-colors cursor-pointer">You may be exempt from new work requirements.<br />Click Here to Check your Exemption Status.<br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
+      <div className="text-accent-foreground py-3 px-4 text-center font-medium transition-colors cursor-pointer bg-[#eeeeee]">You may be exempt from new work requirements.<br />Click Here to Check your Exemption Status.<br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
 
       {/* Header */}
       <header className="border-b border-border bg-card">
@@ -111,16 +111,14 @@ Opportunity Finder</h1>
                 Career Center: <a href="tel:607-272-7570" className="text-primary hover:underline">(607) 272-7570</a>
               </p>
             </div>
-
-            <div className="flex flex-col items-center gap-6">
+             <div className="flex flex-col items-center gap-6">
               <a href="https://hsctc.org/network/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                 <img src={chrnLogo} alt="Community Health & Resource Network Logo" className="h-48 w-auto object-contain rounded-lg shadow-md" />
               </a>
               <p className="text-lg text-foreground">Dial 211: <a href="tel:1-877-211-8667" className="text-primary hover:underline">877-211-8667</a>
               </p>
             </div>
-
-            <div className="flex flex-col items-center gap-6">
+             <div className="flex flex-col items-center gap-6">
               <a href="https://www.foodbankst.org/find-food/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                 <img src={foodbankLogo} alt="Food Bank of the Southern Tier Logo" className="h-48 w-auto object-contain rounded-lg shadow-md" />
               </a>
@@ -130,7 +128,7 @@ Opportunity Finder</h1>
             </div>
           </div>
         </div>
-      </section> */}
+       </section> */}
 
       {/* Footer */}
       <footer className="border-t border-border bg-card py-8 mt-20">
