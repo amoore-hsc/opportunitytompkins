@@ -348,7 +348,7 @@ const ListOpportunity = () => {
 
           <div className="space-y-4">
             <Label>Standard Requirements</Label>
-            <p className="text-sm text-muted-foreground">Add any specific requirements (e.g., Driver's license, background check)</p>
+            <p className="text-sm text-muted-foreground">Add any specific requirements for workers or volunteers in your organization (e.g., Driver's license)</p>
             
             <div className="flex gap-2">
               <Input value={currentRequirement} onChange={e => setCurrentRequirement(e.target.value)} onKeyPress={e => {
