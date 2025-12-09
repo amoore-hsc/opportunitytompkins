@@ -30,7 +30,7 @@ const Index = () => {
               You may be exempt from new work requirements.
             </p>
             <a 
-              href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" 
+              href="https://forms.gle/9fBQrPjE7xNZbHQR8" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-block"
