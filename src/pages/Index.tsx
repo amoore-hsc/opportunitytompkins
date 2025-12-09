@@ -10,7 +10,7 @@ const Index = () => {
       <div className="text-accent-foreground py-3 px-4 text-center font-medium transition-colors cursor-pointer bg-[#eeeeee]">You may be exempt from new work requirements.<br />Click Here to Check your Exemption Status.<br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
 
       {/* Header */}
-      <header className="border-b border-border bg-card">
+      <header className="border-b border-border bg-[#eeeeee]">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-2">
             <Handshake className="h-8 w-8 text-primary" />
