@@ -54,7 +54,7 @@ const Opportunities = () => {
   };
   return <div className="min-h-screen bg-background">
       {/* Exemption Status Banner */}
-      <div className="bg-accent text-accent-foreground py-3 px-4 text-center font-medium hover:bg-accent/90 transition-colors cursor-pointer">You may be exempt from new work requirements.<br />Click Here to Check your Exemption Status.<br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
+      <div className="py-3 px-4 text-center font-medium transition-colors cursor-pointer text-primary-foreground bg-[#2a5f99]">You may be exempt from new work requirements.<br />Click Here to Check your Exemption Status.<br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
 
       <header className="border-b border-border bg-[#eeeeee]">
         <div className="container mx-auto px-4 py-6">
@@ -80,9 +80,7 @@ const Opportunities = () => {
               <h2 className="mb-2 text-3xl font-bold text-foreground">Available Opportunities</h2>
               <p className="text-muted-foreground">Browse and apply for opportunities that fulfill work requirements</p>
             </div>
-            {filteredOpportunities.length > 0 && (
-              <ShareOpportunitiesDialog opportunities={filteredOpportunities} />
-            )}
+            {filteredOpportunities.length > 0 && <ShareOpportunitiesDialog opportunities={filteredOpportunities} />}
           </div>
         </div>
 
