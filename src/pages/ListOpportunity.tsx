@@ -79,6 +79,7 @@ const ListOpportunity = () => {
     onBusRoute: false,
     hoursAvailable: "",
     orgName: "",
+    contactName: "",
     orgEmail: "",
     orgPhone: "",
     acknowledged: false
@@ -381,6 +382,14 @@ const ListOpportunity = () => {
                 <Input id="orgName" required value={formData.orgName} onChange={e => setFormData({
                 ...formData,
                 orgName: e.target.value
+              })} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="contactName">Contact Name *</Label>
+                <Input id="contactName" required value={formData.contactName} onChange={e => setFormData({
+                ...formData,
+                contactName: e.target.value
               })} />
               </div>
 
