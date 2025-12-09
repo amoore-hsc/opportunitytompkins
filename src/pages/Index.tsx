@@ -28,7 +28,7 @@ const Index = () => {
                 Click Here to Check your Exemption Status
               </Button>
             </a>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-base">
               Questions?
               <br />
               Contact{" "}
