@@ -264,11 +264,14 @@ const ListOpportunity = () => {
                 <SelectValue placeholder="Select classification" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="entry-level">Entry Level</SelectItem>
-                <SelectItem value="skilled">Skilled</SelectItem>
-                <SelectItem value="professional">Professional</SelectItem>
-                <SelectItem value="administrative">Administrative</SelectItem>
-                <SelectItem value="labor">Labor</SelectItem>
+                <SelectItem value="administrative">Administrative & Office Support</SelectItem>
+                <SelectItem value="community">Community Engagement & Public Service</SelectItem>
+                <SelectItem value="education">Education & Mentoring</SelectItem>
+                <SelectItem value="human-services">Human & Social Support Services</SelectItem>
+                <SelectItem value="physical-outdoor">Physical, Outdoor & Environmental Work</SelectItem>
+                <SelectItem value="creative-media">Creative, Media & Communications</SelectItem>
+                <SelectItem value="technology">Technology & Digital Support</SelectItem>
+                <SelectItem value="fundraising">Fundraising & Development</SelectItem>
               </SelectContent>
             </Select>
           </div>
