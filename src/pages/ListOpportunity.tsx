@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
@@ -265,72 +264,54 @@ const ListOpportunity = () => {
                 <SelectValue placeholder="Select classification" />
               </SelectTrigger>
               <SelectContent>
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SelectItem value="administrative">Administrative & Office Support</SelectItem>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-xs">
-                      <p>Clerical tasks, data entry, reception, scheduling</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SelectItem value="community">Community Engagement & Public Service</SelectItem>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-xs">
-                      <p>Event support, outreach, food pantry, public programs, civic projects</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SelectItem value="education">Education & Mentoring</SelectItem>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-xs">
-                      <p>Tutoring, classroom support, youth programs, coaching, workshops</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SelectItem value="human-services">Human & Social Support Services</SelectItem>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-xs">
-                      <p>Case support, client assistance, caregiving, housing support, crisis response</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SelectItem value="physical-outdoor">Physical, Outdoor & Environmental Work</SelectItem>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-xs">
-                      <p>Trail maintenance, gardening, construction, cleaning, landscaping</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SelectItem value="creative-media">Creative, Media & Communications</SelectItem>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-xs">
-                      <p>Graphic design, photography, video, writing, social media, marketing</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SelectItem value="technology">Technology & Digital Support</SelectItem>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-xs">
-                      <p>Tech troubleshooting, website/app help, data management</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SelectItem value="fundraising">Fundraising & Development</SelectItem>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-xs">
-                      <p>Donor outreach, event support, grant support</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <SelectItem value="administrative">
+                  <div className="flex flex-col items-start">
+                    <span>Administrative & Office Support</span>
+                    <span className="text-xs text-muted-foreground">Clerical tasks, data entry, reception, scheduling</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="community">
+                  <div className="flex flex-col items-start">
+                    <span>Community Engagement & Public Service</span>
+                    <span className="text-xs text-muted-foreground">Event support, outreach, food pantry, public programs, civic projects</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="education">
+                  <div className="flex flex-col items-start">
+                    <span>Education & Mentoring</span>
+                    <span className="text-xs text-muted-foreground">Tutoring, classroom support, youth programs, coaching, workshops</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="human-services">
+                  <div className="flex flex-col items-start">
+                    <span>Human & Social Support Services</span>
+                    <span className="text-xs text-muted-foreground">Case support, client assistance, caregiving, housing support, crisis response</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="physical-outdoor">
+                  <div className="flex flex-col items-start">
+                    <span>Physical, Outdoor & Environmental Work</span>
+                    <span className="text-xs text-muted-foreground">Trail maintenance, gardening, construction, cleaning, landscaping</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="creative-media">
+                  <div className="flex flex-col items-start">
+                    <span>Creative, Media & Communications</span>
+                    <span className="text-xs text-muted-foreground">Graphic design, photography, video, writing, social media, marketing</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="technology">
+                  <div className="flex flex-col items-start">
+                    <span>Technology & Digital Support</span>
+                    <span className="text-xs text-muted-foreground">Tech troubleshooting, website/app help, data management</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="fundraising">
+                  <div className="flex flex-col items-start">
+                    <span>Fundraising & Development</span>
+                    <span className="text-xs text-muted-foreground">Donor outreach, event support, grant support</span>
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
