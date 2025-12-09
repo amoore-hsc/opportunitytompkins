@@ -2,17 +2,12 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Search, ListPlus, Handshake, FileCheck, ClipboardCheck } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
 import chrnLogo from "@/assets/chrn-logo.jpg";
 import foodbankLogo from "@/assets/foodbank-logo.png";
-
 const Index = () => {
   const [showPopup, setShowPopup] = useState(false);
-
   useEffect(() => {
     // Show popup after a short delay when page loads
     const timer = setTimeout(() => {
@@ -20,7 +15,6 @@ const Index = () => {
     }, 500);
     return () => clearTimeout(timer);
   }, []);
-
   return <div className="min-h-screen bg-background">
       {/* Exemption Status Popup */}
       <Dialog open={showPopup} onOpenChange={setShowPopup}>
@@ -29,28 +23,18 @@ const Index = () => {
             <p className="text-lg font-medium text-foreground">
               You may be exempt from new work requirements.
             </p>
-            <a 
-              href="https://forms.gle/9fBQrPjE7xNZbHQR8" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-block"
-            >
+            <a href="https://forms.gle/9fBQrPjE7xNZbHQR8" target="_blank" rel="noopener noreferrer" className="inline-block">
               <Button className="text-base">
                 Click Here to Check your Exemption Status
               </Button>
             </a>
             <p className="text-muted-foreground">
               Questions? Contact{" "}
-              <a 
-                href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-primary underline hover:no-underline"
-              >
+              <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
                 Tompkins County DSS
               </a>
               <br />
-              <a href="tel:607-274-5680" className="text-primary hover:underline">(607) 274-5680</a>
+              <a className="hover:underline text-primary" href="">(607) 274-5680</a>
             </p>
           </div>
         </DialogContent>
