@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Handshake, ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { Handshake, ArrowLeft, Pencil, Trash2, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { User, Session } from "@supabase/supabase-js";
 
 interface Opportunity {
   id: string;
@@ -42,19 +43,76 @@ interface Opportunity {
 }
 
 const Admin = () => {
-  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
   const { toast } = useToast();
 
-  const ADMIN_PASSWORD = "snap2024admin"; // Simple password for demo
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        // Check admin role after auth state changes
+        if (session?.user) {
+          setTimeout(() => {
+            checkAdminRole(session.user.id);
+          }, 0);
+        } else {
+          setIsAdmin(false);
+          setLoading(false);
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        checkAdminRole(session.user.id);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const checkAdminRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "admin")
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        console.error("Error checking admin role:", error);
+      }
+      
+      setIsAdmin(!!data);
+    } catch (error) {
+      console.error("Error checking admin role:", error);
+      setIsAdmin(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (authenticated) {
+    if (isAdmin) {
       fetchAllOpportunities();
     }
-  }, [authenticated]);
+  }, [isAdmin]);
 
   const fetchAllOpportunities = async () => {
     try {
@@ -74,17 +132,37 @@ const Admin = () => {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      setAuthenticated(true);
-    } else {
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        toast({
+          title: "Login Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
       toast({
-        title: "Access Denied",
-        description: "Incorrect password",
+        title: "Error",
+        description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsAdmin(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -150,15 +228,39 @@ const Admin = () => {
     }
   };
 
-  if (!authenticated) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login if not authenticated
+  if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
           <div className="mb-6 text-center">
             <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h1 className="text-2xl font-bold text-foreground">Admin Access</h1>
+            <h1 className="text-2xl font-bold text-foreground">Admin Login</h1>
+            <p className="text-sm text-muted-foreground mt-2">Sign in with your admin account</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@example.com"
+                required
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -166,11 +268,12 @@ const Admin = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter admin password"
+                placeholder="Enter password"
+                required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
             <Link to="/">
               <Button variant="outline" className="w-full">
@@ -178,6 +281,32 @@ const Admin = () => {
               </Button>
             </Link>
           </form>
+        </div>
+      </div>
+    );
+  }
+
+  // Show access denied if authenticated but not admin
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm text-center">
+          <Handshake className="mx-auto h-12 w-12 text-destructive mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
+          <p className="text-muted-foreground mb-6">
+            You don't have admin privileges. Please contact an administrator if you need access.
+          </p>
+          <div className="space-y-2">
+            <Button onClick={handleLogout} variant="outline" className="w-full">
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+            <Link to="/">
+              <Button variant="outline" className="w-full">
+                Back to Home
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -192,12 +321,19 @@ const Admin = () => {
               <Handshake className="h-8 w-8 text-primary" />
               <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
             </div>
-            <Link to="/">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Home
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">{user.email}</span>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
               </Button>
-            </Link>
+              <Link to="/">
+                <Button variant="outline" size="sm">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Home
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
