@@ -122,10 +122,12 @@ Opportunity Finder</h1>
                 <ClipboardCheck className="mr-2 h-5 w-5 shrink-0" />
                 Training/ Educational Program Verification Form
               </Button>
-              <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
-                <FileCheck className="mr-2 h-5 w-5 shrink-0" />
-                NYDocSubmit
-              </Button>
+              <a href="https://otda.ny.gov/programs/nydocsubmit/" target="_blank" rel="noopener noreferrer" className="h-full">
+                <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
+                  <FileCheck className="mr-2 h-5 w-5 shrink-0" />
+                  NYDocSubmit
+                </Button>
+              </a>
             </div>
           </div>
         </div>
