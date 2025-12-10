@@ -75,7 +75,7 @@ Opportunity Finder</h1>
 
             <Link to="/list-opportunity" className="group">
               <div className="rounded-xl border-2 bg-card p-8 transition-all hover:scale-105 hover:shadow-lg border-success">
-                <ListPlus className="mx-auto mb-4 h-12 w-12 bg-success text-success" />
+                <ListPlus className="mx-auto mb-4 h-12 w-12 text-success" />
                 <h3 className="mb-2 text-xl font-semibold text-foreground">List an Opportunity</h3>
                 <p className="text-muted-foreground">Organizations: Post volunteer or training/ educational positions</p>
                 <Button variant="default" size="lg" className="mt-6 w-full bg-success">
