@@ -487,7 +487,7 @@ const ListOpportunity = () => {
             </Label>
           </div>
 
-          <Button type="submit" className="w-full bg-accent hover:bg-accent/90" size="lg" disabled={loading}>
+          <Button type="submit" size="lg" disabled={loading} className="w-full bg-success">
             {loading ? "Submitting..." : "Submit Opportunity"}
           </Button>
         </form>
