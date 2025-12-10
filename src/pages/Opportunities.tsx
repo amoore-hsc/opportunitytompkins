@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Handshake, ArrowLeft, FileCheck, ClipboardCheck } from "lucide-react";
+import { Handshake, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { OpportunityCard } from "@/components/OpportunityCard";
 import { OpportunityFilters } from "@/components/OpportunityFilters";
 import { ShareOpportunitiesDialog } from "@/components/ShareOpportunitiesDialog";
 import { PrintableOpportunities } from "@/components/PrintableOpportunities";
+import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
 import { useToast } from "@/hooks/use-toast";
 export interface Opportunity {
   id: string;
@@ -96,24 +97,7 @@ const Opportunities = () => {
             {filteredOpportunities.map(opportunity => <OpportunityCard key={opportunity.id} opportunity={opportunity} />)}
           </div>}
 
-        {/* Electronic Verification Forms Section */}
-        <div className="mt-16 rounded-xl bg-card border border-border p-8 max-w-6xl mx-auto">
-          <h3 className="mb-8 text-2xl font-semibold text-foreground text-center">Electronic Verification Forms</h3>
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="flex flex-col items-center">
-              <Button className="w-full max-w-md text-base" size="lg">
-                <FileCheck className="mr-2 h-5 w-5" />
-                Volunteer Work Experience Verification Form
-              </Button>
-            </div>
-            <div className="flex flex-col items-center">
-              <Button className="w-full max-w-md text-base" size="lg">
-                <ClipboardCheck className="mr-2 h-5 w-5" />
-                Training/ Educational Program Verification Form
-              </Button>
-            </div>
-          </div>
-        </div>
+        <ElectronicVerificationForms />
       </main>
 
       <footer className="border-t border-border bg-card py-8 mt-20">
