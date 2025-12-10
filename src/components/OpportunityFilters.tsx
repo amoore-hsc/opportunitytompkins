@@ -192,26 +192,6 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="roleClassification">Role Classification</Label>
-            <Select
-              value={filters.roleClassification}
-              onValueChange={(value) => setFilters({ ...filters, roleClassification: value })}
-            >
-              <SelectTrigger id="roleClassification">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Classifications</SelectItem>
-                {roleClassifications.map((role) => (
-                  <SelectItem key={role} value={role}>
-                    {role}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="hours">Hours per Week: {filters.minHours}</Label>
@@ -240,6 +220,26 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
             </Label>
             </div>
           </div>
+        </div>
+
+        <div className="mt-6 space-y-2">
+          <Label htmlFor="roleClassification">Role Classification</Label>
+          <Select
+            value={filters.roleClassification}
+            onValueChange={(value) => setFilters({ ...filters, roleClassification: value })}
+          >
+            <SelectTrigger id="roleClassification" className="w-full md:w-1/2 lg:w-1/3">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Classifications</SelectItem>
+              {roleClassifications.map((role) => (
+                <SelectItem key={role} value={role}>
+                  {role}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="mt-6 space-y-3">
