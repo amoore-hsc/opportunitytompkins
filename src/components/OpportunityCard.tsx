@@ -1,4 +1,4 @@
-import { MapPin, Clock, Calendar, Bus, FileText } from "lucide-react";
+import { MapPin, Clock, Calendar, Bus, FileText, Briefcase } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,20 @@ export const OpportunityCard = ({
 }: OpportunityCardProps) => {
   return <Card className="hover:shadow-lg transition-shadow">
       <CardHeader>
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between flex-wrap gap-2">
           <Badge variant={opportunity.type === "volunteer" ? "default" : "secondary"} className="mb-2">
             {opportunity.type === "volunteer" ? "Volunteer" : "Education & Training"}
           </Badge>
-          {opportunity.on_bus_route && <Badge variant="outline" className="flex items-center gap-1">
-              <Bus className="h-3 w-3" />
-              On Bus Route
-            </Badge>}
+          <div className="flex flex-wrap gap-2">
+            {opportunity.on_bus_route && <Badge variant="outline" className="flex items-center gap-1">
+                <Bus className="h-3 w-3" />
+                On Bus Route
+              </Badge>}
+            {opportunity.role_classification && <Badge variant="outline" className="flex items-center gap-1">
+                <Briefcase className="h-3 w-3" />
+                {opportunity.role_classification}
+              </Badge>}
+          </div>
         </div>
         <CardTitle className="text-xl">{opportunity.org_name}</CardTitle>
         <CardDescription className="line-clamp-2">{opportunity.description}</CardDescription>
