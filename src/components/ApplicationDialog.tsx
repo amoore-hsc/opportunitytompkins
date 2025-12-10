@@ -156,7 +156,7 @@ export const ApplicationDialog = ({ opportunity, children }: ApplicationDialogPr
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Sending..." : "Submit Application"}
+            {loading ? "Sending..." : "Submit"}
           </Button>
         </form>
       </DialogContent>
