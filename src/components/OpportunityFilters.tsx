@@ -27,22 +27,41 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
   }, [filters, opportunities]);
 
   const extractCity = (location: string): string => {
-    // Extract city from various address formats:
-    // "324 W Buffalo St, Ithaca, NY 14850" -> "Ithaca"
-    // "Ithaca, NY" -> "Ithaca"
-    // "Ithaca" -> "Ithaca"
-    const parts = location.split(',').map(part => part.trim());
+    const statePattern = /,?\s*NY(?:\s*\d{5})?(?:-\d{4})?$/i;
+    const newYorkPattern = /,?\s*New York(?:\s*\d{5})?(?:-\d{4})?$/i;
     
-    if (parts.length >= 3) {
-      // Full address format: Street, City, State ZIP
-      return parts[1];
-    } else if (parts.length === 2) {
-      // City, State format
-      return parts[0];
-    } else {
-      // Just city name
-      return parts[0];
+    let beforeState = location;
+    
+    if (statePattern.test(location)) {
+      beforeState = location.replace(statePattern, '').trim();
+    } else if (newYorkPattern.test(location)) {
+      beforeState = location.replace(newYorkPattern, '').trim();
     }
+    
+    const parts = beforeState.split(',').map(part => part.trim());
+    
+    if (parts.length >= 1) {
+      const lastPart = parts[parts.length - 1];
+      const words = lastPart.split(/\s+/);
+      
+      const streetIndicators = ['st', 'st.', 'ave', 'ave.', 'rd', 'rd.', 'dr', 'dr.', 'ln', 'ln.', 'blvd', 'street', 'avenue', 'road', 'drive', 'lane', 'boulevard', 'way', 'court', 'ct', 'ct.', 'place', 'pl', 'pl.'];
+      
+      let cityStartIndex = 0;
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i].toLowerCase();
+        if (streetIndicators.includes(word) || /^\d+$/.test(word)) {
+          cityStartIndex = i + 1;
+        }
+      }
+      
+      if (cityStartIndex > 0 && cityStartIndex < words.length) {
+        return words.slice(cityStartIndex).join(' ');
+      }
+      
+      return lastPart;
+    }
+    
+    return location;
   };
 
   const applyFilters = () => {
