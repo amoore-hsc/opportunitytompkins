@@ -244,7 +244,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
           </div>
 
           <div className="flex-1 space-y-2">
-            <Label>Days of the Week</Label>
+            <Label>Days Available</Label>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap gap-2">
                 {daysOfWeek.map((day) => (
