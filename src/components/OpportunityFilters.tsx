@@ -7,46 +7,39 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Bus } from "lucide-react";
 import { Opportunity } from "@/pages/Opportunities";
-
 interface OpportunityFiltersProps {
   opportunities: Opportunity[];
   onFilterChange: (filtered: Opportunity[]) => void;
 }
-
-export const OpportunityFilters = ({ opportunities, onFilterChange }: OpportunityFiltersProps) => {
+export const OpportunityFilters = ({
+  opportunities,
+  onFilterChange
+}: OpportunityFiltersProps) => {
   const [filters, setFilters] = useState({
     type: "all",
     busRoute: false,
     location: "all",
     minHours: 0,
     daysOfWeek: [] as string[],
-    roleClassification: "all",
+    roleClassification: "all"
   });
-
   useEffect(() => {
     applyFilters();
   }, [filters, opportunities]);
-
   const extractCity = (location: string): string => {
     const statePattern = /,?\s*NY(?:\s*\d{5})?(?:-\d{4})?$/i;
     const newYorkPattern = /,?\s*New York(?:\s*\d{5})?(?:-\d{4})?$/i;
-    
     let beforeState = location;
-    
     if (statePattern.test(location)) {
       beforeState = location.replace(statePattern, '').trim();
     } else if (newYorkPattern.test(location)) {
       beforeState = location.replace(newYorkPattern, '').trim();
     }
-    
     const parts = beforeState.split(',').map(part => part.trim());
-    
     if (parts.length >= 1) {
       const lastPart = parts[parts.length - 1];
       const words = lastPart.split(/\s+/);
-      
       const streetIndicators = ['st', 'st.', 'ave', 'ave.', 'rd', 'rd.', 'dr', 'dr.', 'ln', 'ln.', 'blvd', 'street', 'avenue', 'road', 'drive', 'lane', 'boulevard', 'way', 'court', 'ct', 'ct.', 'place', 'pl', 'pl.'];
-      
       let cityStartIndex = 0;
       for (let i = 0; i < words.length; i++) {
         const word = words[i].toLowerCase();
@@ -54,81 +47,53 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
           cityStartIndex = i + 1;
         }
       }
-      
       if (cityStartIndex > 0 && cityStartIndex < words.length) {
         return words.slice(cityStartIndex).join(' ');
       }
-      
       return lastPart;
     }
-    
     return location;
   };
-
   const applyFilters = () => {
     let filtered = [...opportunities];
-
     if (filters.type !== "all") {
-      filtered = filtered.filter((opp) => opp.type === filters.type);
+      filtered = filtered.filter(opp => opp.type === filters.type);
     }
-
     if (filters.busRoute) {
-      filtered = filtered.filter((opp) => opp.on_bus_route);
+      filtered = filtered.filter(opp => opp.on_bus_route);
     }
-
     if (filters.location !== "all") {
-      filtered = filtered.filter((opp) => 
-        extractCity(opp.location).toLowerCase() === filters.location.toLowerCase()
-      );
+      filtered = filtered.filter(opp => extractCity(opp.location).toLowerCase() === filters.location.toLowerCase());
     }
-
     if (filters.minHours > 0) {
-      filtered = filtered.filter((opp) => {
+      filtered = filtered.filter(opp => {
         const hours = parseInt(opp.hours_available) || 0;
         return hours >= filters.minHours;
       });
     }
-
     if (filters.daysOfWeek.length > 0) {
-      filtered = filtered.filter((opp) => {
+      filtered = filtered.filter(opp => {
         const daysAvailable = opp.days_times_available.toLowerCase();
         return filters.daysOfWeek.some(day => daysAvailable.includes(day.toLowerCase()));
       });
     }
-
     if (filters.roleClassification !== "all") {
-      filtered = filtered.filter((opp) => opp.role_classification === filters.roleClassification);
+      filtered = filtered.filter(opp => opp.role_classification === filters.roleClassification);
     }
-
     onFilterChange(filtered);
   };
-
   const normalizeCity = (city: string): string => {
     // Capitalize first letter of each word
-    return city
-      .toLowerCase()
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+    return city.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
-
-  const uniqueCities = Array.from(
-    new Set(
-      opportunities.map((opp) => normalizeCity(extractCity(opp.location)))
-    )
-  ).sort();
-  
+  const uniqueCities = Array.from(new Set(opportunities.map(opp => normalizeCity(extractCity(opp.location))))).sort();
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
   const toggleDay = (day: string) => {
     setFilters(prev => ({
       ...prev,
-      daysOfWeek: prev.daysOfWeek.includes(day)
-        ? prev.daysOfWeek.filter(d => d !== day)
-        : [...prev.daysOfWeek, day]
+      daysOfWeek: prev.daysOfWeek.includes(day) ? prev.daysOfWeek.filter(d => d !== day) : [...prev.daysOfWeek, day]
     }));
   };
-
   const clearAllFilters = () => {
     setFilters({
       type: "all",
@@ -136,31 +101,19 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
       location: "all",
       minHours: 0,
       daysOfWeek: [],
-      roleClassification: "all",
+      roleClassification: "all"
     });
   };
-
-  const roleClassifications = [
-    "Administrative & Office Support",
-    "Community Engagement & Public Service",
-    "Education & Mentoring",
-    "Human & Social Support Services",
-    "Physical, Outdoor & Environmental Work",
-    "Creative, Media & Communications",
-    "Technology & Digital Support",
-    "Fundraising & Development",
-  ];
-
-  return (
-    <Card className="mb-8">
+  const roleClassifications = ["Administrative & Office Support", "Community Engagement & Public Service", "Education & Mentoring", "Human & Social Support Services", "Physical, Outdoor & Environmental Work", "Creative, Media & Communications", "Technology & Digital Support", "Fundraising & Development"];
+  return <Card className="mb-8">
       <CardContent className="pt-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="space-y-2">
             <Label htmlFor="type">Opportunity Type</Label>
-            <Select
-              value={filters.type}
-              onValueChange={(value) => setFilters({ ...filters, type: value })}
-            >
+            <Select value={filters.type} onValueChange={value => setFilters({
+            ...filters,
+            type: value
+          })}>
               <SelectTrigger id="type">
                 <SelectValue />
               </SelectTrigger>
@@ -174,20 +127,18 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
 
           <div className="space-y-2">
             <Label htmlFor="location">Location</Label>
-            <Select
-              value={filters.location}
-              onValueChange={(value) => setFilters({ ...filters, location: value })}
-            >
+            <Select value={filters.location} onValueChange={value => setFilters({
+            ...filters,
+            location: value
+          })}>
               <SelectTrigger id="location">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Locations</SelectItem>
-                {uniqueCities.map((city) => (
-                  <SelectItem key={city} value={city}>
+                {uniqueCities.map(city => <SelectItem key={city} value={city}>
                     {city}
-                  </SelectItem>
-                ))}
+                  </SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -195,25 +146,17 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="hours">Hours per Week: {filters.minHours}</Label>
-              <Slider
-                id="hours"
-                min={0}
-                max={40}
-                step={1}
-                value={[filters.minHours]}
-                onValueChange={(value) => setFilters({ ...filters, minHours: value[0] })}
-                className="mt-2"
-              />
+              <Slider id="hours" min={0} max={40} step={1} value={[filters.minHours]} onValueChange={value => setFilters({
+              ...filters,
+              minHours: value[0]
+            })} className="mt-2" />
             </div>
 
             <div className="flex items-center space-x-2">
-              <Checkbox
-                id="busRoute"
-                checked={filters.busRoute}
-                onCheckedChange={(checked) =>
-                  setFilters({ ...filters, busRoute: checked === true })
-                }
-              />
+              <Checkbox id="busRoute" checked={filters.busRoute} onCheckedChange={checked => setFilters({
+              ...filters,
+              busRoute: checked === true
+            })} />
             <Label htmlFor="busRoute" className="cursor-pointer flex items-center gap-2">
               <Bus className="h-4 w-4" />
               On Bus Route Only
@@ -225,20 +168,18 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
         <div className="mt-6 flex flex-col lg:flex-row lg:items-end gap-6">
           <div className="space-y-2 w-full lg:w-[calc(33.333%-1rem)] lg:shrink-0">
             <Label htmlFor="roleClassification">Role Classification</Label>
-            <Select
-              value={filters.roleClassification}
-              onValueChange={(value) => setFilters({ ...filters, roleClassification: value })}
-            >
+            <Select value={filters.roleClassification} onValueChange={value => setFilters({
+            ...filters,
+            roleClassification: value
+          })}>
               <SelectTrigger id="roleClassification">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Classifications</SelectItem>
-                {roleClassifications.map((role) => (
-                  <SelectItem key={role} value={role}>
+                {roleClassifications.map(role => <SelectItem key={role} value={role}>
                     {role}
-                  </SelectItem>
-                ))}
+                  </SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -247,24 +188,11 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
             <Label>Days Available</Label>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap gap-2">
-                {daysOfWeek.map((day) => (
-                  <Button
-                    key={day}
-                    variant={filters.daysOfWeek.includes(day) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => toggleDay(day)}
-                    className="transition-all"
-                  >
+                {daysOfWeek.map(day => <Button key={day} variant={filters.daysOfWeek.includes(day) ? "default" : "outline"} size="sm" onClick={() => toggleDay(day)} className="transition-all">
                     {day}
-                  </Button>
-                ))}
+                  </Button>)}
               </div>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={clearAllFilters}
-                className="gap-2"
-              >
+              <Button variant="secondary" size="sm" onClick={clearAllFilters} className="gap-2 bg-success">
                 <RotateCcw className="h-4 w-4" />
                 Clear All Filters
               </Button>
@@ -272,6 +200,5 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
