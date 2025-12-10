@@ -223,7 +223,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
         </div>
 
         <div className="mt-6 flex flex-col lg:flex-row lg:items-end gap-6">
-          <div className="space-y-2 lg:w-1/3">
+          <div className="space-y-2">
             <Label htmlFor="roleClassification">Role Classification</Label>
             <Select
               value={filters.roleClassification}
