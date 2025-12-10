@@ -56,7 +56,7 @@ const Opportunities = () => {
   };
   return <div className="min-h-screen bg-background">
       {/* Exemption Status Banner */}
-      <div className="py-3 px-4 text-center font-medium transition-colors cursor-pointer text-primary-foreground bg-[#2a5f99]">You may be exempt from new work requirements.<br />Click Here to Check your Exemption Status.<br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
+      <div className="py-3 px-4 text-center font-medium transition-colors text-primary-foreground bg-[#2a5f99]">You may be exempt from new work requirements.<br /><a href="https://docs.google.com/forms/d/e/1FAIpQLSfXDths0eQwRcWRMrqVdjjhILjLpi5qz7lMyn27VyhdKTt6nw/viewform" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Click Here to Check your Exemption Status.</a><br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
 
       <header className="border-b border-border bg-[#eeeeee]">
         <div className="container mx-auto px-4 py-6">
