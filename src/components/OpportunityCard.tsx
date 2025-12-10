@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { MapPin, Clock, Calendar, Bus, FileText, Briefcase } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +12,6 @@ interface OpportunityCardProps {
 export const OpportunityCard = ({
   opportunity
 }: OpportunityCardProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -36,17 +34,9 @@ export const OpportunityCard = ({
           </Badge>
         )}
         <CardTitle className="text-xl">{opportunity.org_name}</CardTitle>
-        <CardDescription className={isExpanded ? "" : "line-clamp-2"}>
+        <CardDescription>
           {opportunity.description}
         </CardDescription>
-        {opportunity.description.length > 100 && (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-sm text-primary hover:underline mt-1 text-left"
-          >
-            {isExpanded ? "Show less" : "Show more"}
-          </button>
-        )}
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-start gap-2 text-sm text-muted-foreground">
