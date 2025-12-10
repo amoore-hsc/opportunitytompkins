@@ -115,19 +115,19 @@ Opportunity Finder</h1>
             <h3 className="mb-8 text-2xl font-semibold text-foreground text-center">Electronic Verification Forms</h3>
             <div className="grid gap-6 md:grid-cols-3">
               <div className="flex flex-col items-center">
-                <Button className="w-full text-base h-auto py-4 px-6 whitespace-normal text-center" size="lg">
+                <Button className="w-full text-base h-auto min-h-[80px] py-4 px-6 whitespace-normal text-center" size="lg">
                   <FileCheck className="mr-2 h-5 w-5 shrink-0" />
                   Volunteer Work Experience Verification Form
                 </Button>
               </div>
               <div className="flex flex-col items-center">
-                <Button className="w-full text-base h-auto py-4 px-6 whitespace-normal text-center" size="lg">
+                <Button className="w-full text-base h-auto min-h-[80px] py-4 px-6 whitespace-normal text-center" size="lg">
                   <ClipboardCheck className="mr-2 h-5 w-5 shrink-0" />
                   Training/ Educational Program Verification Form
                 </Button>
               </div>
               <div className="flex flex-col items-center">
-                <Button className="w-full text-base h-auto py-4 px-6 whitespace-normal text-center" size="lg">
+                <Button className="w-full text-base h-auto min-h-[80px] py-4 px-6 whitespace-normal text-center" size="lg">
                   <FileCheck className="mr-2 h-5 w-5 shrink-0" />
                   NYDocSubmit
                 </Button>
