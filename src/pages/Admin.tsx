@@ -49,6 +49,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
   const { toast } = useToast();
@@ -137,17 +138,41 @@ const Admin = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        toast({
-          title: "Login Failed",
-          description: error.message,
-          variant: "destructive",
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/admin`
+          }
         });
+
+        if (error) {
+          toast({
+            title: "Sign Up Failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Account Created",
+            description: "You can now sign in. Note: You won't have admin access until an administrator grants it.",
+          });
+          setIsSignUp(false);
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          toast({
+            title: "Login Failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       }
     } catch (error: any) {
       toast({
@@ -246,8 +271,12 @@ const Admin = () => {
         <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
           <div className="mb-6 text-center">
             <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
-            <h1 className="text-2xl font-bold text-foreground">Admin Login</h1>
-            <p className="text-sm text-muted-foreground mt-2">Sign in with your admin account</p>
+            <h1 className="text-2xl font-bold text-foreground">
+              {isSignUp ? "Create Admin Account" : "Admin Login"}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-2">
+              {isSignUp ? "Sign up for an admin account" : "Sign in with your admin account"}
+            </p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
@@ -273,7 +302,15 @@ const Admin = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (isSignUp ? "Creating account..." : "Signing in...") : (isSignUp ? "Sign Up" : "Sign In")}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full"
+              onClick={() => setIsSignUp(!isSignUp)}
+            >
+              {isSignUp ? "Already have an account? Sign In" : "Need an account? Sign Up"}
             </Button>
             <Link to="/">
               <Button variant="outline" className="w-full">
