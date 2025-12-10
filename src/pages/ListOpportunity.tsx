@@ -491,7 +491,7 @@ const ListOpportunity = () => {
           </Button>
         </form>
 
-        <ElectronicVerificationForms />
+        
       </main>
 
       <footer className="border-t border-border bg-card py-8 mt-20">
