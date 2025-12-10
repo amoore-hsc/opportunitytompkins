@@ -16,17 +16,15 @@ export const OpportunityCard = ({
           <Badge variant={opportunity.type === "volunteer" ? "default" : "secondary"} className="mb-2">
             {opportunity.type === "volunteer" ? "Volunteer" : "Education & Training"}
           </Badge>
-          <div className="flex flex-wrap gap-2">
-            {opportunity.on_bus_route && <Badge variant="outline" className="flex items-center gap-1">
-                <Bus className="h-3 w-3" />
-                On Bus Route
-              </Badge>}
-            {opportunity.role_classification && <Badge variant="outline" className="flex items-center gap-1">
-                <Briefcase className="h-3 w-3" />
-                {opportunity.role_classification}
-              </Badge>}
-          </div>
+          {opportunity.on_bus_route && <Badge variant="outline" className="flex items-center gap-1">
+              <Bus className="h-3 w-3" />
+              On Bus Route
+            </Badge>}
         </div>
+        {opportunity.role_classification && <Badge variant="outline" className="flex items-center gap-1 w-fit mb-2">
+            <Briefcase className="h-3 w-3" />
+            {opportunity.role_classification}
+          </Badge>}
         <CardTitle className="text-xl">{opportunity.org_name}</CardTitle>
         <CardDescription className="line-clamp-2">{opportunity.description}</CardDescription>
       </CardHeader>
