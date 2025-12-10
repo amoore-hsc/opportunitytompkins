@@ -21,6 +21,7 @@ export interface Opportunity {
   org_name: string;
   org_email: string;
   org_phone: string;
+  role_classification: string | null;
 }
 const Opportunities = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
