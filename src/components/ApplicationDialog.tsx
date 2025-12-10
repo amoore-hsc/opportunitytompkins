@@ -155,7 +155,7 @@ export const ApplicationDialog = ({ opportunity, children }: ApplicationDialogPr
             </Label>
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
             {loading ? "Sending..." : "Submit"}
           </Button>
         </form>
