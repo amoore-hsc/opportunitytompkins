@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Handshake, ArrowLeft, Plus, X } from "lucide-react";
+import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -489,6 +490,8 @@ const ListOpportunity = () => {
             {loading ? "Submitting..." : "Submit Opportunity"}
           </Button>
         </form>
+
+        <ElectronicVerificationForms />
       </main>
 
       <footer className="border-t border-border bg-card py-8 mt-20">
