@@ -20,6 +20,7 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
     location: "all",
     minHours: 0,
     daysOfWeek: [] as string[],
+    roleClassification: "all",
   });
 
   useEffect(() => {
@@ -95,6 +96,10 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
       });
     }
 
+    if (filters.roleClassification !== "all") {
+      filtered = filtered.filter((opp) => opp.role_classification === filters.roleClassification);
+    }
+
     onFilterChange(filtered);
   };
 
@@ -131,8 +136,20 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
       location: "all",
       minHours: 0,
       daysOfWeek: [],
+      roleClassification: "all",
     });
   };
+
+  const roleClassifications = [
+    "Administrative & Office Support",
+    "Community Engagement & Public Service",
+    "Education & Mentoring",
+    "Human & Social Support Services",
+    "Physical, Outdoor & Environmental Work",
+    "Creative, Media & Communications",
+    "Technology & Digital Support",
+    "Fundraising & Development",
+  ];
 
   return (
     <Card className="mb-8">
@@ -169,6 +186,26 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
                 {uniqueCities.map((city) => (
                   <SelectItem key={city} value={city}>
                     {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="roleClassification">Role Classification</Label>
+            <Select
+              value={filters.roleClassification}
+              onValueChange={(value) => setFilters({ ...filters, roleClassification: value })}
+            >
+              <SelectTrigger id="roleClassification">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Classifications</SelectItem>
+                {roleClassifications.map((role) => (
+                  <SelectItem key={role} value={role}>
+                    {role}
                   </SelectItem>
                 ))}
               </SelectContent>

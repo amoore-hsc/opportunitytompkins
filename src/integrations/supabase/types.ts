@@ -28,6 +28,7 @@ export type Database = {
           org_email: string
           org_name: string
           org_phone: string
+          role_classification: string | null
           type: string
           updated_at: string
         }
@@ -44,6 +45,7 @@ export type Database = {
           org_email: string
           org_name: string
           org_phone: string
+          role_classification?: string | null
           type: string
           updated_at?: string
         }
@@ -60,6 +62,7 @@ export type Database = {
           org_email?: string
           org_name?: string
           org_phone?: string
+          role_classification?: string | null
           type?: string
           updated_at?: string
         }
