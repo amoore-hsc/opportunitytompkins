@@ -222,51 +222,53 @@ export const OpportunityFilters = ({ opportunities, onFilterChange }: Opportunit
           </div>
         </div>
 
-        <div className="mt-6 space-y-2">
-          <Label htmlFor="roleClassification">Role Classification</Label>
-          <Select
-            value={filters.roleClassification}
-            onValueChange={(value) => setFilters({ ...filters, roleClassification: value })}
-          >
-            <SelectTrigger id="roleClassification" className="w-full md:w-1/2 lg:w-1/3">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Classifications</SelectItem>
-              {roleClassifications.map((role) => (
-                <SelectItem key={role} value={role}>
-                  {role}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="mt-6 space-y-3">
-          <Label>Days of the Week</Label>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex flex-wrap gap-2">
-              {daysOfWeek.map((day) => (
-                <Button
-                  key={day}
-                  variant={filters.daysOfWeek.includes(day) ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => toggleDay(day)}
-                  className="transition-all"
-                >
-                  {day}
-                </Button>
-              ))}
-            </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={clearAllFilters}
-              className="gap-2"
+        <div className="mt-6 flex flex-col lg:flex-row lg:items-end gap-6">
+          <div className="space-y-2 lg:w-1/3">
+            <Label htmlFor="roleClassification">Role Classification</Label>
+            <Select
+              value={filters.roleClassification}
+              onValueChange={(value) => setFilters({ ...filters, roleClassification: value })}
             >
-              <RotateCcw className="h-4 w-4" />
-              Clear All Filters
-            </Button>
+              <SelectTrigger id="roleClassification">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Classifications</SelectItem>
+                {roleClassifications.map((role) => (
+                  <SelectItem key={role} value={role}>
+                    {role}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex-1 space-y-2">
+            <Label>Days of the Week</Label>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap gap-2">
+                {daysOfWeek.map((day) => (
+                  <Button
+                    key={day}
+                    variant={filters.daysOfWeek.includes(day) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => toggleDay(day)}
+                    className="transition-all"
+                  >
+                    {day}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={clearAllFilters}
+                className="gap-2"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Clear All Filters
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
