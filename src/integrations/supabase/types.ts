@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      application_counts: {
+        Row: {
+          application_date: string
+          count: number
+          created_at: string
+          id: string
+          opportunity_id: string
+        }
+        Insert: {
+          application_date?: string
+          count?: number
+          created_at?: string
+          id?: string
+          opportunity_id: string
+        }
+        Update: {
+          application_date?: string
+          count?: number
+          created_at?: string
+          id?: string
+          opportunity_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_counts_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       opportunities: {
         Row: {
           active: boolean
