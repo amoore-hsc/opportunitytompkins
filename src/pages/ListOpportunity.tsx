@@ -517,8 +517,8 @@ const ListOpportunity = () => {
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground">
             Need help? Email{" "}
-            <a href="mailto:amoore@hsctc.org" className="text-primary hover:underline">
-              amoore@hsctc.org
+            <a href="mailto:rhinton@uwtc.org" className="text-primary hover:underline">
+              rhinton@uwtc.org
             </a>
           </p>
           <p className="mt-2 text-sm text-muted-foreground">Powered by Tompkins County Opportunity Finder</p>
