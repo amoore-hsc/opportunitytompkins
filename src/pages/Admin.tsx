@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDistanceToNow } from "date-fns";
-import { Handshake, ArrowLeft, Pencil, Trash2, LogOut } from "lucide-react";
+import { formatDistanceToNow, differenceInDays } from "date-fns";
+import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -115,6 +115,39 @@ interface Opportunity {
   active: boolean;
   updated_at: string;
 }
+
+const StaleListingsAlert = ({ opportunities }: { opportunities: Opportunity[] }) => {
+  const staleListings = useMemo(() => {
+    const now = new Date();
+    return opportunities.filter(opp => 
+      opp.active && differenceInDays(now, new Date(opp.updated_at)) >= 90
+    );
+  }, [opportunities]);
+
+  if (staleListings.length === 0) return null;
+
+  return (
+    <div className="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+      <div className="flex items-start gap-3">
+        <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+        <div>
+          <h3 className="font-semibold text-destructive">
+            {staleListings.length} {staleListings.length === 1 ? 'listing has' : 'listings have'} not been updated in 90+ days
+          </h3>
+          <ul className="mt-2 space-y-1 text-sm text-destructive/80">
+            {staleListings.map(listing => (
+              <li key={listing.id}>
+                <span className="font-medium">{listing.position_title || listing.org_name}</span>
+                {listing.position_title && <span className="text-destructive/60"> — {listing.org_name}</span>}
+                <span className="text-destructive/60"> (updated {formatDistanceToNow(new Date(listing.updated_at), { addSuffix: true })})</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -456,6 +489,8 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-8">
         <h2 className="mb-6 text-2xl font-bold text-foreground">Manage Opportunities</h2>
+
+        <StaleListingsAlert opportunities={opportunities} />
 
         <div className="rounded-lg border border-border bg-card">
           <Table>
