@@ -156,12 +156,14 @@ const Admin = () => {
             description: error.message,
             variant: "destructive",
           });
+          setLoading(false);
         } else {
           toast({
             title: "Account Created",
             description: "You can now sign in. Note: You won't have admin access until an administrator grants it.",
           });
           setIsSignUp(false);
+          setLoading(false);
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -175,7 +177,9 @@ const Admin = () => {
             description: error.message,
             variant: "destructive",
           });
+          setLoading(false);
         }
+        // Don't set loading to false on success - let checkAdminRole handle it via onAuthStateChange
       }
     } catch (error: any) {
       toast({
@@ -183,7 +187,6 @@ const Admin = () => {
         description: error.message,
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };
