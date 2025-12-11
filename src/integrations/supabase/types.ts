@@ -62,6 +62,7 @@ export type Database = {
           org_name: string
           org_phone: string
           position_title: string | null
+          reminder_sent_at: string | null
           role_classification: string | null
           type: string
           updated_at: string
@@ -81,6 +82,7 @@ export type Database = {
           org_name: string
           org_phone: string
           position_title?: string | null
+          reminder_sent_at?: string | null
           role_classification?: string | null
           type: string
           updated_at?: string
@@ -100,6 +102,7 @@ export type Database = {
           org_name?: string
           org_phone?: string
           position_title?: string | null
+          reminder_sent_at?: string | null
           role_classification?: string | null
           type?: string
           updated_at?: string

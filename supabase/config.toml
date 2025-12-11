@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.send-weekly-report]
 verify_jwt = false
+
+[functions.send-listing-reminder]
+verify_jwt = false
