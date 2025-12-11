@@ -9,21 +9,26 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
     <div className="print-only">
       <style>{`
         @media print {
-          body * {
-            visibility: hidden;
-          }
-          .print-only, .print-only * {
-            visibility: visible;
+          body > *:not(.print-container) {
+            display: none !important;
           }
           .print-only {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            padding: 20px;
+            display: block !important;
+            position: static !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
+          .print-only * {
+            visibility: visible !important;
+          }
+          html, body {
+            height: auto !important;
+            overflow: visible !important;
           }
           @page {
             margin: 1cm;
+            size: auto;
           }
         }
         @media screen {
