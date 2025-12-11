@@ -40,6 +40,123 @@ const getDaysSinceCreation = (createdAt: string): number => {
   return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 };
 
+const generateListingBlock = (opportunity: Opportunity, editUrl: string): string => {
+  const daysSinceCreation = getDaysSinceCreation(opportunity.created_at);
+  const positionTitle = opportunity.position_title || opportunity.type;
+  
+  return `
+    <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #1e3a5f;">
+      <h3 style="margin: 0 0 15px 0; color: #1e3a5f; font-size: 18px;">${positionTitle}</h3>
+      <table style="width: 100%; font-size: 14px; color: #555; margin-bottom: 15px;">
+        <tr>
+          <td style="padding: 5px 0; font-weight: bold; width: 40%;">Organization:</td>
+          <td style="padding: 5px 0;">${opportunity.org_name}</td>
+        </tr>
+        <tr>
+          <td style="padding: 5px 0; font-weight: bold;">Type:</td>
+          <td style="padding: 5px 0;">${opportunity.type}</td>
+        </tr>
+        ${opportunity.role_classification ? `
+        <tr>
+          <td style="padding: 5px 0; font-weight: bold;">Classification:</td>
+          <td style="padding: 5px 0;">${opportunity.role_classification}</td>
+        </tr>
+        ` : ''}
+        <tr>
+          <td style="padding: 5px 0; font-weight: bold;">Location:</td>
+          <td style="padding: 5px 0;">${opportunity.location}</td>
+        </tr>
+        <tr>
+          <td style="padding: 5px 0; font-weight: bold;">Posted:</td>
+          <td style="padding: 5px 0;">${formatDate(opportunity.created_at)} (${daysSinceCreation} days ago)</td>
+        </tr>
+      </table>
+      <div style="text-align: center;">
+        <a href="${editUrl}" style="display: inline-block; background-color: #84cc16; color: #1e3a5f; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; font-size: 14px;">
+          Edit This Listing
+        </a>
+      </div>
+    </div>
+  `;
+};
+
+const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string): string => {
+  const listingBlocks = opportunities.map(opp => {
+    const editUrl = `${siteUrl}/edit-opportunity/${opp.edit_token}`;
+    return generateListingBlock(opp, editUrl);
+  }).join('');
+
+  const listingCount = opportunities.length;
+  const listingWord = listingCount === 1 ? 'listing' : 'listings';
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Listing Reminder</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        
+        <!-- Header -->
+        <div style="background-color: #1e3a5f; padding: 30px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px;">📋 Your ${listingWord === 'listings' ? 'Listings Need' : 'Listing Needs'} Attention</h1>
+        </div>
+        
+        <!-- Content -->
+        <div style="padding: 30px;">
+          <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+            Hello,
+          </p>
+          
+          <p style="font-size: 16px; color: #333; margin-bottom: 25px;">
+            You have <strong>${listingCount} opportunity ${listingWord}</strong> on the Tompkins County Opportunity Finder that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates. Please review ${listingCount === 1 ? 'it' : 'them'} to ensure the information is still current.
+          </p>
+          
+          <!-- Listing Blocks -->
+          ${listingBlocks}
+          
+          <!-- What You Can Do -->
+          <div style="margin: 25px 0;">
+            <h3 style="margin: 0 0 15px 0; color: #1e3a5f; font-size: 16px;">What You Can Do:</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #555; font-size: 14px; line-height: 1.8;">
+              <li><strong>Update your listing</strong> if availability or details have changed</li>
+              <li><strong>Remove the listing</strong> if the position has been filled</li>
+              <li><strong>No action needed</strong> if everything is still current</li>
+            </ul>
+          </div>
+          
+          <p style="font-size: 12px; color: #888; text-align: center; margin: 25px 0;">
+            Each edit link is unique to its listing. Please keep them safe.
+          </p>
+          
+          <!-- Help Section -->
+          <div style="background-color: #f0f9ff; border-radius: 8px; padding: 15px; text-align: center;">
+            <p style="margin: 0; font-size: 14px; color: #555;">
+              <strong>Questions?</strong><br>
+              Contact <a href="mailto:rhinton@uwtc.org" style="color: #1e3a5f;">rhinton@uwtc.org</a>
+            </p>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="background-color: #1e3a5f; padding: 20px; text-align: center;">
+          <p style="color: #ffffff; margin: 0; font-size: 14px;">
+            Thank you for supporting our community!
+          </p>
+          <p style="color: #a0aec0; margin: 10px 0 0 0; font-size: 12px;">
+            Tompkins County Opportunity Finder
+          </p>
+        </div>
+        
+      </div>
+    </body>
+    </html>
+  `;
+};
+
 const handler = async (req: Request): Promise<Response> => {
   console.log("send-listing-reminder function invoked");
 
@@ -91,7 +208,8 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({ 
           success: true, 
           message: "No opportunities need reminders at this time",
-          reminders_sent: 0
+          reminders_sent: 0,
+          emails_sent: 0
         }),
         {
           status: 200,
@@ -100,160 +218,74 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Group opportunities by org_email
+    const groupedByEmail = new Map<string, Opportunity[]>();
+    for (const opp of eligibleOpportunities) {
+      const email = opp.org_email.toLowerCase();
+      if (!groupedByEmail.has(email)) {
+        groupedByEmail.set(email, []);
+      }
+      groupedByEmail.get(email)!.push(opp);
+    }
+
+    console.log(`Grouped into ${groupedByEmail.size} unique contact emails`);
+
     const siteUrl = Deno.env.get("SITE_URL") || "https://oosxopnxaivfdtksrvam.lovableproject.com";
-    let remindersSent = 0;
+    let emailsSent = 0;
+    let listingsUpdated = 0;
     const errors: string[] = [];
 
-    // Process each eligible opportunity
-    for (const opportunity of eligibleOpportunities) {
-      const editUrl = `${siteUrl}/edit-opportunity/${opportunity.edit_token}`;
-      const daysSinceCreation = getDaysSinceCreation(opportunity.created_at);
-      const positionTitle = opportunity.position_title || opportunity.type;
-
-      const emailHtml = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Listing Reminder</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-            
-            <!-- Header -->
-            <div style="background-color: #1e3a5f; padding: 30px; text-align: center;">
-              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">📋 Your Listing is Still Active</h1>
-            </div>
-            
-            <!-- Content -->
-            <div style="padding: 30px;">
-              <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
-                Dear <strong>${opportunity.org_name}</strong>,
-              </p>
-              
-              <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
-                Your opportunity listing "<strong>${positionTitle}</strong>" has been active on the Tompkins County Opportunity Finder for <strong>${daysSinceCreation} days</strong>.
-              </p>
-              
-              <p style="font-size: 16px; color: #333; margin-bottom: 25px;">
-                We wanted to check in to make sure this listing is still current and available for applicants.
-              </p>
-              
-              <!-- Listing Details Box -->
-              <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 25px; border-left: 4px solid #1e3a5f;">
-                <h3 style="margin: 0 0 15px 0; color: #1e3a5f; font-size: 16px;">Your Listing Details:</h3>
-                <table style="width: 100%; font-size: 14px; color: #555;">
-                  <tr>
-                    <td style="padding: 5px 0; font-weight: bold; width: 40%;">Type:</td>
-                    <td style="padding: 5px 0;">${opportunity.type}</td>
-                  </tr>
-                  ${opportunity.position_title ? `
-                  <tr>
-                    <td style="padding: 5px 0; font-weight: bold;">Position:</td>
-                    <td style="padding: 5px 0;">${opportunity.position_title}</td>
-                  </tr>
-                  ` : ''}
-                  ${opportunity.role_classification ? `
-                  <tr>
-                    <td style="padding: 5px 0; font-weight: bold;">Classification:</td>
-                    <td style="padding: 5px 0;">${opportunity.role_classification}</td>
-                  </tr>
-                  ` : ''}
-                  <tr>
-                    <td style="padding: 5px 0; font-weight: bold;">Location:</td>
-                    <td style="padding: 5px 0;">${opportunity.location}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 5px 0; font-weight: bold;">Posted:</td>
-                    <td style="padding: 5px 0;">${formatDate(opportunity.created_at)}</td>
-                  </tr>
-                </table>
-              </div>
-              
-              <!-- What You Can Do -->
-              <div style="margin-bottom: 25px;">
-                <h3 style="margin: 0 0 15px 0; color: #1e3a5f; font-size: 16px;">What You Can Do:</h3>
-                <ul style="margin: 0; padding-left: 20px; color: #555; font-size: 14px; line-height: 1.8;">
-                  <li><strong>Update your listing</strong> if availability or details have changed</li>
-                  <li><strong>Remove the listing</strong> if the position has been filled</li>
-                  <li><strong>No action needed</strong> if everything is still current</li>
-                </ul>
-              </div>
-              
-              <!-- CTA Button -->
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${editUrl}" style="display: inline-block; background-color: #84cc16; color: #1e3a5f; text-decoration: none; padding: 15px 40px; border-radius: 6px; font-weight: bold; font-size: 16px;">
-                  Edit Your Listing
-                </a>
-              </div>
-              
-              <p style="font-size: 12px; color: #888; text-align: center; margin-bottom: 25px;">
-                This link is unique to your listing. Please keep it safe.
-              </p>
-              
-              <!-- Help Section -->
-              <div style="background-color: #f0f9ff; border-radius: 8px; padding: 15px; text-align: center;">
-                <p style="margin: 0; font-size: 14px; color: #555;">
-                  <strong>Questions?</strong><br>
-                  Contact <a href="mailto:rhinton@uwtc.org" style="color: #1e3a5f;">rhinton@uwtc.org</a>
-                </p>
-              </div>
-            </div>
-            
-            <!-- Footer -->
-            <div style="background-color: #1e3a5f; padding: 20px; text-align: center;">
-              <p style="color: #ffffff; margin: 0; font-size: 14px;">
-                Thank you for supporting our community!
-              </p>
-              <p style="color: #a0aec0; margin: 10px 0 0 0; font-size: 12px;">
-                Tompkins County Opportunity Finder
-              </p>
-            </div>
-            
-          </div>
-        </body>
-        </html>
-      `;
-
+    // Process each email group
+    for (const [email, opps] of groupedByEmail) {
       try {
-        console.log(`Sending reminder to ${opportunity.org_email} for opportunity ${opportunity.id}`);
+        console.log(`Sending consolidated reminder to ${email} for ${opps.length} listing(s)`);
+
+        const emailHtml = generateConsolidatedEmail(opps, siteUrl);
+        
+        // Generate subject line
+        const listingCount = opps.length;
+        const subject = listingCount === 1
+          ? `Reminder: Your "${opps[0].position_title || opps[0].type}" Listing Has Been Active for 60+ Days`
+          : `Reminder: Your ${listingCount} Listings Need Attention`;
 
         const emailResponse = await resend.emails.send({
           from: "Tompkins County Opportunity Finder <onboarding@resend.dev>",
-          to: [opportunity.org_email],
-          subject: `Reminder: Your "${positionTitle}" Listing Has Been Active for ${daysSinceCreation} Days`,
+          to: [email],
+          subject: subject,
           html: emailHtml,
         });
 
-        console.log(`Email sent successfully to ${opportunity.org_email}:`, emailResponse);
+        console.log(`Email sent successfully to ${email}:`, emailResponse);
+        emailsSent++;
 
-        // Update reminder_sent_at timestamp
+        // Update reminder_sent_at for all opportunities in this group
+        const oppIds = opps.map(o => o.id);
         const { error: updateError } = await supabase
           .from("opportunities")
           .update({ reminder_sent_at: new Date().toISOString() })
-          .eq("id", opportunity.id);
+          .in("id", oppIds);
 
         if (updateError) {
-          console.error(`Error updating reminder_sent_at for ${opportunity.id}:`, updateError);
-          errors.push(`Failed to update reminder_sent_at for ${opportunity.id}`);
+          console.error(`Error updating reminder_sent_at for opportunities:`, updateError);
+          errors.push(`Failed to update reminder_sent_at for ${oppIds.length} opportunities`);
         } else {
-          remindersSent++;
+          listingsUpdated += oppIds.length;
         }
 
       } catch (emailError: any) {
-        console.error(`Error sending email to ${opportunity.org_email}:`, emailError);
-        errors.push(`Failed to send email to ${opportunity.org_email}: ${emailError.message}`);
+        console.error(`Error sending email to ${email}:`, emailError);
+        errors.push(`Failed to send email to ${email}: ${emailError.message}`);
       }
     }
 
-    console.log(`Reminder process complete. Sent ${remindersSent} reminders.`);
+    console.log(`Reminder process complete. Sent ${emailsSent} emails covering ${listingsUpdated} listings.`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: `Sent ${remindersSent} reminder emails`,
-        reminders_sent: remindersSent,
+        message: `Sent ${emailsSent} consolidated reminder emails covering ${listingsUpdated} listings`,
+        emails_sent: emailsSent,
+        listings_updated: listingsUpdated,
         errors: errors.length > 0 ? errors : undefined
       }),
       {
