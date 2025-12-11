@@ -57,6 +57,7 @@ export const ApplicationDialog = ({ opportunity, children }: ApplicationDialogPr
           orgName: opportunity.org_name,
           opportunityDescription: opportunity.description,
           opportunityType: opportunity.type === "volunteer" ? "Volunteer" : "Education & Training",
+          positionTitle: opportunity.position_title || "",
         },
       });
 
