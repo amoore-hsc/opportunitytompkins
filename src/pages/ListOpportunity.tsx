@@ -76,6 +76,7 @@ const ListOpportunity = () => {
   const [formData, setFormData] = useState({
     type: "",
     roleClassification: "",
+    positionTitle: "",
     description: "",
     location: "",
     onBusRoute: false,
@@ -169,6 +170,7 @@ const ListOpportunity = () => {
       } = await supabase.from("opportunities").insert({
         type: formData.type,
         role_classification: formData.roleClassification,
+        position_title: formData.positionTitle || null,
         description: formData.description,
         location: formData.location,
         on_bus_route: formData.onBusRoute,
@@ -316,6 +318,16 @@ const ListOpportunity = () => {
                 </SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="positionTitle">Position Title</Label>
+            <Input
+              id="positionTitle"
+              value={formData.positionTitle}
+              onChange={(e) => setFormData({ ...formData, positionTitle: e.target.value })}
+              placeholder="e.g., Kitchen Assistant, Office Volunteer"
+            />
           </div>
 
           <div className="space-y-2">
