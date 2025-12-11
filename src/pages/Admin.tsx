@@ -42,7 +42,7 @@ interface Opportunity {
   org_email: string;
   org_phone: string;
   active: boolean;
-  created_at: string;
+  updated_at: string;
 }
 
 const Admin = () => {
@@ -389,7 +389,7 @@ const Admin = () => {
                 <TableHead>Type</TableHead>
                 <TableHead>Organization</TableHead>
                 <TableHead>Position Title</TableHead>
-                <TableHead>Date Posted</TableHead>
+                <TableHead>Last Updated</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -401,7 +401,7 @@ const Admin = () => {
                   <TableCell>{opp.org_name}</TableCell>
                   <TableCell>{opp.position_title || "—"}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">
-                    {formatDistanceToNow(new Date(opp.created_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(opp.updated_at), { addSuffix: true })}
                   </TableCell>
                   <TableCell>
                     <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${

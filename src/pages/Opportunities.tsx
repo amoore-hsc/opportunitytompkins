@@ -23,7 +23,7 @@ export interface Opportunity {
   org_email: string;
   org_phone: string;
   role_classification: string | null;
-  created_at: string;
+  updated_at: string;
 }
 const Opportunities = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
@@ -40,7 +40,7 @@ const Opportunities = () => {
       const {
         data,
         error
-      } = await supabase.from("opportunities").select("*").eq("active", true).order("created_at", {
+      } = await supabase.from("opportunities").select("*").eq("active", true).order("updated_at", {
         ascending: false
       });
       if (error) throw error;

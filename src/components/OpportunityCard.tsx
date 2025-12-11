@@ -64,7 +64,7 @@ export const OpportunityCard = ({
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t border-border">
           <CalendarPlus className="h-3 w-3 flex-shrink-0" />
-          <span>Posted {formatDistanceToNow(new Date(opportunity.created_at), { addSuffix: true })}</span>
+          <span>Updated {formatDistanceToNow(new Date(opportunity.updated_at), { addSuffix: true })}</span>
         </div>
       </CardContent>
     </Card>;
