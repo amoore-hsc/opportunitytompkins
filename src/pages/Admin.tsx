@@ -386,6 +386,7 @@ const Admin = () => {
               <TableRow>
                 <TableHead>Type</TableHead>
                 <TableHead>Organization</TableHead>
+                <TableHead>Position Title</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -395,6 +396,7 @@ const Admin = () => {
                 <TableRow key={opp.id}>
                   <TableCell className="font-medium capitalize">{opp.type}</TableCell>
                   <TableCell>{opp.org_name}</TableCell>
+                  <TableCell>{opp.position_title || "—"}</TableCell>
                   <TableCell>
                     <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                       opp.active ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"
