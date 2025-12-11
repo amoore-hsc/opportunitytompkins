@@ -26,7 +26,77 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
 import { User, Session } from "@supabase/supabase-js";
+
+type DaySchedule = {
+  [key: string]: {
+    selected: boolean;
+    startTime: number;
+    endTime: number;
+  };
+};
+
+const DAYS_OF_WEEK = [
+  { key: "monday", label: "Monday" },
+  { key: "tuesday", label: "Tuesday" },
+  { key: "wednesday", label: "Wednesday" },
+  { key: "thursday", label: "Thursday" },
+  { key: "friday", label: "Friday" },
+  { key: "saturday", label: "Saturday" },
+  { key: "sunday", label: "Sunday" },
+];
+
+const formatTimeFromHour = (hour: number): string => {
+  const period = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  return `${displayHour}:00 ${period}`;
+};
+
+const parseTimeToHour = (timeStr: string): number => {
+  const match = timeStr.match(/(\d+):00\s*(AM|PM)/i);
+  if (!match) return 9;
+  let hour = parseInt(match[1]);
+  const period = match[2].toUpperCase();
+  if (period === "PM" && hour !== 12) hour += 12;
+  if (period === "AM" && hour === 12) hour = 0;
+  return hour;
+};
+
+const parseDaysTimesAvailable = (daysTimesStr: string): DaySchedule => {
+  const schedule: DaySchedule = DAYS_OF_WEEK.reduce((acc, day) => ({
+    ...acc,
+    [day.key]: { selected: false, startTime: 9, endTime: 17 }
+  }), {});
+
+  if (!daysTimesStr) return schedule;
+
+  const entries = daysTimesStr.split(", ");
+  entries.forEach(entry => {
+    const match = entry.match(/^(\w+):\s*(.+)\s*-\s*(.+)$/);
+    if (match) {
+      const dayLabel = match[1];
+      const startTime = parseTimeToHour(match[2].trim());
+      const endTime = parseTimeToHour(match[3].trim());
+      const dayKey = DAYS_OF_WEEK.find(d => d.label.toLowerCase() === dayLabel.toLowerCase())?.key;
+      if (dayKey) {
+        schedule[dayKey] = { selected: true, startTime, endTime };
+      }
+    }
+  });
+
+  return schedule;
+};
+
+const formatDayScheduleToString = (schedule: DaySchedule): string => {
+  return Object.entries(schedule)
+    .filter(([_, s]) => s.selected)
+    .map(([day, s]) => {
+      const dayLabel = DAYS_OF_WEEK.find(d => d.key === day)?.label;
+      return `${dayLabel}: ${formatTimeFromHour(s.startTime)} - ${formatTimeFromHour(s.endTime)}`;
+    })
+    .join(", ");
+};
 
 interface Opportunity {
   id: string;
@@ -521,14 +591,77 @@ const Admin = () => {
                                 }
                               />
                             </div>
-                            <div className="space-y-2">
-                              <Label>Days/Times Available</Label>
-                              <Input
-                                value={editingOpportunity.days_times_available}
-                                onChange={(e) =>
-                                  setEditingOpportunity({ ...editingOpportunity, days_times_available: e.target.value })
-                                }
-                              />
+                            <div className="space-y-4">
+                              <Label>Days & Times Available</Label>
+                              <p className="text-sm text-muted-foreground">Select days and set available hours for each day</p>
+                              
+                              {DAYS_OF_WEEK.map(day => {
+                                const currentSchedule = parseDaysTimesAvailable(editingOpportunity.days_times_available);
+                                return (
+                                  <div key={day.key} className="space-y-3 rounded-lg border border-border p-4">
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox
+                                        id={`edit-${day.key}`}
+                                        checked={currentSchedule[day.key].selected}
+                                        onCheckedChange={(checked) => {
+                                          const updated = { ...currentSchedule };
+                                          updated[day.key] = { ...updated[day.key], selected: checked === true };
+                                          setEditingOpportunity({
+                                            ...editingOpportunity,
+                                            days_times_available: formatDayScheduleToString(updated)
+                                          });
+                                        }}
+                                      />
+                                      <Label htmlFor={`edit-${day.key}`} className="cursor-pointer font-medium">
+                                        {day.label}
+                                      </Label>
+                                    </div>
+                                    
+                                    {currentSchedule[day.key].selected && (
+                                      <div className="space-y-3 pl-6 animate-fade-in">
+                                        <div className="space-y-2">
+                                          <div className="flex items-center justify-between text-sm">
+                                            <div>
+                                              <span className="text-muted-foreground">Start: </span>
+                                              <span className="font-medium">{formatTimeFromHour(currentSchedule[day.key].startTime)}</span>
+                                            </div>
+                                            <div>
+                                              <span className="text-muted-foreground">End: </span>
+                                              <span className="font-medium">{formatTimeFromHour(currentSchedule[day.key].endTime)}</span>
+                                            </div>
+                                          </div>
+                                          <Slider
+                                            value={[currentSchedule[day.key].startTime, currentSchedule[day.key].endTime]}
+                                            min={0}
+                                            max={23}
+                                            step={1}
+                                            onValueChange={(values) => {
+                                              const updated = { ...currentSchedule };
+                                              updated[day.key] = {
+                                                ...updated[day.key],
+                                                startTime: values[0],
+                                                endTime: values[1]
+                                              };
+                                              setEditingOpportunity({
+                                                ...editingOpportunity,
+                                                days_times_available: formatDayScheduleToString(updated)
+                                              });
+                                            }}
+                                            className="w-full"
+                                          />
+                                          <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span>12 AM</span>
+                                            <span>6 AM</span>
+                                            <span>12 PM</span>
+                                            <span>6 PM</span>
+                                            <span>11 PM</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
                             <div className="space-y-2">
                               <Label>Organization Name</Label>
