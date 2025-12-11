@@ -65,7 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="padding: 30px 20px;">
             <p style="color: #1e3a5f; font-size: 16px;">Dear ${orgName},</p>
             
-            <p style="color: #333; line-height: 1.6;">Your opportunity has been successfully published to Tompkins County Opportunity Finder. Use this email to review your post and edit the listing with any corrections OR if the opportunity has been filled and is no longer available.</p>
+            <p style="color: #333; line-height: 1.6;">Your opportunity has been successfully published to Tompkins County Opportunity Finder. Use this email to review your post and edit the listing with any corrections OR to remove the posting if the opportunity has been filled.</p>
             
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
               <h2 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Your Listing Details</h2>
@@ -92,11 +92,10 @@ const handler = async (req: Request): Promise<Response> => {
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
               <h3 style="color: #1e3a5f; margin-top: 0; font-size: 16px;">What Happens Next?</h3>
               <ul style="color: #333; line-height: 1.8; padding-left: 20px;">
-                <li>Your opportunity is now published</li>
                 <li>Clients can apply directly through the platform</li>
-                <li>You'll receive an email when someone applies</li>
+                <li>You'll receive a notification to this address when someone applies</li>
                 <li>Contact applicants to confirm availability and interest</li>
-                <li>Complete monthly documentation on behalf of beneficiaries</li>
+                <li>Complete monthly documentation on behalf of clients</li>
                 <li>Remove your posting when the position has been filled</li>
               </ul>
             </div>
