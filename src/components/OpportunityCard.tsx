@@ -1,9 +1,11 @@
-import { MapPin, Clock, Calendar, Bus, FileText, Briefcase } from "lucide-react";
+import { MapPin, Clock, Calendar, Bus, FileText, Briefcase, CalendarPlus } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ApplicationDialog } from "./ApplicationDialog";
 import { Opportunity } from "@/pages/Opportunities";
+import { format } from "date-fns";
+
 interface OpportunityCardProps {
   opportunity: Opportunity;
 }
@@ -59,6 +61,11 @@ export const OpportunityCard = ({
         <ApplicationDialog opportunity={opportunity}>
           <Button className="w-full mt-4 bg-success">Apply</Button>
         </ApplicationDialog>
+
+        <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t border-border">
+          <CalendarPlus className="h-3 w-3 flex-shrink-0" />
+          <span>Posted {format(new Date(opportunity.created_at), "MMMM d, yyyy")}</span>
+        </div>
       </CardContent>
     </Card>;
 };
