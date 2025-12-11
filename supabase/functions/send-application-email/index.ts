@@ -45,7 +45,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Tompkins County Opportunity Finder <onboarding@resend.dev>",
       to: [orgEmail],
-      subject: `New Client Application - ${opportunityType}`,
+      subject: `New Application - ${positionTitle || 'Position'}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
           <div style="background: #1e3a5f; padding: 20px; text-align: center;">
@@ -55,7 +55,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="padding: 30px 20px;">
             <p style="color: #1e3a5f; font-size: 16px;">Dear ${orgName},</p>
             
-            <p style="color: #333; line-height: 1.6;">A client has applied for your opportunity through Tompkins County Opportunity Finder.</p>
+            <p style="color: #333; line-height: 1.6;">You have a new application through Tompkins County Opportunity Finder.</p>
             
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
               <h2 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Opportunity Details</h2>
