@@ -678,8 +678,9 @@ const Admin = () => {
                                 onCheckedChange={(checked) =>
                                   setEditingOpportunity({ ...editingOpportunity, active: checked === true })
                                 }
+                                className={editingOpportunity.active ? "border-success bg-success data-[state=checked]:bg-success data-[state=checked]:border-success" : ""}
                               />
-                              <Label>Active</Label>
+                              <Label className={editingOpportunity.active ? "text-success font-medium" : ""}>Active</Label>
                             </div>
                             <Button onClick={handleUpdate} className="w-full">
                               Save Changes
