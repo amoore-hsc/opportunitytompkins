@@ -17,6 +17,8 @@ interface ConfirmationEmailRequest {
   onBusRoute: boolean;
   hoursAvailable: string;
   daysTimesAvailable: string;
+  editToken: string;
+  siteUrl: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -35,10 +37,14 @@ const handler = async (req: Request): Promise<Response> => {
       location,
       onBusRoute,
       hoursAvailable,
-      daysTimesAvailable
+      daysTimesAvailable,
+      editToken,
+      siteUrl
     }: ConfirmationEmailRequest = await req.json();
 
     console.log(`Sending confirmation email to ${orgEmail}`);
+
+    const editUrl = `${siteUrl}/edit-opportunity/${editToken}`;
 
     const emailResponse = await resend.emails.send({
       from: "SNAP ABAWD Finder <onboarding@resend.dev>",
@@ -62,6 +68,15 @@ const handler = async (req: Request): Promise<Response> => {
             <p><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
           </div>
 
+          <div style="background: #d1fae5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #059669; margin-top: 0;">Edit Your Listing</h3>
+            <p>Need to make changes? Use the secure link below to edit your listing at any time:</p>
+            <p style="text-align: center; margin: 15px 0;">
+              <a href="${editUrl}" style="background-color: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">Edit Your Listing</a>
+            </p>
+            <p style="font-size: 12px; color: #666;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
+          </div>
+
           <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="color: #d97706; margin-top: 0;">What Happens Next?</h3>
             <ul>
@@ -74,8 +89,8 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
 
           <div style="background: #fee2e2; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #dc2626; margin-top: 0;">Need to Make Changes?</h3>
-            <p>To edit or remove this opportunity, please email: <strong>amoore@hsctc.org</strong></p>
+            <h3 style="color: #dc2626; margin-top: 0;">Need Help?</h3>
+            <p>For additional assistance, please email: <strong>amoore@hsctc.org</strong></p>
           </div>
 
           <p style="color: #666; font-size: 14px; margin-top: 30px;">

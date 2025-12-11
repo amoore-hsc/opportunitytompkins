@@ -21,6 +21,7 @@ export type Database = {
           created_at: string
           days_times_available: string
           description: string
+          edit_token: string
           hours_available: string
           id: string
           location: string
@@ -39,6 +40,7 @@ export type Database = {
           created_at?: string
           days_times_available: string
           description: string
+          edit_token?: string
           hours_available: string
           id?: string
           location: string
@@ -57,6 +59,7 @@ export type Database = {
           created_at?: string
           days_times_available?: string
           description?: string
+          edit_token?: string
           hours_available?: string
           id?: string
           location?: string
