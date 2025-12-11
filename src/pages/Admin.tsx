@@ -31,6 +31,7 @@ import { User, Session } from "@supabase/supabase-js";
 interface Opportunity {
   id: string;
   type: string;
+  role_classification: string | null;
   position_title: string | null;
   description: string;
   location: string;
@@ -229,6 +230,7 @@ const Admin = () => {
         .from("opportunities")
         .update({
           type: editingOpportunity.type,
+          role_classification: editingOpportunity.role_classification,
           position_title: editingOpportunity.position_title,
           description: editingOpportunity.description,
           location: editingOpportunity.location,
@@ -447,6 +449,29 @@ const Admin = () => {
                                 <SelectContent>
                                   <SelectItem value="volunteer">Volunteer</SelectItem>
                                   <SelectItem value="education">Education & Training</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Role Classification</Label>
+                              <Select
+                                value={editingOpportunity.role_classification || ""}
+                                onValueChange={(value) =>
+                                  setEditingOpportunity({ ...editingOpportunity, role_classification: value || null })
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select classification" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Administrative & Office Support">Administrative & Office Support</SelectItem>
+                                  <SelectItem value="Community Engagement & Public Service">Community Engagement & Public Service</SelectItem>
+                                  <SelectItem value="Education & Mentoring">Education & Mentoring</SelectItem>
+                                  <SelectItem value="Human & Social Support Services">Human & Social Support Services</SelectItem>
+                                  <SelectItem value="Physical, Outdoor & Environmental Work">Physical, Outdoor & Environmental Work</SelectItem>
+                                  <SelectItem value="Creative, Media & Communications">Creative, Media & Communications</SelectItem>
+                                  <SelectItem value="Technology & Digital Support">Technology & Digital Support</SelectItem>
+                                  <SelectItem value="Fundraising & Development">Fundraising & Development</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
