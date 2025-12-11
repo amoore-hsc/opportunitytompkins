@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDistanceToNow } from "date-fns";
 import { Handshake, ArrowLeft, Pencil, Trash2, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ interface Opportunity {
   org_email: string;
   org_phone: string;
   active: boolean;
+  created_at: string;
 }
 
 const Admin = () => {
@@ -387,6 +389,7 @@ const Admin = () => {
                 <TableHead>Type</TableHead>
                 <TableHead>Organization</TableHead>
                 <TableHead>Position Title</TableHead>
+                <TableHead>Date Posted</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -397,6 +400,9 @@ const Admin = () => {
                   <TableCell className="font-medium capitalize">{opp.type}</TableCell>
                   <TableCell>{opp.org_name}</TableCell>
                   <TableCell>{opp.position_title || "—"}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">
+                    {formatDistanceToNow(new Date(opp.created_at), { addSuffix: true })}
+                  </TableCell>
                   <TableCell>
                     <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                       opp.active ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"
