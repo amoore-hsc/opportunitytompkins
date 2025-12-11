@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.update-opportunity-by-token]
 verify_jwt = false
+
+[functions.send-application-email]
+verify_jwt = false
+
+[functions.send-weekly-report]
+verify_jwt = false

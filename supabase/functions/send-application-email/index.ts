@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -18,6 +19,7 @@ interface ApplicationEmailRequest {
   opportunityDescription: string;
   opportunityType: string;
   positionTitle: string;
+  opportunityId: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -37,10 +39,46 @@ const handler = async (req: Request): Promise<Response> => {
       orgName,
       opportunityDescription,
       opportunityType,
-      positionTitle
+      positionTitle,
+      opportunityId
     }: ApplicationEmailRequest = await req.json();
 
     console.log(`Sending application email to ${orgEmail} from ${clientName}`);
+
+    // Track application count (aggregated, no personal data stored)
+    if (opportunityId) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+        
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Try to increment existing count, or insert new row
+        const { data: existing } = await supabaseClient
+          .from('application_counts')
+          .select('id, count')
+          .eq('opportunity_id', opportunityId)
+          .eq('application_date', today)
+          .maybeSingle();
+        
+        if (existing) {
+          await supabaseClient
+            .from('application_counts')
+            .update({ count: existing.count + 1 })
+            .eq('id', existing.id);
+          console.log(`Incremented application count for opportunity ${opportunityId}`);
+        } else {
+          await supabaseClient
+            .from('application_counts')
+            .insert({ opportunity_id: opportunityId, application_date: today, count: 1 });
+          console.log(`Created new application count for opportunity ${opportunityId}`);
+        }
+      } catch (countError) {
+        console.error("Error tracking application count:", countError);
+        // Don't fail the email send if count tracking fails
+      }
+    }
 
     const emailResponse = await resend.emails.send({
       from: "Tompkins County Opportunity Finder <onboarding@resend.dev>",
