@@ -12,6 +12,9 @@ interface ConfirmationEmailRequest {
   orgName: string;
   orgEmail: string;
   opportunityType: string;
+  roleClassification: string;
+  positionTitle: string | null;
+  additionalRequirements: string | null;
   description: string;
   location: string;
   onBusRoute: boolean;
@@ -33,6 +36,9 @@ const handler = async (req: Request): Promise<Response> => {
       orgName, 
       orgEmail, 
       opportunityType,
+      roleClassification,
+      positionTitle,
+      additionalRequirements,
       description,
       location,
       onBusRoute,
@@ -61,11 +67,14 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h2 style="color: #0e7490; margin-top: 0;">Your Listing Details</h2>
             <p><strong>Type:</strong> ${opportunityType}</p>
+            <p><strong>Role Classification:</strong> ${roleClassification}</p>
+            ${positionTitle ? `<p><strong>Position Title:</strong> ${positionTitle}</p>` : ''}
             <p><strong>Description:</strong> ${description}</p>
             <p><strong>Location:</strong> ${location}</p>
             <p><strong>On Bus Route:</strong> ${onBusRoute ? 'Yes' : 'No'}</p>
             <p><strong>Hours Available:</strong> ${hoursAvailable}</p>
             <p><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
+            ${additionalRequirements ? `<p><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ''}
           </div>
 
           <div style="background: #d1fae5; padding: 20px; border-radius: 8px; margin: 20px 0;">
