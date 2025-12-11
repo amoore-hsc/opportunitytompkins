@@ -95,8 +95,8 @@ const handler = async (req: Request): Promise<Response> => {
                 <li>Clients can apply directly through the platform</li>
                 <li>You'll receive a notification to this address when someone applies</li>
                 <li>Contact applicants to confirm availability and interest</li>
-                <li>Complete monthly documentation on behalf of clients</li>
-                <li>Remove your posting when the position has been filled</li>
+                <li>Complete monthly documentation on behalf of the volunteer</li>
+                <li>Remove your posting when the position has been filled. You can also use the edit link to update hours available per week if a position has been partially filled.</li>
               </ul>
             </div>
 
