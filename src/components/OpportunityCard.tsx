@@ -26,6 +26,9 @@ export const OpportunityCard = ({
             {opportunity.role_classification}
           </Badge>}
         <CardTitle className="text-xl">{opportunity.org_name}</CardTitle>
+        {opportunity.position_title && (
+          <p className="text-base font-medium text-foreground">{opportunity.position_title}</p>
+        )}
         <CardDescription>
           {opportunity.description}
         </CardDescription>

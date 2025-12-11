@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 export interface Opportunity {
   id: string;
   type: string;
+  position_title: string | null;
   description: string;
   location: string;
   on_bus_route: boolean;
