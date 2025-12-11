@@ -89,7 +89,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="color: #d97706; margin-top: 0;">What Happens Next?</h3>
             <ul>
-              <li>Your opportunity is now visible to SNAP ABAWD recipients</li>
+              <li>Your opportunity is now published</li>
               <li>Clients can apply directly through the platform</li>
               <li>You'll receive an email when someone applies</li>
               <li>Contact applicants to confirm participation</li>
