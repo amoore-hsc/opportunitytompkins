@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ApplicationDialog } from "./ApplicationDialog";
 import { Opportunity } from "@/pages/Opportunities";
-import { format } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 
 interface OpportunityCardProps {
   opportunity: Opportunity;
@@ -64,7 +64,7 @@ export const OpportunityCard = ({
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t border-border">
           <CalendarPlus className="h-3 w-3 flex-shrink-0" />
-          <span>Posted {format(new Date(opportunity.created_at), "MMMM d, yyyy")}</span>
+          <span>Posted {formatDistanceToNow(new Date(opportunity.created_at), { addSuffix: true })}</span>
         </div>
       </CardContent>
     </Card>;
