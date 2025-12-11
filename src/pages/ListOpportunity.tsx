@@ -516,7 +516,7 @@ const ListOpportunity = () => {
       <footer className="border-t border-border bg-card py-8 mt-20">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground">
-            Need help? Email{" "}
+            Need help with your listing? Email{" "}
             <a href="mailto:rhinton@uwtc.org" className="text-primary hover:underline">
               rhinton@uwtc.org
             </a>
