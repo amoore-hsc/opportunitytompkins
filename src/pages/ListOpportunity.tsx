@@ -183,7 +183,7 @@ const ListOpportunity = () => {
       }).select().single();
       if (error) throw error;
 
-      // Send confirmation email
+      // Send confirmation email with edit link
       const {
         error: emailError
       } = await supabase.functions.invoke("send-confirmation-email", {
@@ -195,7 +195,9 @@ const ListOpportunity = () => {
           location: formData.location,
           onBusRoute: formData.onBusRoute,
           hoursAvailable: formData.hoursAvailable,
-          daysTimesAvailable: daysTimesAvailable
+          daysTimesAvailable: daysTimesAvailable,
+          editToken: data.edit_token,
+          siteUrl: window.location.origin
         }
       });
       if (emailError) {

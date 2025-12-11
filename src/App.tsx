@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Opportunities from "./pages/Opportunities";
 import ListOpportunity from "./pages/ListOpportunity";
+import EditOpportunity from "./pages/EditOpportunity";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/opportunities" element={<Opportunities />} />
           <Route path="/list-opportunity" element={<ListOpportunity />} />
+          <Route path="/edit-opportunity/:token" element={<EditOpportunity />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
