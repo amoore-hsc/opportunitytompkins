@@ -30,6 +30,7 @@ import { User, Session } from "@supabase/supabase-js";
 interface Opportunity {
   id: string;
   type: string;
+  position_title: string | null;
   description: string;
   location: string;
   on_bus_route: boolean;
@@ -223,6 +224,7 @@ const Admin = () => {
         .from("opportunities")
         .update({
           type: editingOpportunity.type,
+          position_title: editingOpportunity.position_title,
           description: editingOpportunity.description,
           location: editingOpportunity.location,
           on_bus_route: editingOpportunity.on_bus_route,
@@ -436,6 +438,16 @@ const Admin = () => {
                                   <SelectItem value="education">Education & Training</SelectItem>
                                 </SelectContent>
                               </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Position Title</Label>
+                              <Input
+                                value={editingOpportunity.position_title || ""}
+                                onChange={(e) =>
+                                  setEditingOpportunity({ ...editingOpportunity, position_title: e.target.value || null })
+                                }
+                                placeholder="e.g., Kitchen Assistant, Office Volunteer"
+                              />
                             </div>
                             <div className="space-y-2">
                               <Label>Description</Label>
