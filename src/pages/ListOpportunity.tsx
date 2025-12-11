@@ -326,9 +326,10 @@ const ListOpportunity = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="positionTitle">Position Title</Label>
+            <Label htmlFor="positionTitle">Position Title *</Label>
             <Input
               id="positionTitle"
+              required
               value={formData.positionTitle}
               onChange={(e) => setFormData({ ...formData, positionTitle: e.target.value })}
               placeholder="e.g., Kitchen Assistant, Office Volunteer"
