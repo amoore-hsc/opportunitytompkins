@@ -5,7 +5,8 @@ export const ElectronicVerificationForms = () => {
       <h3 className="mb-8 text-2xl font-semibold text-foreground text-center">
         Send Forms Electronically
       </h3>
-      <div className="grid gap-6 md:grid-cols-5 items-stretch">
+      {/* Row 1 */}
+      <div className="grid gap-6 md:grid-cols-2 items-stretch">
         <a href="https://hipaa.jotform.com/sign/253434861321049/invite/01kc4jf96z3caf7c048e46ea9f" target="_blank" rel="noopener noreferrer" className="h-full">
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
             <FileCheck className="mr-2 h-5 w-5 shrink-0" />
@@ -18,6 +19,10 @@ export const ElectronicVerificationForms = () => {
             Training/ Educational Program Verification Form
           </Button>
         </a>
+      </div>
+      
+      {/* Row 2 */}
+      <div className="grid gap-6 md:grid-cols-2 items-stretch mt-6">
         <a href="#" target="_blank" rel="noopener noreferrer" className="h-full">
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
             <Stethoscope className="mr-2 h-5 w-5 shrink-0" />
@@ -30,7 +35,11 @@ export const ElectronicVerificationForms = () => {
             Monthly WIOA Job Search Activity Record
           </Button>
         </a>
-        <a href="https://otda.ny.gov/programs/nydocsubmit/" target="_blank" rel="noopener noreferrer" className="h-full">
+      </div>
+      
+      {/* Row 3 */}
+      <div className="flex justify-center mt-6">
+        <a href="https://otda.ny.gov/programs/nydocsubmit/" target="_blank" rel="noopener noreferrer" className="w-full md:w-1/2">
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
             <FileCheck className="mr-2 h-5 w-5 shrink-0" />
             Submit Documentation to DSS via NYDocSubmit
