@@ -5,7 +5,7 @@ export const ElectronicVerificationForms = () => {
       <h3 className="mb-8 text-2xl font-semibold text-foreground text-center">Electronic Forms</h3>
       {/* Row 1 */}
       <div className="grid gap-6 md:grid-cols-2 items-stretch">
-        <a href="https://hipaa.jotform.com/sign/253434861321049/invite/01kc4jf96z3caf7c048e46ea9f" target="_blank" rel="noopener noreferrer" className="h-full">
+        <a href="https://docs.google.com/document/d/1n3NCaPuSlK0lQkDQTAw7r5PRIyw0carA/edit" target="_blank" rel="noopener noreferrer" className="h-full">
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
             <FileCheck className="mr-2 h-5 w-5 shrink-0" />
             Volunteer Work Experience Verification Form
