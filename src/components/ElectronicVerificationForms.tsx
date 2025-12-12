@@ -39,7 +39,7 @@ export const ElectronicVerificationForms = () => {
       
       {/* Row 3 */}
       <div className="flex justify-center mt-6">
-        <a href="https://otda.ny.gov/programs/nydocsubmit/" target="_blank" rel="noopener noreferrer" className="w-full md:w-1/2">
+        <a href="https://otda.ny.gov/programs/nydocsubmit/" target="_blank" rel="noopener noreferrer" className="w-full">
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
             <FileCheck className="mr-2 h-5 w-5 shrink-0" />
             Submit Documentation to DSS via NYDocSubmit
