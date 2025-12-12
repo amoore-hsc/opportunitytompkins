@@ -112,8 +112,6 @@ Opportunity Finder</h1>
           </div>
 
           <ElectronicVerificationForms />
-
-          
         </div>
       </main>
 
