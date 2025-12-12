@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { FileCheck, ClipboardCheck } from "lucide-react";
-
 export const ElectronicVerificationForms = () => {
-  return (
-    <div className="mt-16 rounded-xl bg-card border border-border p-8">
-      <h3 className="mb-8 text-2xl font-semibold text-foreground text-center">Electronic Verification Forms</h3>
+  return <div className="mt-16 rounded-xl bg-card border border-border p-8">
+      <h3 className="mb-8 text-2xl font-semibold text-foreground text-center">Send Forms Electronically</h3>
       <div className="grid gap-6 md:grid-cols-3 items-stretch">
         <a href="https://hipaa.jotform.com/sign/253434861321049/invite/01kc4jf96z3caf7c048e46ea9f" target="_blank" rel="noopener noreferrer" className="h-full">
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
@@ -25,6 +23,5 @@ export const ElectronicVerificationForms = () => {
           </Button>
         </a>
       </div>
-    </div>
-  );
+    </div>;
 };
