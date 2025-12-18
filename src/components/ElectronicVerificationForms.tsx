@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { FileCheck, ClipboardCheck, Stethoscope, Search } from "lucide-react";
+import { FileCheck, ClipboardCheck, Stethoscope, Search, Heart } from "lucide-react";
 export const ElectronicVerificationForms = () => {
   return <div className="mt-16 rounded-xl bg-card border border-border p-8">
       <h3 className="mb-8 text-2xl font-semibold text-foreground text-center">Electronic Forms</h3>
@@ -36,6 +36,16 @@ export const ElectronicVerificationForms = () => {
       </div>
       
       {/* Row 3 */}
+      <div className="grid gap-6 md:grid-cols-2 items-stretch mt-6">
+        <a href="#" target="_blank" rel="noopener noreferrer" className="h-full">
+          <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
+            <Heart className="mr-2 h-5 w-5 shrink-0" />
+            Caregiver Verification
+          </Button>
+        </a>
+      </div>
+      
+      {/* Row 4 - Submit */}
       <div className="flex justify-center mt-6">
         <a href="https://otda.ny.gov/policy/directives/2019/ADM/19-ADM-07-Attachment-1.pdf" target="_blank" rel="noopener noreferrer" className="w-full">
           <Button variant="success" className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
