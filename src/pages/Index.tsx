@@ -147,10 +147,6 @@ Opportunity Finder</h1>
         </div>
        </section> */}
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-card py-8 mt-20">
-        
-      </footer>
     </div>;
 };
 export default Index;
