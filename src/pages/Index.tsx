@@ -44,12 +44,11 @@ const Index = () => {
       </Dialog>
 
       {/* Header */}
-      <header className="border-b border-border bg-[#eeeeee]">
-        <div className="container mx-auto px-4 py-6 bg-primary-foreground">
+      <header className="border-b border-border bg-card">
+        <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-2">
             <Handshake className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Tompkins County 
-Opportunity Finder</h1>
+            <h1 className="text-2xl font-bold text-foreground">Tompkins County Opportunity Finder</h1>
           </div>
         </div>
       </header>
