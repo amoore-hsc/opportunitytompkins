@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Search, ListPlus, Handshake } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
 import chrnLogo from "@/assets/chrn-logo.jpg";
@@ -19,7 +19,13 @@ const Index = () => {
   return <div className="min-h-screen bg-background">
       {/* Exemption Status Popup */}
       <Dialog open={showPopup} onOpenChange={setShowPopup}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby="exemption-description">
+          <DialogHeader>
+            <DialogTitle className="text-center">Check Your Exemption Status</DialogTitle>
+            <DialogDescription id="exemption-description" className="sr-only">
+              Information about checking your exemption status for work requirements
+            </DialogDescription>
+          </DialogHeader>
           <div className="text-center space-y-4 py-4">
             <p className="text-lg font-medium text-foreground">
               You may be exempt from new work requirements.
