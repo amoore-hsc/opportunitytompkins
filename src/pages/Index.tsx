@@ -44,11 +44,12 @@ const Index = () => {
       </Dialog>
 
       {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-6">
+      <header className="border-b border-border bg-[#eeeeee]">
+        <div className="container mx-auto px-4 py-6 bg-primary-foreground">
           <div className="flex items-center gap-2">
             <Handshake className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Tompkins County Opportunity Finder</h1>
+            <h1 className="text-2xl font-bold text-foreground">Tompkins County 
+Opportunity Finder</h1>
           </div>
         </div>
       </header>
@@ -148,15 +149,7 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="border-t border-border bg-card py-8 mt-20">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-muted-foreground">
-            Need help? Email{" "}
-            <a href="mailto:amoore@hsctc.org" className="text-primary hover:underline">
-              amoore@hsctc.org
-            </a>
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">Powered by Tompkins County Opportunity Finder</p>
-        </div>
+        
       </footer>
     </div>;
 };
