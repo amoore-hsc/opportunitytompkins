@@ -79,17 +79,14 @@ const handler = async (req: Request): Promise<Response> => {
 <hr style="border:none; border-top:1px solid #dddddd; margin:0 0 30px 0;">
 
 <p style="margin:0 0 15px 0; font-size:18px;"><strong>Listing Details</strong></p>
-<p style="margin:0 0 8px 0;"><strong>Organization:</strong> ${orgName}</p>
-<p style="margin:0 0 8px 0;"><strong>Contact:</strong> ${contactName || "Not provided"}</p>
-${positionTitle ? `<p style="margin:0 0 8px 0;"><strong>Position:</strong> ${positionTitle}</p>` : ""}
 <p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opportunityType}</p>
-<p style="margin:0 0 8px 0;"><strong>Role:</strong> ${roleClassification || "Not specified"}</p>
-<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${location}</p>
-<p style="margin:0 0 8px 0;"><strong>Bus Route:</strong> ${onBusRoute ? "Yes" : "No"}</p>
-<p style="margin:0 0 8px 0;"><strong>Hours:</strong> ${hoursAvailable}</p>
-<p style="margin:0 0 8px 0;"><strong>Schedule:</strong> ${daysTimesAvailable}</p>
+<p style="margin:0 0 8px 0;"><strong>Role Classification:</strong> ${roleClassification || "Not specified"}</p>
+${positionTitle ? `<p style="margin:0 0 8px 0;"><strong>Position Title:</strong> ${positionTitle}</p>` : ""}
 <p style="margin:0 0 8px 0;"><strong>Description:</strong> ${description}</p>
-${additionalRequirements ? `<p style="margin:0 0 8px 0;"><strong>Requirements:</strong> ${additionalRequirements}</p>` : ""}
+<p style="margin:0 0 8px 0;"><strong>On Bus Route:</strong> ${onBusRoute ? "Yes" : "No"}</p>
+<p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${hoursAvailable}</p>
+<p style="margin:0 0 8px 0;"><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
+${additionalRequirements ? `<p style="margin:0 0 8px 0;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ""}
 
 <hr style="border:none; border-top:1px solid #dddddd; margin:30px 0;">
 
