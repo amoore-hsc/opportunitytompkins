@@ -97,11 +97,11 @@ ${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirem
 <!-- What Happens Next Card -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">What Happens Next?</h2>
-<p style="margin:0 0 8px 0;">&bull; Clients can apply directly through the platform</p>
-<p style="margin:0 0 8px 0;">&bull; You will receive a notification to this email when someone applies</p>
-<p style="margin:0 0 8px 0;">&bull; Contact applicants to confirm availability and interest</p>
-<p style="margin:0 0 8px 0;">&bull; Remove your posting when the position has been filled</p>
-<p style="margin:0 0 0 0;">&bull; Complete monthly documentation on behalf of the volunteer</p>
+<p style="margin:0 0 8px 0;">1. Clients can apply directly through the platform</p>
+<p style="margin:0 0 8px 0;">2. You will receive a notification to this email when someone applies</p>
+<p style="margin:0 0 8px 0;">3. Contact applicants to confirm availability and interest</p>
+<p style="margin:0 0 8px 0;">4. Remove your posting when the position has been filled</p>
+<p style="margin:0 0 0 0;">5. Complete monthly documentation on behalf of the volunteer</p>
 </div>
 
 <!-- Update or Remove Card -->
