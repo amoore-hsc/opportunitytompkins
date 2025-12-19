@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, XCircle, Loader2, Building2, MapPin, Calendar, Briefcase, Edit } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Building2, MapPin, Calendar, Briefcase, Edit, Clock, CalendarDays, ClipboardList } from "lucide-react";
 
 interface OpportunityDetails {
   id: string;
@@ -11,6 +11,9 @@ interface OpportunityDetails {
   position_title: string | null;
   type: string;
   location: string;
+  hours_available: string;
+  days_times_available: string;
+  additional_requirements: string | null;
   created_at: string;
   active: boolean;
 }
@@ -49,7 +52,8 @@ const ConfirmListing = () => {
           return;
         }
 
-        setOpportunity(data);
+        // Handle the nested opportunity response
+        setOpportunity(data.opportunity || data);
       } catch (err) {
         console.error("Error:", err);
         setError("An unexpected error occurred");
@@ -184,22 +188,39 @@ const ConfirmListing = () => {
             
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
-                <Building2 className="h-4 w-4" />
+                <Building2 className="h-4 w-4 flex-shrink-0" />
                 <span>{opportunity?.org_name}</span>
               </div>
               
               <div className="flex items-center gap-2 text-muted-foreground">
-                <Briefcase className="h-4 w-4" />
+                <Briefcase className="h-4 w-4 flex-shrink-0" />
                 <span>{opportunity?.type}</span>
               </div>
               
               <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
+                <MapPin className="h-4 w-4 flex-shrink-0" />
                 <span>{opportunity?.location}</span>
               </div>
               
               <div className="flex items-center gap-2 text-muted-foreground">
-                <Calendar className="h-4 w-4" />
+                <Clock className="h-4 w-4 flex-shrink-0" />
+                <span>{opportunity?.hours_available}</span>
+              </div>
+              
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <CalendarDays className="h-4 w-4 flex-shrink-0" />
+                <span>{opportunity?.days_times_available}</span>
+              </div>
+              
+              {opportunity?.additional_requirements && (
+                <div className="flex items-start gap-2 text-muted-foreground">
+                  <ClipboardList className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                  <span>{opportunity.additional_requirements}</span>
+                </div>
+              )}
+              
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Calendar className="h-4 w-4 flex-shrink-0" />
                 <span>
                   Posted {formatDate(opportunity?.created_at || "")} ({getDaysSince(opportunity?.created_at || "")} days ago)
                 </span>
