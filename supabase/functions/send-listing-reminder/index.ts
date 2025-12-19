@@ -125,10 +125,11 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Action Items</h2>
 <p style="margin:0 0 12px 0;"><strong>If your listing is still accurate:</strong></p>
-<p style="margin:0 0 16px 0; padding-left:15px;">&bull; Click <strong>Confirm Still Active</strong> below to keep it listed.</p>
-<p style="margin:0 0 12px 0;"><strong>If changes are needed:</strong></p>
-<p style="margin:0 0 8px 0; padding-left:15px;">&bull; <strong>Update your listing</strong> if availability or details have changed, using the Edit This Listing button.</p>
-<p style="margin:0 0 0 0; padding-left:15px;">&bull; <strong>Remove the listing</strong> if the position has been filled. Click Edit This Listing, then scroll to the bottom to deactivate.</p>
+<p style="margin:0 0 20px 0; padding-left:15px;">&bull; Click the <strong>Confirm Still Active</strong> button below to keep the listing posted</p>
+<p style="margin:0 0 12px 0;"><strong>If you need to make changes:</strong></p>
+<p style="margin:0 0 8px 0; padding-left:15px;">&bull; Update your listing if availability or details have changed by clicking the <strong>Edit This Listing</strong> button.</p>
+<p style="margin:0 0 20px 0; padding-left:15px;">&bull; Remove the listing if the position has been filled. Click the <strong>Edit This Listing</strong> button, then scroll to the bottom of the page and click <strong>Deactivate</strong>.</p>
+<p style="margin:0; color:#c62828; font-style:italic;">If you do not take either action, we will automatically archive your post in 14 days.</p>
 </div>
 
 <!-- Listing Blocks -->
@@ -172,7 +173,7 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         const body = await req.json();
         testMode = body.testMode === true;
-        testEmail = body.email || "";
+        testEmail = body.testEmail || body.email || "";
       } catch {
         // No body or invalid JSON, continue with normal mode
       }
