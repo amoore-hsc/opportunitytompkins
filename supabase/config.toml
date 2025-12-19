@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.test-listing-reminder]
 verify_jwt = false
+
+[functions.confirm-listing-active]
+verify_jwt = false

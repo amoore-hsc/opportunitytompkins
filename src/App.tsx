@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Opportunities from "./pages/Opportunities";
 import ListOpportunity from "./pages/ListOpportunity";
 import EditOpportunity from "./pages/EditOpportunity";
+import ConfirmListing from "./pages/ConfirmListing";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/opportunities" element={<Opportunities />} />
           <Route path="/list-opportunity" element={<ListOpportunity />} />
           <Route path="/edit-opportunity/:token" element={<EditOpportunity />} />
+          <Route path="/confirm-listing/:token" element={<ConfirmListing />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
