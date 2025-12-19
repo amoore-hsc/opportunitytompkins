@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Handshake, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { OpportunityCard } from "@/components/OpportunityCard";
 import { OpportunityFilters } from "@/components/OpportunityFilters";
@@ -33,11 +33,31 @@ const Opportunities = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   useEffect(() => {
     fetchOpportunities();
   }, []);
+
+  // Handle scrolling to specific opportunity when id param is present
+  useEffect(() => {
+    const targetId = searchParams.get("id");
+    if (targetId && !loading && filteredOpportunities.length > 0) {
+      const cardElement = cardRefs.current.get(targetId);
+      if (cardElement) {
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+          cardElement.scrollIntoView({ behavior: "smooth", block: "center" });
+          setHighlightedId(targetId);
+          // Remove highlight after animation
+          setTimeout(() => setHighlightedId(null), 3000);
+        }, 100);
+      }
+    }
+  }, [searchParams, loading, filteredOpportunities]);
 
   const fetchOpportunities = async () => {
     try {
@@ -132,7 +152,14 @@ const Opportunities = () => {
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredOpportunities.map(opportunity => (
-                <OpportunityCard key={opportunity.id} opportunity={opportunity} />
+                <OpportunityCard 
+                  key={opportunity.id} 
+                  opportunity={opportunity} 
+                  isHighlighted={highlightedId === opportunity.id}
+                  ref={(el) => {
+                    if (el) cardRefs.current.set(opportunity.id, el);
+                  }}
+                />
               ))}
             </div>
           )}
