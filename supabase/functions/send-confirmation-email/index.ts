@@ -70,7 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
 <!-- Header -->
 <tr>
 <td style="background-color:#1e3a5f; padding:30px; text-align:center;">
-<h1 style="margin:0; font-size:28px; color:#ffffff;">Thank You for Your Submission</h1>
+<h1 style="margin:0; font-size:28px; color:#ffffff;">Thank You for Your Submission!</h1>
 </td>
 </tr>
 
@@ -114,11 +114,6 @@ ${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirem
 <p style="margin:0; font-size:13px; color:#666666; text-align:center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
 </div>
 
-<!-- Need Help Card -->
-<div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 0 0; border-radius:0 8px 8px 0;">
-<h2 style="margin:0 0 10px 0; font-size:18px; color:#1e3a5f;">Need Help?</h2>
-<p style="margin:0;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#1e3a5f; font-weight:bold;">rhinton@uwtc.org</a></p>
-</div>
 
 </td>
 </tr>
@@ -126,8 +121,8 @@ ${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirem
 <!-- Footer -->
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
-<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">&#11088; Thank You for Supporting Our Community! &#11088;</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px;">Tompkins Opportunity</p>
+<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">rhinton@uwtc.org</a></p>
 </td>
 </tr>
 
