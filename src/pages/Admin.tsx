@@ -110,6 +110,7 @@ interface Opportunity {
   days_times_available: string;
   additional_requirements: string | null;
   org_name: string;
+  contact_name: string | null;
   org_email: string;
   org_phone: string;
   active: boolean;
