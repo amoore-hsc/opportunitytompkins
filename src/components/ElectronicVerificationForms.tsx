@@ -1,54 +1,95 @@
 import { Button } from "@/components/ui/button";
 import { Briefcase, GraduationCap, Stethoscope, Search, Heart, Send } from "lucide-react";
+import { VisuallyHidden } from "@/components/VisuallyHidden";
+
 export const ElectronicVerificationForms = () => {
-  return <div className="mt-16 rounded-xl bg-card border border-border p-8">
+  return (
+    <div className="mt-16 rounded-xl bg-card border border-border p-8">
       <h3 className="mb-8 text-2xl font-semibold text-foreground text-center">Electronic Forms</h3>
+      
       {/* Row 1 */}
       <div className="grid gap-6 md:grid-cols-2 items-stretch">
-        <a href="https://docs.google.com/document/d/1n3NCaPuSlK0lQkDQTAw7r5PRIyw0carA/edit" target="_blank" rel="noopener noreferrer" className="h-full">
+        <a 
+          href="https://docs.google.com/document/d/1n3NCaPuSlK0lQkDQTAw7r5PRIyw0carA/edit" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="h-full"
+        >
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
-            <Briefcase className="mr-2 h-5 w-5 shrink-0" />
+            <Briefcase className="mr-2 h-5 w-5 shrink-0" aria-hidden="true" />
             Volunteer Work Experience Verification Form
+            <VisuallyHidden>(opens in new tab)</VisuallyHidden>
           </Button>
         </a>
-        <a href="https://hipaa.jotform.com/sign/253434861321049/invite/01kc4jf96z3caf7c048e46ea9f" target="_blank" rel="noopener noreferrer" className="h-full">
+        <a 
+          href="https://hipaa.jotform.com/sign/253434861321049/invite/01kc4jf96z3caf7c048e46ea9f" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="h-full"
+        >
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
-            <GraduationCap className="mr-2 h-5 w-5 shrink-0" />
+            <GraduationCap className="mr-2 h-5 w-5 shrink-0" aria-hidden="true" />
             Training/ Educational Program Verification Form
+            <VisuallyHidden>(opens in new tab)</VisuallyHidden>
           </Button>
         </a>
       </div>
       
       {/* Row 2 */}
       <div className="grid gap-6 md:grid-cols-3 items-stretch mt-6">
-        <a href="https://docs.google.com/document/d/1xAumMXBIV2lEADQuSgpajamqsPoxxoOp/edit" target="_blank" rel="noopener noreferrer" className="h-full">
+        <a 
+          href="https://docs.google.com/document/d/1xAumMXBIV2lEADQuSgpajamqsPoxxoOp/edit" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="h-full"
+        >
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
-            <Stethoscope className="mr-2 h-5 w-5 shrink-0" />
+            <Stethoscope className="mr-2 h-5 w-5 shrink-0" aria-hidden="true" />
             ABAWD Medical Statement
+            <VisuallyHidden>(opens in new tab)</VisuallyHidden>
           </Button>
         </a>
-        <a href="https://docs.google.com/document/d/1__P8F3DkuJWpo-C4206thP1Ix3JyitZY/edit" target="_blank" rel="noopener noreferrer" className="h-full">
+        <a 
+          href="https://docs.google.com/document/d/1__P8F3DkuJWpo-C4206thP1Ix3JyitZY/edit" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="h-full"
+        >
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
-            <Search className="mr-2 h-5 w-5 shrink-0" />
+            <Search className="mr-2 h-5 w-5 shrink-0" aria-hidden="true" />
             Monthly WIOA Job Search Activity Record
+            <VisuallyHidden>(opens in new tab)</VisuallyHidden>
           </Button>
         </a>
-        <a href="https://docs.google.com/document/d/1RnUrSBkKb-TAykLtr894ABpDbytTnfe9/edit" target="_blank" rel="noopener noreferrer" className="h-full">
+        <a 
+          href="https://docs.google.com/document/d/1RnUrSBkKb-TAykLtr894ABpDbytTnfe9/edit" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="h-full"
+        >
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
-            <Heart className="mr-2 h-5 w-5 shrink-0" />
+            <Heart className="mr-2 h-5 w-5 shrink-0" aria-hidden="true" />
             Caregiver Verification
+            <VisuallyHidden>(opens in new tab)</VisuallyHidden>
           </Button>
         </a>
       </div>
       
       {/* Row 4 - Submit */}
       <div className="flex justify-center mt-6">
-        <a href="https://otda.ny.gov/policy/directives/2019/ADM/19-ADM-07-Attachment-1.pdf" target="_blank" rel="noopener noreferrer" className="w-full">
+        <a 
+          href="https://otda.ny.gov/policy/directives/2019/ADM/19-ADM-07-Attachment-1.pdf" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="w-full"
+        >
           <Button variant="success" className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
-            <Send className="mr-2 h-5 w-5 shrink-0" />
+            <Send className="mr-2 h-5 w-5 shrink-0" aria-hidden="true" />
             Submit Documentation to DSS via NYDocSubmit
+            <VisuallyHidden>(opens in new tab)</VisuallyHidden>
           </Button>
         </a>
       </div>
-    </div>;
+    </div>
+  );
 };

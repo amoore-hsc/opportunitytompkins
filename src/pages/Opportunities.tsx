@@ -8,7 +8,9 @@ import { OpportunityFilters } from "@/components/OpportunityFilters";
 import { ShareOpportunitiesDialog } from "@/components/ShareOpportunitiesDialog";
 import { PrintableOpportunities } from "@/components/PrintableOpportunities";
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
+import { SkipNavigation } from "@/components/SkipNavigation";
 import { useToast } from "@/hooks/use-toast";
+
 export interface Opportunity {
   id: string;
   type: string;
@@ -25,24 +27,24 @@ export interface Opportunity {
   role_classification: string | null;
   updated_at: string;
 }
+
 const Opportunities = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
   useEffect(() => {
     fetchOpportunities();
   }, []);
+
   const fetchOpportunities = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.from("opportunities").select("*").eq("active", true).order("updated_at", {
-        ascending: false
-      });
+      const { data, error } = await supabase
+        .from("opportunities")
+        .select("*")
+        .eq("active", true)
+        .order("updated_at", { ascending: false });
       if (error) throw error;
       setOpportunities(data || []);
       setFilteredOpportunities(data || []);
@@ -56,20 +58,45 @@ const Opportunities = () => {
       setLoading(false);
     }
   };
-  return <div className="min-h-screen bg-background">
+
+  return (
+    <div className="min-h-screen bg-background">
+      <SkipNavigation />
+      
       {/* Exemption Status Banner */}
-      <div className="py-3 px-4 text-center font-medium transition-colors text-primary-foreground bg-[#2a5f99]">You may be exempt from new work requirements.<br /><a href="https://docs.google.com/forms/d/e/1FAIpQLSfXDths0eQwRcWRMrqVdjjhILjLpi5qz7lMyn27VyhdKTt6nw/viewform" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Click Here to Check your Exemption Status.</a><br />Questions? Contact <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline">Tompkins County DSS</a> (607) 274-5680</div>
+      <div className="py-3 px-4 text-center font-medium transition-colors text-primary-foreground bg-[#2a5f99]">
+        You may be exempt from new work requirements.<br />
+        <a 
+          href="https://docs.google.com/forms/d/e/1FAIpQLSfXDths0eQwRcWRMrqVdjjhILjLpi5qz7lMyn27VyhdKTt6nw/viewform" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="underline hover:no-underline"
+        >
+          Click Here to Check your Exemption Status.
+        </a>
+        <br />
+        Questions? Contact{" "}
+        <a 
+          href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="underline hover:no-underline"
+        >
+          Tompkins County DSS
+        </a>{" "}
+        (607) 274-5680
+      </div>
 
       <header className="border-b border-border bg-[#eeeeee]">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Handshake className="h-8 w-8 text-primary" />
+              <Handshake className="h-8 w-8 text-primary" aria-hidden="true" />
               <h1 className="text-2xl font-bold text-foreground">Tompkins County Opportunity Finder</h1>
             </div>
             <Link to="/">
               <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
                 Home
               </Button>
             </Link>
@@ -77,7 +104,7 @@ const Opportunities = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main id="main-content" className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
@@ -92,18 +119,28 @@ const Opportunities = () => {
         
         <PrintableOpportunities opportunities={filteredOpportunities} />
 
-        {loading ? <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading opportunities...</p>
-          </div> : filteredOpportunities.length === 0 ? <div className="text-center py-12">
-            <p className="text-muted-foreground">No opportunities found matching your filters.</p>
-          </div> : <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredOpportunities.map(opportunity => <OpportunityCard key={opportunity.id} opportunity={opportunity} />)}
-          </div>}
+        <div aria-live="polite" aria-atomic="true">
+          {loading ? (
+            <div className="text-center py-12" role="status">
+              <p className="text-muted-foreground">Loading opportunities...</p>
+            </div>
+          ) : filteredOpportunities.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No opportunities found matching your filters.</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredOpportunities.map(opportunity => (
+                <OpportunityCard key={opportunity.id} opportunity={opportunity} />
+              ))}
+            </div>
+          )}
+        </div>
 
         <ElectronicVerificationForms />
       </main>
-
-      
-    </div>;
+    </div>
+  );
 };
+
 export default Opportunities;
