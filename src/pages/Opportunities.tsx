@@ -9,6 +9,7 @@ import { ShareOpportunitiesDialog } from "@/components/ShareOpportunitiesDialog"
 import { PrintableOpportunities } from "@/components/PrintableOpportunities";
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
 import { SkipNavigation } from "@/components/SkipNavigation";
+import { ApplicationDialog } from "@/components/ApplicationDialog";
 import { useToast } from "@/hooks/use-toast";
 
 export interface Opportunity {
@@ -34,30 +35,28 @@ const Opportunities = () => {
   const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [autoOpenOpportunity, setAutoOpenOpportunity] = useState<Opportunity | null>(null);
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   useEffect(() => {
     fetchOpportunities();
   }, []);
 
-  // Handle scrolling to specific opportunity when id param is present
+  // Handle auto-opening apply dialog when id param is present
   useEffect(() => {
     const targetId = searchParams.get("id");
     if (targetId && !loading && filteredOpportunities.length > 0) {
-      const cardElement = cardRefs.current.get(targetId);
-      if (cardElement) {
-        // Small delay to ensure DOM is ready
-        setTimeout(() => {
-          cardElement.scrollIntoView({ behavior: "smooth", block: "center" });
-          setHighlightedId(targetId);
-          // Remove highlight after animation
-          setTimeout(() => setHighlightedId(null), 3000);
-        }, 100);
+      const targetOpportunity = filteredOpportunities.find(opp => opp.id === targetId);
+      if (targetOpportunity) {
+        // Auto-open the application dialog
+        setAutoOpenOpportunity(targetOpportunity);
+        // Clear the id param from URL to prevent re-opening on navigation
+        setSearchParams({}, { replace: true });
       }
     }
-  }, [searchParams, loading, filteredOpportunities]);
+  }, [searchParams, loading, filteredOpportunities, setSearchParams]);
 
   const fetchOpportunities = async () => {
     try {
@@ -166,6 +165,17 @@ const Opportunities = () => {
         </div>
 
         <ElectronicVerificationForms />
+
+        {/* Auto-open application dialog from email link */}
+        {autoOpenOpportunity && (
+          <ApplicationDialog
+            opportunity={autoOpenOpportunity}
+            externalOpen={!!autoOpenOpportunity}
+            onExternalOpenChange={(open) => {
+              if (!open) setAutoOpenOpportunity(null);
+            }}
+          />
+        )}
       </main>
     </div>
   );
