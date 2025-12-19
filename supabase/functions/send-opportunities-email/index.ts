@@ -86,13 +86,6 @@ ${opp.additional_requirements ? `<p style="margin:0 0 8px 0;"><strong>Requiremen
 <!-- Opportunities List -->
 ${opportunitiesHtml}
 
-<!-- What's Next Card -->
-<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
-<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">What's Next?</h2>
-<p style="margin:0 0 8px 0;">&bull; Review the opportunities above</p>
-<p style="margin:0 0 8px 0;">&bull; Contact organizations directly using the provided information</p>
-<p style="margin:0 0 0 0;">&bull; Apply online through our Opportunity Finder</p>
-</div>
 
 </td>
 </tr>
