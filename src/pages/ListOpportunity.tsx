@@ -253,7 +253,7 @@ const ListOpportunity = () => {
         <form onSubmit={handleSubmit} className="space-y-6 rounded-xl bg-card p-8 shadow-sm border border-border">
           <div className="space-y-2">
             <Label htmlFor="type">
-              Type of Opportunity <span aria-hidden="true">*</span>
+              Type of Opportunity <span aria-hidden="true" className="text-destructive">*</span>
               <VisuallyHidden>(required)</VisuallyHidden>
             </Label>
             <Select required value={formData.type} onValueChange={value => setFormData({ ...formData, type: value })}>
@@ -269,7 +269,7 @@ const ListOpportunity = () => {
 
           <div className="space-y-2">
             <Label htmlFor="roleClassification">
-              Role Classification <span aria-hidden="true">*</span>
+              Role Classification <span aria-hidden="true" className="text-destructive">*</span>
               <VisuallyHidden>(required)</VisuallyHidden>
             </Label>
             <Select required value={formData.roleClassification} onValueChange={value => setFormData({ ...formData, roleClassification: value })}>
@@ -331,7 +331,7 @@ const ListOpportunity = () => {
 
           <div className="space-y-2">
             <Label htmlFor="positionTitle">
-              Position Title <span aria-hidden="true">*</span>
+              Position Title <span aria-hidden="true" className="text-destructive">*</span>
               <VisuallyHidden>(required)</VisuallyHidden>
             </Label>
             <Input
@@ -346,7 +346,7 @@ const ListOpportunity = () => {
 
           <div className="space-y-2">
             <Label htmlFor="description">
-              Short Description (25 words max) <span aria-hidden="true">*</span>
+              Short Description (25 words max) <span aria-hidden="true" className="text-destructive">*</span>
               <VisuallyHidden>(required)</VisuallyHidden>
             </Label>
             <Textarea
@@ -372,7 +372,7 @@ const ListOpportunity = () => {
 
           <div className="space-y-2">
             <Label htmlFor="location">
-              Service Location(s) <span aria-hidden="true">*</span>
+              Service Location(s) <span aria-hidden="true" className="text-destructive">*</span>
               <VisuallyHidden>(required)</VisuallyHidden>
             </Label>
             <Input
@@ -415,7 +415,7 @@ const ListOpportunity = () => {
 
           <div className="space-y-2">
             <Label htmlFor="hours">
-              Hours Available per Week <span aria-hidden="true">*</span>
+              Hours Available per Week <span aria-hidden="true" className="text-destructive">*</span>
               <VisuallyHidden>(required)</VisuallyHidden>
             </Label>
             <Input
@@ -432,7 +432,7 @@ const ListOpportunity = () => {
 
           <div className="space-y-4">
             <Label id="days-times-label">
-              Days & Times Available <span aria-hidden="true">*</span>
+              Days & Times Available <span aria-hidden="true" className="text-destructive">*</span>
               <VisuallyHidden>(required)</VisuallyHidden>
             </Label>
             <p className="text-sm text-muted-foreground">Select days and set available hours for each day</p>
@@ -551,7 +551,7 @@ const ListOpportunity = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="orgName">
-                  Organization Name <span aria-hidden="true">*</span>
+                  Organization Name <span aria-hidden="true" className="text-destructive">*</span>
                   <VisuallyHidden>(required)</VisuallyHidden>
                 </Label>
                 <Input
@@ -565,7 +565,7 @@ const ListOpportunity = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="contactName">
-                  Contact Name <span aria-hidden="true">*</span>
+                  Contact Name <span aria-hidden="true" className="text-destructive">*</span>
                   <VisuallyHidden>(required)</VisuallyHidden>
                 </Label>
                 <Input
@@ -579,7 +579,7 @@ const ListOpportunity = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="orgEmail">
-                  Email <span aria-hidden="true">*</span>
+                  Email <span aria-hidden="true" className="text-destructive">*</span>
                   <VisuallyHidden>(required)</VisuallyHidden>
                 </Label>
                 <Input
@@ -594,7 +594,7 @@ const ListOpportunity = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="orgPhone">
-                  Phone <span aria-hidden="true">*</span>
+                  Phone <span aria-hidden="true" className="text-destructive">*</span>
                   <VisuallyHidden>(required)</VisuallyHidden>
                 </Label>
                 <Input
@@ -620,7 +620,7 @@ const ListOpportunity = () => {
             />
             <Label htmlFor="acknowledged" className="cursor-pointer text-sm">
               I confirm that I am a non-profit or public organization and will complete the required 
-              documentation on behalf of the beneficiary. <span aria-hidden="true">*</span>
+              documentation on behalf of the beneficiary. <span aria-hidden="true" className="text-destructive">*</span>
               <VisuallyHidden>(required)</VisuallyHidden>
             </Label>
           </div>
