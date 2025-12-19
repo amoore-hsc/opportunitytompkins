@@ -109,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
                             <h3 style="color: #00695c; margin-top: 0; font-size: 18px;">What Happens Next?</h3>
                             <ol style="color: #333; line-height: 1.8; padding-left: 20px; font-size: 16px; margin: 0;">
                               <li>Clients can apply directly through the platform</li>
-                              <li>You will receive a notification to this address when someone applies</li>
+                              <li>You'll receive a notification to this email when someone applies</li>
                               <li>Contact applicants to confirm availability and interest</li>
                               <li>Remove your posting when the position has been filled</li>
                               <li>Complete monthly documentation on behalf of the volunteer</li>
