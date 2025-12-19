@@ -106,7 +106,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
 <!-- Header -->
 <tr>
 <td style="background-color:#1e3a5f; padding:30px; text-align:center;">
-<h1 style="margin:0; font-size:28px; color:#ffffff;">⭐ Your ${listingWord === 'listings' ? 'Listings Need' : 'Listing Needs'}<br>Attention ⭐</h1>
+<h1 style="margin:0; font-size:28px; color:#ffffff;">Your ${listingWord === 'listings' ? 'Listings Need' : 'Listing Needs'}<br>Attention</h1>
 </td>
 </tr>
 

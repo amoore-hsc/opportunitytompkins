@@ -148,7 +148,7 @@ const handler = async (req: Request): Promise<Response> => {
 <!-- Header -->
 <tr>
 <td style="background-color:#1e3a5f; padding:30px; text-align:center;">
-<h1 style="margin:0; font-size:28px; color:#ffffff;">⭐ Weekly Application Report ⭐</h1>
+<h1 style="margin:0; font-size:28px; color:#ffffff;">Weekly Application Report</h1>
 <p style="margin:10px 0 0 0; color:#a0c4e8; font-size:16px;">${formatDate(startDate)} – ${formatDate(endDate)}</p>
 </td>
 </tr>
