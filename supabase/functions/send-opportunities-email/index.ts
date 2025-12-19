@@ -79,7 +79,7 @@ const handler = async (req: Request): Promise<Response> => {
     `).join('');
 
     const emailResponse = await resend.emails.send({
-      from: "Tompkins Opportunity <onboarding@resend.dev>",
+      from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
       to: [email],
       subject: `Your ${opportunities.length} Filtered ${opportunities.length === 1 ? 'Opportunity' : 'Opportunities'} from Tompkins County`,
       html: `
