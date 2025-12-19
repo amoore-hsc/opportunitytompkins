@@ -21,6 +21,7 @@ interface Opportunity {
   role_classification: string | null;
   hours_available: string;
   days_times_available: string;
+  additional_requirements: string | null;
   created_at: string;
   edit_token: string;
 }
@@ -50,23 +51,23 @@ const generateListingBlock = (opportunity: Opportunity, editUrl: string, confirm
       <h3 style="margin: 0 0 15px 0; color: #1e3a5f; font-size: 18px;">${positionTitle}</h3>
       <table style="width: 100%; font-size: 14px; color: #555; margin-bottom: 15px;">
         <tr>
-          <td style="padding: 5px 0; font-weight: bold; width: 40%;">Organization:</td>
-          <td style="padding: 5px 0;">${opportunity.org_name}</td>
-        </tr>
-        <tr>
-          <td style="padding: 5px 0; font-weight: bold;">Type:</td>
-          <td style="padding: 5px 0;">${opportunity.type}</td>
-        </tr>
-        ${opportunity.role_classification ? `
-        <tr>
-          <td style="padding: 5px 0; font-weight: bold;">Classification:</td>
-          <td style="padding: 5px 0;">${opportunity.role_classification}</td>
-        </tr>
-        ` : ''}
-        <tr>
-          <td style="padding: 5px 0; font-weight: bold;">Location:</td>
+          <td style="padding: 5px 0; font-weight: bold; width: 40%;">Location:</td>
           <td style="padding: 5px 0;">${opportunity.location}</td>
         </tr>
+        <tr>
+          <td style="padding: 5px 0; font-weight: bold;">Hours Available:</td>
+          <td style="padding: 5px 0;">${opportunity.hours_available}</td>
+        </tr>
+        <tr>
+          <td style="padding: 5px 0; font-weight: bold;">Days/Times Available:</td>
+          <td style="padding: 5px 0;">${opportunity.days_times_available}</td>
+        </tr>
+        ${opportunity.additional_requirements ? `
+        <tr>
+          <td style="padding: 5px 0; font-weight: bold;">Requirements:</td>
+          <td style="padding: 5px 0;">${opportunity.additional_requirements}</td>
+        </tr>
+        ` : ''}
         <tr>
           <td style="padding: 5px 0; font-weight: bold;">Posted:</td>
           <td style="padding: 5px 0;">${formatDate(opportunity.created_at)} (${daysSinceCreation} days ago)</td>
@@ -194,6 +195,7 @@ const handler = async (req: Request): Promise<Response> => {
           role_classification: "Administrative",
           hours_available: "Part-time (20 hours/week)",
           days_times_available: "Monday-Friday, 9am-1pm",
+          additional_requirements: "Must have valid driver's license",
           created_at: new Date(Date.now() - 75 * 24 * 60 * 60 * 1000).toISOString(), // 75 days ago
           edit_token: "test-token-123"
         },
@@ -209,6 +211,7 @@ const handler = async (req: Request): Promise<Response> => {
           role_classification: "Community Service",
           hours_available: "Flexible (10-15 hours/week)",
           days_times_available: "Weekends preferred",
+          additional_requirements: null,
           created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days ago
           edit_token: "test-token-456"
         }
@@ -256,7 +259,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { data: opportunities, error: fetchError } = await supabase
       .from("opportunities")
-      .select("id, org_name, contact_name, org_email, position_title, type, description, location, role_classification, hours_available, days_times_available, created_at, edit_token, updated_at")
+      .select("id, org_name, contact_name, org_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, updated_at")
       .eq("active", true)
       .is("reminder_sent_at", null)
       .lte("created_at", sixtyDaysAgo.toISOString());
