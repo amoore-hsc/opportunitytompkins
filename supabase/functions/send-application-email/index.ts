@@ -106,7 +106,7 @@ const handler = async (req: Request): Promise<Response> => {
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">You have received a new application through Tompkins County Opportunity Finder.</p>
+<p style="margin:0 0 25px 0;">You have received a new application through Tompkins Opportunity.</p>
 
 <!-- Opportunity Details Card -->
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">

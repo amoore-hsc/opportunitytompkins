@@ -228,7 +228,7 @@ const ListOpportunity = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Handshake className="h-8 w-8 text-primary" aria-hidden="true" />
-              <h1 className="text-2xl font-bold text-foreground">Tompkins County Opportunity Finder</h1>
+              <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
             </div>
             <Link to="/">
               <Button variant="outline" size="sm">
@@ -639,7 +639,7 @@ const ListOpportunity = () => {
               rhinton@uwtc.org
             </a>
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">Powered by Tompkins County Opportunity Finder</p>
+          <p className="mt-2 text-sm text-muted-foreground">Powered by Tompkins Opportunity</p>
         </div>
       </footer>
     </div>

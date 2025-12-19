@@ -112,7 +112,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
           </p>
           
           <p style="font-size: 16px; color: #333; margin-bottom: 25px;">
-            You have <strong>${listingCount} opportunity ${listingWord}</strong> on the Tompkins County Opportunity Finder that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates. Please review ${listingCount === 1 ? 'it' : 'them'} to ensure the information is still current.
+            You have <strong>${listingCount} opportunity ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates. Please review ${listingCount === 1 ? 'it' : 'them'} to ensure the information is still current.
           </p>
           
           <!-- Listing Blocks -->
@@ -147,7 +147,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
             Thank you for supporting our community!
           </p>
           <p style="color: #a0aec0; margin: 10px 0 0 0; font-size: 12px;">
-            Tompkins County Opportunity Finder
+            Tompkins Opportunity
           </p>
         </div>
         
