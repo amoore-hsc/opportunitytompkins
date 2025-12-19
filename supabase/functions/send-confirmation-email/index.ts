@@ -5,7 +5,8 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 interface ConfirmationEmailRequest {
@@ -27,16 +28,17 @@ interface ConfirmationEmailRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   console.log("Confirmation email function invoked");
-  
+
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { 
-      orgName, 
+    const {
+      orgName,
       contactName,
-      orgEmail, 
+      orgEmail,
       opportunityType,
       roleClassification,
       positionTitle,
@@ -47,117 +49,127 @@ const handler = async (req: Request): Promise<Response> => {
       hoursAvailable,
       daysTimesAvailable,
       editToken,
-      siteUrl
+      siteUrl,
     }: ConfirmationEmailRequest = await req.json();
 
     console.log(`Sending confirmation email to ${orgEmail}`);
 
     const editUrl = `${siteUrl}/edit-opportunity/${editToken}`;
 
+    // Helps avoid Gmail "quoted/trimmed content" heuristics by making each message uniquely identifiable
+    const gmailRef = crypto.randomUUID();
+
     const emailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
       to: [orgEmail],
-      subject: `${positionTitle || 'Opportunity'} Role Listing Confirmation`,
+      subject: `${positionTitle || "Opportunity"} Role Listing Confirmation`,
       html: `
         <!DOCTYPE html>
         <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="margin: 0; padding: 0; background-color: #f5f5f5;">
-          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f5f5f5;">
-            <tr>
-              <td align="center" style="padding: 20px 0;">
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width: 600px; background-color: #ffffff; font-family: Arial, sans-serif; font-size: 16px;">
-                  
-                  <!-- Main Content -->
-                  <tr>
-                    <td style="padding: 30px 20px;">
-                      
-                      <!-- Success Banner -->
-                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 20px;">
-                        <tr>
-                          <td style="background: #e3f2fd; padding: 20px; border-radius: 8px; border-left: 4px solid #2196f3;">
-                            <p style="color: #1565c0; line-height: 1.6; font-size: 18px; font-weight: bold; margin: 0;">Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting when the opportunity is filled.</p>
-                          </td>
-                        </tr>
-                      </table>
-                      
-                      <!-- Listing Details -->
-                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 20px;">
-                        <tr>
-                          <td style="background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #1e3a5f;">
-                            <h2 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Your Listing Details</h2>
-                            <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Type:</strong> ${opportunityType}</p>
-                            <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Role Classification:</strong> ${roleClassification}</p>
-                            ${positionTitle ? `<p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Position Title:</strong> ${positionTitle}</p>` : ''}
-                            <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Description:</strong> ${description}</p>
-                            <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Location:</strong> ${location}</p>
-                            <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>On Bus Route:</strong> ${onBusRoute ? 'Yes' : 'No'}</p>
-                            <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Hours Available:</strong> ${hoursAvailable}</p>
-                            <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
-                            ${additionalRequirements ? `<p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ''}
-                          </td>
-                        </tr>
-                      </table>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="margin:0; padding:0; background-color:#f5f5f5;">
+            <!-- Preheader (hidden) -->
+            <div style="display:none; max-height:0; overflow:hidden; opacity:0; color:transparent;">
+              Listing confirmation for ${orgName} (ref ${gmailRef})
+            </div>
 
-                      <!-- What Happens Next -->
-                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 20px;">
-                        <tr>
-                          <td style="background: #e0f2f1; padding: 20px; border-radius: 8px; border-left: 4px solid #00897b;">
-                            <h3 style="color: #00695c; margin-top: 0; font-size: 18px;">What Happens Next?</h3>
-                            <ol style="color: #333; line-height: 1.8; padding-left: 20px; font-size: 16px; margin: 0;">
-                              <li>Clients can apply directly through the platform</li>
-                              <li>You'll receive a notification to this email when someone applies</li>
-                              <li>Contact applicants to confirm availability and interest</li>
-                              <li>Remove your posting when the position has been filled</li>
-                              <li>Complete monthly documentation on behalf of the volunteer</li>
-                            </ol>
-                          </td>
-                        </tr>
-                      </table>
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color:#f5f5f5;">
+              <tr>
+                <td align="center" style="padding:20px 0;">
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px; background-color:#ffffff; font-family: Arial, sans-serif; font-size:16px;">
+                    <tr>
+                      <td style="padding:30px 20px;">
 
-                      <!-- Edit Listing -->
-                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 20px;">
-                        <tr>
-                          <td style="background: #e8f5e9; padding: 20px; border-radius: 8px; border-left: 4px solid #7cb342;">
-                            <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Update or Remove Your Listing</h3>
-                            <p style="color: #333; line-height: 1.6; font-size: 16px; margin: 0 0 20px 0;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
-                            <p style="text-align: center; margin: 0 0 15px 0;">
-                              <a href="${editUrl}" style="background-color: #7cb342; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; font-size: 16px;">Edit Your Listing</a>
-                            </p>
-                            <p style="font-size: 13px; color: #666; text-align: center; margin: 0;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
-                          </td>
-                        </tr>
-                      </table>
+                        <!-- Success Banner -->
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 20px 0;">
+                          <tr>
+                            <td style="background:#e3f2fd; padding:20px; border-radius:8px; border-top:4px solid #2196f3;">
+                              <p style="color:#1565c0; line-height:1.6; font-size:18px; font-weight:bold; margin:0;">
+                                Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting when the opportunity is filled.
+                              </p>
+                            </td>
+                          </tr>
+                        </table>
 
-                      <!-- Need Help -->
-                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 20px;">
-                        <tr>
-                          <td style="background: #fff3e0; padding: 20px; border-radius: 8px; border-left: 4px solid #f57c00;">
-                            <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Need Help?</h3>
-                            <p style="color: #333; font-size: 16px; margin: 0;">For additional assistance, please email: <strong style="color: #1e3a5f;">rhinton@uwtc.org</strong></p>
-                          </td>
-                        </tr>
-                      </table>
+                        <!-- Listing Details -->
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 20px 0;">
+                          <tr>
+                            <td style="background:#f8fafc; padding:20px; border-radius:8px; border-top:4px solid #1e3a5f;">
+                              <h2 style="color:#1e3a5f; margin:0 0 10px 0; font-size:18px;">Your Listing Details</h2>
+                              <p style="margin:8px 0; color:#333; font-size:16px;"><strong>Type:</strong> ${opportunityType}</p>
+                              <p style="margin:8px 0; color:#333; font-size:16px;"><strong>Role Classification:</strong> ${roleClassification}</p>
+                              ${positionTitle ? `<p style="margin:8px 0; color:#333; font-size:16px;"><strong>Position Title:</strong> ${positionTitle}</p>` : ""}
+                              <p style="margin:8px 0; color:#333; font-size:16px;"><strong>Description:</strong> ${description}</p>
+                              <p style="margin:8px 0; color:#333; font-size:16px;"><strong>Location:</strong> ${location}</p>
+                              <p style="margin:8px 0; color:#333; font-size:16px;"><strong>On Bus Route:</strong> ${onBusRoute ? "Yes" : "No"}</p>
+                              <p style="margin:8px 0; color:#333; font-size:16px;"><strong>Hours Available:</strong> ${hoursAvailable}</p>
+                              <p style="margin:8px 0; color:#333; font-size:16px;"><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
+                              ${additionalRequirements ? `<p style="margin:8px 0; color:#333; font-size:16px;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ""}
+                            </td>
+                          </tr>
+                        </table>
 
-                      <!-- Thank You Footer -->
-                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                        <tr>
-                          <td style="background-color: #1e3a5f; padding: 20px; text-align: center; border-radius: 8px;">
-                            <p style="color: #ffffff; font-size: 16px; margin: 0;">Thank You for Supporting Our Community!</p>
-                          </td>
-                        </tr>
-                      </table>
+                        <!-- What Happens Next -->
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 20px 0;">
+                          <tr>
+                            <td style="background:#e0f2f1; padding:20px; border-radius:8px; border-top:4px solid #00897b;">
+                              <h3 style="color:#00695c; margin:0 0 10px 0; font-size:18px;">What Happens Next?</h3>
+                              <ol style="color:#333; line-height:1.8; padding-left:20px; font-size:16px; margin:0;">
+                                <li>Clients can apply directly through the platform</li>
+                                <li>You'll receive a notification to this email when someone applies</li>
+                                <li>Contact applicants to confirm availability and interest</li>
+                                <li>Remove your posting when the position has been filled</li>
+                                <li>Complete monthly documentation on behalf of the volunteer</li>
+                              </ol>
+                            </td>
+                          </tr>
+                        </table>
 
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
+                        <!-- Update / Remove -->
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 20px 0;">
+                          <tr>
+                            <td style="background:#e8f5e9; padding:20px; border-radius:8px; border-top:4px solid #7cb342;">
+                              <h3 style="color:#1e3a5f; margin:0 0 10px 0; font-size:18px;">Update or Remove Your Listing</h3>
+                              <p style="color:#333; line-height:1.6; font-size:16px; margin:0 0 20px 0;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
+                              <p style="text-align:center; margin:0 0 15px 0;">
+                                <a href="${editUrl}" style="background-color:#7cb342; color:#ffffff; padding:14px 28px; text-decoration:none; border-radius:6px; display:inline-block; font-weight:bold; font-size:16px;">Edit Your Listing</a>
+                              </p>
+                              <p style="font-size:13px; color:#666; text-align:center; margin:0;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
+                            </td>
+                          </tr>
+                        </table>
+
+                        <!-- Need Help -->
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 20px 0;">
+                          <tr>
+                            <td style="background:#fff3e0; padding:20px; border-radius:8px; border-top:4px solid #f57c00;">
+                              <h3 style="color:#1e3a5f; margin:0 0 10px 0; font-size:18px;">Need Help?</h3>
+                              <p style="color:#333; font-size:16px; margin:0;">For additional assistance, please email: <strong style="color:#1e3a5f;">rhinton@uwtc.org</strong></p>
+                            </td>
+                          </tr>
+                        </table>
+
+                        <!-- Footer -->
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                          <tr>
+                            <td style="background-color:#1e3a5f; padding:20px; text-align:center; border-radius:8px;">
+                              <p style="color:#ffffff; font-size:16px; margin:0;">Thank You for Supporting Our Community!</p>
+                            </td>
+                          </tr>
+                        </table>
+
+                        <!-- ref:${gmailRef} -->
+
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </body>
         </html>
       `,
     });
@@ -173,13 +185,10 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error in send-confirmation-email function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 };
 
