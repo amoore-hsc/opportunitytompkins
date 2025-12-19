@@ -59,39 +59,39 @@ const handler = async (req: Request): Promise<Response> => {
       to: [orgEmail],
       subject: `${positionTitle || 'Opportunity'} Listed Successfully`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; font-size: 16px;">
           <div style="background-color: #1e3a5f; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0;">
             <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Thank You for Listing an Opportunity!</h1>
           </div>
           
           <div style="padding: 30px 20px;">
-            <p style="color: #333; line-height: 1.6;">Your opportunity has been successfully published to Tompkins County Opportunity Finder. Use this email to review your post and edit the listing with any corrections OR to remove the posting if the opportunity has been filled.</p>
+            <p style="color: #333; line-height: 1.6; font-size: 16px;">Your opportunity has been successfully published to Tompkins County Opportunity Finder. Use this email to review your post and edit the listing with any corrections OR to remove the posting if the opportunity has been filled.</p>
             
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
               <h2 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Your Listing Details</h2>
-              <p style="margin: 8px 0; color: #333;"><strong>Type:</strong> ${opportunityType}</p>
-              <p style="margin: 8px 0; color: #333;"><strong>Role Classification:</strong> ${roleClassification}</p>
-              ${positionTitle ? `<p style="margin: 8px 0; color: #333;"><strong>Position Title:</strong> ${positionTitle}</p>` : ''}
-              <p style="margin: 8px 0; color: #333;"><strong>Description:</strong> ${description}</p>
-              <p style="margin: 8px 0; color: #333;"><strong>Location:</strong> ${location}</p>
-              <p style="margin: 8px 0; color: #333;"><strong>On Bus Route:</strong> ${onBusRoute ? 'Yes' : 'No'}</p>
-              <p style="margin: 8px 0; color: #333;"><strong>Hours Available:</strong> ${hoursAvailable}</p>
-              <p style="margin: 8px 0; color: #333;"><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
-              ${additionalRequirements ? `<p style="margin: 8px 0; color: #333;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ''}
+              <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Type:</strong> ${opportunityType}</p>
+              <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Role Classification:</strong> ${roleClassification}</p>
+              ${positionTitle ? `<p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Position Title:</strong> ${positionTitle}</p>` : ''}
+              <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Description:</strong> ${description}</p>
+              <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Location:</strong> ${location}</p>
+              <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>On Bus Route:</strong> ${onBusRoute ? 'Yes' : 'No'}</p>
+              <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Hours Available:</strong> ${hoursAvailable}</p>
+              <p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
+              ${additionalRequirements ? `<p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ''}
             </div>
 
             <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #7cb342;">
-              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 16px;">Edit Your Listing</h3>
-              <p style="color: #333; line-height: 1.6;">Need to make changes or remove your listing? Use the secure link below to edit your listing at any time:</p>
+              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Edit Your Listing</h3>
+              <p style="color: #333; line-height: 1.6; font-size: 16px;">Need to make changes or remove your listing? Use the secure link below to edit your listing at any time:</p>
               <p style="text-align: center; margin: 20px 0;">
-                <a href="${editUrl}" style="background-color: #7cb342; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; font-size: 14px;">Edit Your Listing</a>
+                <a href="${editUrl}" style="background-color: #7cb342; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; font-size: 16px;">Edit Your Listing</a>
               </p>
-              <p style="font-size: 12px; color: #666; text-align: center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
+              <p style="font-size: 13px; color: #666; text-align: center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
             </div>
 
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
-              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 16px;">What Happens Next?</h3>
-              <ul style="color: #333; line-height: 1.8; padding-left: 20px;">
+              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">What Happens Next?</h3>
+              <ul style="color: #333; line-height: 1.8; padding-left: 20px; font-size: 16px;">
                 <li>Clients can apply directly through the platform</li>
                 <li>You'll receive a notification to this address when someone applies</li>
                 <li>Contact applicants to confirm availability and interest</li>
@@ -101,8 +101,8 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
 
             <div style="background: #fff3e0; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f57c00;">
-              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 16px;">Need Help?</h3>
-              <p style="color: #333;">For additional assistance, please email: <strong style="color: #1e3a5f;">rhinton@uwtc.org</strong></p>
+              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Need Help?</h3>
+              <p style="color: #333; font-size: 16px;">For additional assistance, please email: <strong style="color: #1e3a5f;">rhinton@uwtc.org</strong></p>
             </div>
           </div>
 
