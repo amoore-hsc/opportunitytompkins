@@ -53,6 +53,7 @@ export type Database = {
           contact_name: string | null
           created_at: string
           days_times_available: string
+          deactivated_at: string | null
           description: string
           edit_token: string
           hours_available: string
@@ -63,7 +64,9 @@ export type Database = {
           org_name: string
           org_phone: string
           position_title: string | null
+          positions_filled: number | null
           reminder_sent_at: string | null
+          removal_reason: string | null
           role_classification: string | null
           type: string
           updated_at: string
@@ -74,6 +77,7 @@ export type Database = {
           contact_name?: string | null
           created_at?: string
           days_times_available: string
+          deactivated_at?: string | null
           description: string
           edit_token?: string
           hours_available: string
@@ -84,7 +88,9 @@ export type Database = {
           org_name: string
           org_phone: string
           position_title?: string | null
+          positions_filled?: number | null
           reminder_sent_at?: string | null
+          removal_reason?: string | null
           role_classification?: string | null
           type: string
           updated_at?: string
@@ -95,6 +101,7 @@ export type Database = {
           contact_name?: string | null
           created_at?: string
           days_times_available?: string
+          deactivated_at?: string | null
           description?: string
           edit_token?: string
           hours_available?: string
@@ -105,7 +112,9 @@ export type Database = {
           org_name?: string
           org_phone?: string
           position_title?: string | null
+          positions_filled?: number | null
           reminder_sent_at?: string | null
+          removal_reason?: string | null
           role_classification?: string | null
           type?: string
           updated_at?: string
