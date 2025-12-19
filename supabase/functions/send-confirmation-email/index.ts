@@ -95,8 +95,8 @@ ${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirem
 </div>
 
 <!-- What Happens Next Card -->
-<div style="background-color:#f5f0ff; border-left:4px solid #7c3aed; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
-<h2 style="margin:0 0 15px 0; font-size:18px; color:#7c3aed;">What Happens Next?</h2>
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">What Happens Next?</h2>
 <p style="margin:0 0 8px 0;">&bull; Clients can apply directly through the platform</p>
 <p style="margin:0 0 8px 0;">&bull; You will receive a notification to this email when someone applies</p>
 <p style="margin:0 0 8px 0;">&bull; Contact applicants to confirm availability and interest</p>
@@ -105,11 +105,11 @@ ${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirem
 </div>
 
 <!-- Update or Remove Card -->
-<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
-<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Update or Remove Your Listing</h2>
+<div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">Update or Remove Your Listing</h2>
 <p style="margin:0 0 15px 0;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
 <p style="margin:0 0 15px 0; text-align:center;">
-<a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#2e7d32; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit Your Listing</a>
+<a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#e67e22; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit Your Listing</a>
 </p>
 <p style="margin:0; font-size:13px; color:#666666; text-align:center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
 </div>
