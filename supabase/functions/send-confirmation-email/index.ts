@@ -53,14 +53,6 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Sending confirmation email to ${orgEmail}`);
 
     const editUrl = `${siteUrl}/edit-opportunity/${editToken}`;
-    const submittedDate = new Date().toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit'
-    });
 
     const emailHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -82,8 +74,7 @@ const handler = async (req: Request): Promise<Response> => {
 
 <hr style="border:none; border-top:1px solid #dddddd; margin:0 0 30px 0;">
 
-<p style="margin:0 0 20px 0;"><strong style="color:#2e7d32;">Your opportunity has been successfully published!</strong></p>
-<p style="margin:0 0 30px 0;">Use this email to review your listing details and make updates when needed. You can edit your posting or remove it when the position is filled.</p>
+<p style="margin:0 0 30px 0;">Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting when the opportunity is filled.</p>
 
 <hr style="border:none; border-top:1px solid #dddddd; margin:0 0 30px 0;">
 
@@ -93,12 +84,6 @@ const handler = async (req: Request): Promise<Response> => {
 ${positionTitle ? `<p style="margin:0 0 8px 0;"><strong>Position:</strong> ${positionTitle}</p>` : ""}
 <p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opportunityType}</p>
 <p style="margin:0 0 8px 0;"><strong>Role:</strong> ${roleClassification || "Not specified"}</p>
-<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${location}</p>
-<p style="margin:0 0 8px 0;"><strong>Bus Route:</strong> ${onBusRoute ? "Yes" : "No"}</p>
-<p style="margin:0 0 8px 0;"><strong>Hours:</strong> ${hoursAvailable}</p>
-<p style="margin:0 0 8px 0;"><strong>Schedule:</strong> ${daysTimesAvailable}</p>
-<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${description}</p>
-${additionalRequirements ? `<p style="margin:0 0 8px 0;"><strong>Requirements:</strong> ${additionalRequirements}</p>` : ""}
 <p style="margin:0 0 8px 0;"><strong>Location:</strong> ${location}</p>
 <p style="margin:0 0 8px 0;"><strong>Bus Route:</strong> ${onBusRoute ? "Yes" : "No"}</p>
 <p style="margin:0 0 8px 0;"><strong>Hours:</strong> ${hoursAvailable}</p>
@@ -116,14 +101,17 @@ ${additionalRequirements ? `<p style="margin:0 0 8px 0;"><strong>Requirements:</
 
 <hr style="border:none; border-top:1px solid #dddddd; margin:30px 0;">
 
-<p style="margin:0 0 20px 0; text-align:center;">
-<a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#1e3a5f; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit or Remove Listing</a>
+<p style="margin:0 0 20px 0;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
+
+<p style="margin:0 0 15px 0; text-align:center;">
+<a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#2e7d32; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit or Remove Listing</a>
 </p>
 
-<hr style="border:none; border-top:1px solid #dddddd; margin:30px 0;">
+<p style="margin:0 0 30px 0; font-size:14px; color:#666666; text-align:center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
 
-<p style="margin:0 0 8px 0;">Need help? Contact us at <strong>rhinton@uwtc.org</strong></p>
-<p style="margin:0; color:#999999; font-size:14px;">Submitted: ${submittedDate}</p>
+<hr style="border:none; border-top:1px solid #dddddd; margin:0 0 30px 0;">
+
+<p style="margin:0;">Need help? Contact us at <strong>rhinton@uwtc.org</strong></p>
 
 </td>
 </tr>
@@ -135,9 +123,9 @@ ${additionalRequirements ? `<p style="margin:0 0 8px 0;"><strong>Requirements:</
 </html>`;
 
     const emailResponse = await resend.emails.send({
-      from: "Tompkins Worklink <hello@tompkins-opportunity.org>",
+      from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
       to: [orgEmail],
-      subject: `${positionTitle || "Opportunity"} - Listing Confirmation`,
+      subject: `${positionTitle || "Opportunity"} Role - Listing Confirmation`,
       html: emailHtml,
     });
 
