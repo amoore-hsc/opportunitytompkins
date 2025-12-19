@@ -132,62 +132,88 @@ const handler = async (req: Request): Promise<Response> => {
         `).join('')
       : '';
 
-    const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; background: #ffffff;">
-        <div style="background: #1e3a5f; padding: 30px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 28px;">📊 Weekly Application Report</h1>
-          <p style="color: #94a3b8; margin: 10px 0 0 0; font-size: 16px;">
-            ${formatDate(startDate)} – ${formatDate(endDate)}
-          </p>
-        </div>
-        
-        <div style="padding: 30px;">
-          <div style="background: linear-gradient(135deg, #7cb342, #558b2f); padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
-            <p style="color: rgba(255,255,255,0.9); margin: 0 0 5px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Total Applications</p>
-            <p style="color: #ffffff; margin: 0; font-size: 48px; font-weight: bold;">${totalApplications}</p>
-          </div>
+    const emailHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Report</title>
+</head>
+<body style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:16px; line-height:1.6; color:#333333; background-color:#f5f5f5;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
+<tr>
+<td align="center" style="padding:40px 20px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; max-width:600px; border-radius:8px; overflow:hidden;">
 
-          <h2 style="color: #1e3a5f; margin: 0 0 15px 0; font-size: 20px; border-bottom: 2px solid #1e3a5f; padding-bottom: 10px;">
-            Applications by Opportunity
-          </h2>
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-            <thead>
-              <tr style="background: #f8fafc;">
-                <th style="padding: 12px; text-align: left; color: #1e3a5f;">Opportunity</th>
-                <th style="padding: 12px; text-align: center; color: #1e3a5f;">Applications</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${opportunityRows}
-            </tbody>
-          </table>
+<!-- Header -->
+<tr>
+<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
+<h1 style="margin:0; font-size:28px; color:#ffffff;">⭐ Weekly Application Report ⭐</h1>
+<p style="margin:10px 0 0 0; color:#a0c4e8; font-size:16px;">${formatDate(startDate)} – ${formatDate(endDate)}</p>
+</td>
+</tr>
 
-          ${sortedRoles.length > 0 ? `
-            <h2 style="color: #1e3a5f; margin: 0 0 15px 0; font-size: 20px; border-bottom: 2px solid #1e3a5f; padding-bottom: 10px;">
-              Applications by Role Classification
-            </h2>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-              <thead>
-                <tr style="background: #f8fafc;">
-                  <th style="padding: 10px; text-align: left; color: #1e3a5f;">Classification</th>
-                  <th style="padding: 10px; text-align: center; color: #1e3a5f;">Applications</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${roleRows}
-              </tbody>
-            </table>
-          ` : ''}
-        </div>
+<!-- Main Content -->
+<tr>
+<td style="padding:30px;">
 
-        <div style="background-color: #1e3a5f; padding: 20px; text-align: center;">
-          <p style="color: #ffffff; font-size: 14px; margin: 0;">
-            Tompkins County Opportunity Finder<br>
-            <span style="color: #94a3b8;">This is an automated weekly report</span>
-          </p>
-        </div>
-      </div>
-    `;
+<!-- Total Applications Card -->
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:25px; margin:0 0 25px 0; border-radius:0 8px 8px 0; text-align:center;">
+<p style="margin:0 0 5px 0; font-size:14px; color:#2e7d32; text-transform:uppercase; letter-spacing:1px;">Total Applications</p>
+<p style="margin:0; font-size:48px; font-weight:bold; color:#2e7d32;">${totalApplications}</p>
+</div>
+
+<!-- Applications by Opportunity Card -->
+<div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Applications by Opportunity</h2>
+<table style="width:100%; border-collapse:collapse;">
+<thead>
+<tr style="background:#f8fafc;">
+<th style="padding:12px; text-align:left; color:#1e3a5f; border-bottom:2px solid #1e3a5f;">Opportunity</th>
+<th style="padding:12px; text-align:center; color:#1e3a5f; border-bottom:2px solid #1e3a5f;">Applications</th>
+</tr>
+</thead>
+<tbody>
+${opportunityRows}
+</tbody>
+</table>
+</div>
+
+${sortedRoles.length > 0 ? `
+<!-- Applications by Role Classification Card -->
+<div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">Applications by Role Classification</h2>
+<table style="width:100%; border-collapse:collapse;">
+<thead>
+<tr style="background:#f8fafc;">
+<th style="padding:10px; text-align:left; color:#1e3a5f; border-bottom:2px solid #e67e22;">Classification</th>
+<th style="padding:10px; text-align:center; color:#1e3a5f; border-bottom:2px solid #e67e22;">Applications</th>
+</tr>
+</thead>
+<tbody>
+${roleRows}
+</tbody>
+</table>
+</div>
+` : ''}
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
+<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Tompkins County Opportunity Finder</p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">This is an automated weekly report</p>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
 
     // Send the email
     const emailResponse = await resend.emails.send({

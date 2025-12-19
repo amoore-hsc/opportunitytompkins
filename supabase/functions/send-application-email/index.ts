@@ -82,55 +82,78 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
+    const emailHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Application</title>
+</head>
+<body style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:16px; line-height:1.6; color:#333333; background-color:#f5f5f5;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
+<tr>
+<td align="center" style="padding:40px 20px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; max-width:600px; border-radius:8px; overflow:hidden;">
+
+<!-- Header -->
+<tr>
+<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
+<h1 style="margin:0; font-size:28px; color:#ffffff;">⭐ New Client Application ⭐</h1>
+</td>
+</tr>
+
+<!-- Main Content -->
+<tr>
+<td style="padding:30px;">
+
+<p style="margin:0 0 25px 0;">You have received a new application through Tompkins County Opportunity Finder.</p>
+
+<!-- Opportunity Details Card -->
+<div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Opportunity Details</h2>
+<p style="margin:0 0 0 0;"><strong>Position Title:</strong> ${positionTitle || 'Not specified'}</p>
+</div>
+
+<!-- Client Information Card -->
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Client Information</h2>
+<p style="margin:0 0 8px 0;"><strong>Name:</strong> ${clientName}</p>
+<p style="margin:0 0 8px 0;"><strong>Email:</strong> ${clientEmail}</p>
+<p style="margin:0 0 8px 0;"><strong>Phone:</strong> ${clientPhone}</p>
+<p style="margin:0 0 0 0;"><strong>Hours Requested:</strong> ${hoursRequested}</p>
+</div>
+
+<!-- Next Steps Card -->
+<div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">Next Steps</h2>
+<p style="margin:0 0 8px 0;">&bull; Contact the applicant to confirm their availability and interest</p>
+<p style="margin:0 0 8px 0;">&bull; Complete monthly documentation on behalf of the volunteer</p>
+<p style="margin:0 0 0 0;">&bull; Remove your posting when the position has been filled using the edit link from your confirmation email</p>
+</div>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
+<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">rhinton@uwtc.org</a></p>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
+
     const emailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
       to: [orgEmail],
       subject: `New Application - ${positionTitle || 'Position'}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
-          <div style="background: #1e3a5f; padding: 20px; text-align: center;">
-            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">New Client Application</h1>
-          </div>
-          
-          <div style="padding: 30px 20px;">
-            <p style="color: #333; line-height: 1.6;">You have a new application through Tompkins County Opportunity Finder.</p>
-            
-            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
-              <h2 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Opportunity Details</h2>
-              <p style="margin: 8px 0;"><strong>Position Title:</strong> ${positionTitle || 'Not specified'}</p>
-            </div>
-
-            <div style="background: #f0f7e6; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #7cb342;">
-              <h2 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Client Information</h2>
-              <p style="margin: 8px 0;"><strong>Name:</strong> ${clientName}</p>
-              <p style="margin: 8px 0;"><strong>Email:</strong> ${clientEmail}</p>
-              <p style="margin: 8px 0;"><strong>Phone:</strong> ${clientPhone}</p>
-              <p style="margin: 8px 0;"><strong>Hours Requested:</strong> ${hoursRequested}</p>
-            </div>
-
-            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
-              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 16px;">Next Steps</h3>
-              <ol style="color: #333; line-height: 1.8; padding-left: 20px;">
-                <li>Contact the applicant to confirm their availability and interest</li>
-                <li>Complete monthly documentation on behalf of the volunteer</li>
-                <li>Remove your posting when the position has been filled using the edit link from your confirmation email. You can also use the same link to edit the hours available per week if a position has been partially filled.</li>
-              </ol>
-            </div>
-
-            <div style="background: #fff3e0; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f57c00;">
-              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 16px;">Need Help?</h3>
-              <p style="color: #333;">For additional assistance, please email: <strong style="color: #1e3a5f;">rhinton@uwtc.org</strong></p>
-            </div>
-          </div>
-
-          <div style="background-color: #1e3a5f; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
-            <p style="color: #ffffff; font-size: 14px; margin: 0;">
-              Thank you for supporting our community!<br>
-              <strong>Tompkins County Opportunity Finder</strong>
-            </p>
-          </div>
-        </div>
-      `,
+      html: emailHtml,
     });
 
     console.log("Application email sent successfully:", emailResponse);

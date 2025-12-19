@@ -90,72 +90,62 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
   const listingCount = opportunities.length;
   const listingWord = listingCount === 1 ? 'listing' : 'listings';
 
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Listing Reminder</title>
-    </head>
-    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
-      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-        
-        <!-- Header -->
-        <div style="background-color: #1e3a5f; padding: 30px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 24px;">📋 Your ${listingWord === 'listings' ? 'Listings Need' : 'Listing Needs'} Attention</h1>
-        </div>
-        
-        <!-- Content -->
-        <div style="padding: 30px;">
-          <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
-            Hello${opportunities[0]?.contact_name ? ` ${opportunities[0].contact_name}` : ''},
-          </p>
-          
-          <p style="font-size: 16px; color: #333; margin-bottom: 25px;">
-            You have <strong>${listingCount} opportunity ${listingWord}</strong> on the Tompkins County Opportunity Finder that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates. Please review ${listingCount === 1 ? 'it' : 'them'} to ensure the information is still current.
-          </p>
-          
-          <!-- Listing Blocks -->
-          ${listingBlocks}
-          
-          <!-- What You Can Do -->
-          <div style="margin: 25px 0;">
-            <h3 style="margin: 0 0 15px 0; color: #1e3a5f; font-size: 16px;">What You Can Do:</h3>
-            <ul style="margin: 0; padding-left: 20px; color: #555; font-size: 14px; line-height: 1.8;">
-              <li><strong>Update your listing</strong> if availability or details have changed</li>
-              <li><strong>Remove the listing</strong> if the position has been filled</li>
-              <li><strong>No action needed</strong> if everything is still current</li>
-            </ul>
-          </div>
-          
-          <p style="font-size: 12px; color: #888; text-align: center; margin: 25px 0;">
-            Each edit link is unique to its listing. Please keep them safe.
-          </p>
-          
-          <!-- Help Section -->
-          <div style="background-color: #f0f9ff; border-radius: 8px; padding: 15px; text-align: center;">
-            <p style="margin: 0; font-size: 14px; color: #555;">
-              <strong>Questions?</strong><br>
-              Contact <a href="mailto:rhinton@uwtc.org" style="color: #1e3a5f;">rhinton@uwtc.org</a>
-            </p>
-          </div>
-        </div>
-        
-        <!-- Footer -->
-        <div style="background-color: #1e3a5f; padding: 20px; text-align: center;">
-          <p style="color: #ffffff; margin: 0; font-size: 14px;">
-            Thank you for supporting our community!
-          </p>
-          <p style="color: #a0aec0; margin: 10px 0 0 0; font-size: 12px;">
-            Tompkins County Opportunity Finder
-          </p>
-        </div>
-        
-      </div>
-    </body>
-    </html>
-  `;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listing Reminder</title>
+</head>
+<body style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:16px; line-height:1.6; color:#333333; background-color:#f5f5f5;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
+<tr>
+<td align="center" style="padding:40px 20px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; max-width:600px; border-radius:8px; overflow:hidden;">
+
+<!-- Header -->
+<tr>
+<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
+<h1 style="margin:0; font-size:28px; color:#ffffff;">⭐ Your ${listingWord === 'listings' ? 'Listings Need' : 'Listing Needs'}<br>Attention ⭐</h1>
+</td>
+</tr>
+
+<!-- Main Content -->
+<tr>
+<td style="padding:30px;">
+
+<p style="margin:0 0 25px 0;">Hello${opportunities[0]?.contact_name ? ` ${opportunities[0].contact_name}` : ''}, you have <strong>${listingCount} opportunity ${listingWord}</strong> on the Tompkins County Opportunity Finder that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates.</p>
+
+<!-- Listing Blocks -->
+${listingBlocks}
+
+<!-- What You Can Do Card -->
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">What You Can Do</h2>
+<p style="margin:0 0 8px 0;">&bull; <strong>Update your listing</strong> if availability or details have changed</p>
+<p style="margin:0 0 8px 0;">&bull; <strong>Remove the listing</strong> if the position has been filled</p>
+<p style="margin:0 0 0 0;">&bull; <strong>No action needed</strong> if everything is still current</p>
+</div>
+
+<p style="margin:0 0 0 0; font-size:13px; color:#666666; text-align:center;">Each edit link is unique to its listing. Please keep them safe.</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
+<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">rhinton@uwtc.org</a></p>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
 };
 
 const handler = async (req: Request): Promise<Response> => {

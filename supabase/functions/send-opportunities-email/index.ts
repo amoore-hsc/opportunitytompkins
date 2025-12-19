@@ -41,80 +41,82 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Generate HTML for opportunities list
     const opportunitiesHtml = opportunities.map((opp) => `
-      <div style="margin-bottom: 24px; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;">
-        <h3 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; color: #1a1a1a;">
-          ${opp.org_name}
-        </h3>
-        <p style="margin: 6px 0; font-size: 14px; color: #333;">
-          <strong>Type:</strong> ${opp.type}
-        </p>
-        <p style="margin: 6px 0; font-size: 14px; color: #333;">
-          <strong>Location:</strong> ${opp.location}
-          ${opp.on_bus_route ? '<span style="margin-left: 8px; padding: 2px 8px; background-color: #0066cc; color: white; border-radius: 4px; font-size: 12px;">🚌 On Bus Route</span>' : ''}
-        </p>
-        <p style="margin: 6px 0; font-size: 14px; color: #333;">
-          <strong>Hours Available:</strong> ${opp.hours_available}
-        </p>
-        <p style="margin: 6px 0; font-size: 14px; color: #333;">
-          <strong>Days/Times:</strong> ${opp.days_times_available}
-        </p>
-        <p style="margin: 6px 0; font-size: 14px; color: #333;">
-          <strong>Description:</strong> ${opp.description}
-        </p>
-        ${opp.additional_requirements ? `
-          <p style="margin: 6px 0; font-size: 14px; color: #333;">
-            <strong>Additional Requirements:</strong> ${opp.additional_requirements}
-          </p>
-        ` : ''}
-        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0e0e0;">
-          <p style="margin: 4px 0; font-size: 14px; color: #333;">
-            <strong>Contact Information:</strong>
-          </p>
-          <p style="margin: 4px 0 4px 16px; font-size: 14px; color: #555;">
-            Phone: ${opp.org_phone}<br/>
-            Email: <a href="mailto:${opp.org_email}" style="color: #0066cc; text-decoration: none;">${opp.org_email}</a>
-          </p>
-        </div>
-      </div>
+<div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 20px 0; border-radius:0 8px 8px 0;">
+<h3 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">${opp.org_name}</h3>
+<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opp.type}</p>
+<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${opp.location}${opp.on_bus_route ? ' <span style="background-color:#2e7d32; color:white; padding:2px 8px; border-radius:4px; font-size:12px;">🚌 On Bus Route</span>' : ''}</p>
+<p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${opp.hours_available}</p>
+<p style="margin:0 0 8px 0;"><strong>Days/Times:</strong> ${opp.days_times_available}</p>
+<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${opp.description}</p>
+${opp.additional_requirements ? `<p style="margin:0 0 8px 0;"><strong>Requirements:</strong> ${opp.additional_requirements}</p>` : ''}
+<div style="margin-top:15px; padding-top:15px; border-top:1px solid #ddd;">
+<p style="margin:0 0 4px 0; font-size:14px;"><strong>Contact:</strong></p>
+<p style="margin:0 0 4px 0; font-size:14px;">Phone: ${opp.org_phone}</p>
+<p style="margin:0; font-size:14px;">Email: <a href="mailto:${opp.org_email}" style="color:#1e3a5f;">${opp.org_email}</a></p>
+</div>
+</div>
     `).join('');
+
+    const emailHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Opportunities</title>
+</head>
+<body style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:16px; line-height:1.6; color:#333333; background-color:#f5f5f5;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
+<tr>
+<td align="center" style="padding:40px 20px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; max-width:600px; border-radius:8px; overflow:hidden;">
+
+<!-- Header -->
+<tr>
+<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
+<h1 style="margin:0; font-size:28px; color:#ffffff;">⭐ Your Matched Opportunities ⭐</h1>
+</td>
+</tr>
+
+<!-- Main Content -->
+<tr>
+<td style="padding:30px;">
+
+<p style="margin:0 0 25px 0;">Here ${opportunities.length === 1 ? 'is' : 'are'} the ${opportunities.length} ${opportunities.length === 1 ? 'opportunity' : 'opportunities'} that matched your filters:</p>
+
+<!-- Opportunities List -->
+${opportunitiesHtml}
+
+<!-- What's Next Card -->
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">What's Next?</h2>
+<p style="margin:0 0 8px 0;">&bull; Review the opportunities above</p>
+<p style="margin:0 0 8px 0;">&bull; Contact organizations directly using the provided information</p>
+<p style="margin:0 0 0 0;">&bull; Apply online through our Opportunity Finder</p>
+</div>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
+<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">rhinton@uwtc.org</a></p>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
 
     const emailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
       to: [email],
       subject: `Your ${opportunities.length} Filtered ${opportunities.length === 1 ? 'Opportunity' : 'Opportunities'} from Tompkins County`,
-      html: `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          </head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
-            <div style="background-color: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-              <h1 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #1a1a1a;">
-                Tompkins County Opportunity Finder
-              </h1>
-              <p style="margin: 0 0 20px 0; font-size: 16px; color: #666;">
-                Here ${opportunities.length === 1 ? 'is' : 'are'} the ${opportunities.length} ${opportunities.length === 1 ? 'opportunity' : 'opportunities'} that matched your filters:
-              </p>
-              
-              ${opportunitiesHtml}
-              
-              <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0; text-align: center;">
-                <p style="margin: 8px 0; font-size: 14px; color: #666;">
-                  Need help or have questions?
-                </p>
-                <p style="margin: 8px 0; font-size: 14px; color: #666;">
-                  Contact us at: <a href="mailto:amoore@hsctc.org" style="color: #0066cc; text-decoration: none;">amoore@hsctc.org</a>
-                </p>
-                <p style="margin: 16px 0 0 0; font-size: 12px; color: #999;">
-                  Powered by Tompkins County Opportunity Finder
-                </p>
-              </div>
-            </div>
-          </body>
-        </html>
-      `,
+      html: emailHtml,
     });
 
     console.log("Email sent successfully:", emailResponse);
