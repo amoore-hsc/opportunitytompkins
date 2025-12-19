@@ -114,14 +114,14 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">Hello${opportunities[0]?.contact_name ? ` ${opportunities[0].contact_name}` : ''}, you have <strong>${listingCount} ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates.</p>
+<p style="margin:0 0 25px 0;">You have <strong>${listingCount} ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates.</p>
 
 <!-- Action Items Card -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Action Items</h2>
-<p style="margin:0 0 8px 0;">&bull; <strong>Update your listing</strong> if availability or details have changed</p>
-<p style="margin:0 0 8px 0;">&bull; <strong>Remove the listing</strong> if the position has been filled</p>
-<p style="margin:0 0 0 0;">&bull; <strong>No action needed</strong> if everything is still current</p>
+<p style="margin:0 0 8px 0;">&bull; <strong>Update your listing</strong> if availability or details have changed, using the Edit This Listing button below.</p>
+<p style="margin:0 0 8px 0;">&bull; <strong>Remove the listing</strong> if the position has been filled, using the Edit This Listing button below. Scroll to the bottom of the page to deactivate the listing.</p>
+<p style="margin:0 0 0 0;">&bull; <strong>No action needed</strong> if everything is still current.</p>
 </div>
 
 <!-- Listing Blocks -->
