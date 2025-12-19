@@ -181,51 +181,60 @@ const handler = async (req: Request): Promise<Response> => {
 
     const siteUrl = Deno.env.get("SITE_URL") || "https://oosxopnxaivfdtksrvam.lovableproject.com";
 
-    // Test mode: send dummy data email
-    if (testMode && testEmail) {
-      console.log(`Test mode: sending dummy reminder to ${testEmail}`);
-      
-      const dummyOpportunities: Opportunity[] = [
-        {
-          id: "test-1",
-          org_name: "Sample Organization",
-          contact_name: "Jane Smith",
-          org_email: testEmail,
-          position_title: "Office Assistant",
-          type: "Job",
-          description: "General office duties including filing, data entry, and customer service.",
-          location: "123 Main Street, Ithaca, NY",
-          role_classification: "Administrative",
-          hours_available: "Part-time (20 hours/week)",
-          days_times_available: "Monday-Friday, 9am-1pm",
-          additional_requirements: "Must have valid driver's license",
-          created_at: new Date(Date.now() - 75 * 24 * 60 * 60 * 1000).toISOString(), // 75 days ago
-          edit_token: "test-token-123"
-        },
-        {
-          id: "test-2",
-          org_name: "Sample Organization",
-          contact_name: "Jane Smith",
-          org_email: testEmail,
-          position_title: "Volunteer Coordinator",
-          type: "Volunteer",
-          description: "Help coordinate volunteer activities and community outreach programs.",
-          location: "456 Community Center Dr, Ithaca, NY",
-          role_classification: "Community Service",
-          hours_available: "Flexible (10-15 hours/week)",
-          days_times_available: "Weekends preferred",
-          additional_requirements: null,
-          created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days ago
-          edit_token: "test-token-456"
-        }
-      ];
+    // Initialize Supabase client with service role for full access
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-      const emailHtml = generateConsolidatedEmail(dummyOpportunities, siteUrl);
+    // Test mode: fetch real listings and send to test email
+    if (testMode && testEmail) {
+      console.log(`Test mode: fetching real listings to send reminder to ${testEmail}`);
       
+      // Fetch up to 3 real active listings to use for testing
+      const { data: realListings, error: fetchError } = await supabase
+        .from("opportunities")
+        .select("id, org_name, contact_name, org_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token")
+        .eq("active", true)
+        .limit(3);
+
+      if (fetchError) {
+        console.error("Error fetching real listings for test:", fetchError);
+        throw new Error(`Failed to fetch listings for test: ${fetchError.message}`);
+      }
+
+      if (!realListings || realListings.length === 0) {
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            message: "No active listings found to use for testing",
+            testMode: true
+          }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+
+      console.log(`Found ${realListings.length} real listing(s) to use for test email`);
+
+      // Use real listings but override the org_email display
+      const testOpportunities: Opportunity[] = realListings.map((listing: any) => ({
+        ...listing,
+        // Keep all real data including edit_token so buttons work
+      }));
+
+      const emailHtml = generateConsolidatedEmail(testOpportunities, siteUrl);
+      
+      const listingCount = testOpportunities.length;
+      const subject = listingCount === 1
+        ? `[TEST] Reminder: Your "${testOpportunities[0].position_title || testOpportunities[0].type}" Listing Has Been Active for 60+ Days`
+        : `[TEST] Reminder: Your ${listingCount} Listings Need Attention`;
+
       const emailResponse = await resend.emails.send({
         from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
         to: [testEmail],
-        subject: `[TEST] Reminder: Your 2 Listings Need Attention`,
+        subject: subject,
         html: emailHtml,
       });
 
@@ -234,8 +243,9 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: `Test reminder email sent to ${testEmail}`,
+          message: `Test reminder email sent to ${testEmail} with ${listingCount} real listing(s)`,
           testMode: true,
+          listingsUsed: testOpportunities.map(o => ({ id: o.id, position: o.position_title || o.type, org: o.org_name })),
           emailResponse
         }),
         {
@@ -244,11 +254,6 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     }
-
-    // Initialize Supabase client with service role for full access
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Query opportunities that need reminders:
     // - Active listings
