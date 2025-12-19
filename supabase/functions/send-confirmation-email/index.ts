@@ -102,12 +102,12 @@ const handler = async (req: Request): Promise<Response> => {
               <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Need Help?</h3>
               <p style="color: #333; font-size: 16px;">For additional assistance, please email: <strong style="color: #1e3a5f;">rhinton@uwtc.org</strong></p>
             </div>
-          </div>
 
-          <div style="background-color: #1e3a5f; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
-            <p style="color: #ffffff; font-size: 16px; margin: 0;">
-              🌟 Thank You for Supporting Our Community! 🌟
-            </p>
+            <div style="background-color: #1e3a5f; padding: 20px; text-align: center; border-radius: 8px; margin-top: 20px;">
+              <p style="color: #ffffff; font-size: 16px; margin: 0;">
+                🌟 Thank You for Supporting Our Community! 🌟
+              </p>
+            </div>
           </div>
         </div>
       `,
