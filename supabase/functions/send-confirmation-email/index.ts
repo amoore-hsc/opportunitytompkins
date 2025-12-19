@@ -53,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
     const editUrl = `${siteUrl}/edit-opportunity/${editToken}`;
 
     const emailResponse = await resend.emails.send({
-      from: "Tompkins County Opportunity Finder <onboarding@resend.dev>",
+      from: "Tompkins County Opportunity Finder <hello@tompkins-opportunity.org>",
       to: [orgEmail],
       subject: "Your Opportunity Has Been Listed!",
       html: `
