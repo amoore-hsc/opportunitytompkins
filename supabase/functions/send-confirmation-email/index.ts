@@ -65,54 +65,73 @@ const handler = async (req: Request): Promise<Response> => {
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
 <tr>
 <td align="center" style="padding:40px 20px;">
-<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; max-width:600px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; max-width:600px; border-radius:8px; overflow:hidden;">
+
+<!-- Header -->
+<tr>
+<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
+<h1 style="margin:0; font-size:28px; color:#ffffff;">Tompkins Worklink</h1>
+<p style="margin:10px 0 0 0; color:#a0c4e8; font-size:16px;">Listing Confirmation</p>
+</td>
+</tr>
+
+<!-- Main Content -->
 <tr>
 <td style="padding:30px;">
 
-<h1 style="margin:0 0 10px 0; font-size:24px; color:#1e3a5f;">Tompkins Worklink</h1>
-<p style="margin:0 0 30px 0; color:#666666;">Listing Confirmation</p>
+<p style="margin:0 0 25px 0;">Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting when the opportunity is filled.</p>
 
-<hr style="border:none; border-top:1px solid #dddddd; margin:0 0 30px 0;">
-
-<p style="margin:0 0 30px 0;">Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting when the opportunity is filled.</p>
-
-<hr style="border:none; border-top:1px solid #dddddd; margin:0 0 30px 0;">
-
-<p style="margin:0 0 15px 0; font-size:18px;"><strong>Listing Details</strong></p>
+<!-- Your Listing Details Card -->
+<div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Your Listing Details</h2>
 <p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opportunityType}</p>
 <p style="margin:0 0 8px 0;"><strong>Role Classification:</strong> ${roleClassification || "Not specified"}</p>
 ${positionTitle ? `<p style="margin:0 0 8px 0;"><strong>Position Title:</strong> ${positionTitle}</p>` : ""}
 <p style="margin:0 0 8px 0;"><strong>Description:</strong> ${description}</p>
+<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${location}</p>
 <p style="margin:0 0 8px 0;"><strong>On Bus Route:</strong> ${onBusRoute ? "Yes" : "No"}</p>
 <p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${hoursAvailable}</p>
 <p style="margin:0 0 8px 0;"><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
-${additionalRequirements ? `<p style="margin:0 0 8px 0;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ""}
+${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ""}
+</div>
 
-<hr style="border:none; border-top:1px solid #dddddd; margin:30px 0;">
+<!-- What Happens Next Card -->
+<div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">What Happens Next?</h2>
+<p style="margin:0 0 8px 0;">&bull; Clients can apply directly through the platform</p>
+<p style="margin:0 0 8px 0;">&bull; You will receive a notification to this email when someone applies</p>
+<p style="margin:0 0 8px 0;">&bull; Contact applicants to confirm availability and interest</p>
+<p style="margin:0 0 8px 0;">&bull; Remove your posting when the position has been filled</p>
+<p style="margin:0 0 0 0;">&bull; Complete monthly documentation on behalf of the volunteer</p>
+</div>
 
-<p style="margin:0 0 15px 0; font-size:18px;"><strong>What Happens Next</strong></p>
-<p style="margin:0 0 8px 0;">1. Clients can apply directly through the platform</p>
-<p style="margin:0 0 8px 0;">2. You'll receive a notification to this email when someone applies</p>
-<p style="margin:0 0 8px 0;">3. Contact applicants to confirm availability and interest</p>
-<p style="margin:0 0 8px 0;">4. Remove your posting when the position has been filled</p>
-<p style="margin:0 0 8px 0;">5. Complete monthly documentation on behalf of the volunteer</p>
-
-<hr style="border:none; border-top:1px solid #dddddd; margin:30px 0;">
-
-<p style="margin:0 0 20px 0;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
-
+<!-- Update or Remove Card -->
+<div style="background-color:#fff8e6; border-left:4px solid #f5a623; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Update or Remove Your Listing</h2>
+<p style="margin:0 0 15px 0;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
 <p style="margin:0 0 15px 0; text-align:center;">
-<a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#2e7d32; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit or Remove Listing</a>
+<a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#2e7d32; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit Your Listing</a>
 </p>
+<p style="margin:0; font-size:13px; color:#666666; text-align:center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
+</div>
 
-<p style="margin:0 0 30px 0; font-size:14px; color:#666666; text-align:center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
-
-<hr style="border:none; border-top:1px solid #dddddd; margin:0 0 30px 0;">
-
-<p style="margin:0;">Need help? Contact us at <strong>rhinton@uwtc.org</strong></p>
+<!-- Need Help Card -->
+<div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 0 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 10px 0; font-size:18px; color:#1e3a5f;">Need Help?</h2>
+<p style="margin:0;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#1e3a5f; font-weight:bold;">rhinton@uwtc.org</a></p>
+</div>
 
 </td>
 </tr>
+
+<!-- Footer -->
+<tr>
+<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
+<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">&#11088; Thank You for Supporting Our Community! &#11088;</p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Tompkins County Opportunity Finder</p>
+</td>
+</tr>
+
 </table>
 </td>
 </tr>
