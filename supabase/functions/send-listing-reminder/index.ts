@@ -41,7 +41,7 @@ const getDaysSinceCreation = (createdAt: string): number => {
   return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 };
 
-const generateListingBlock = (opportunity: Opportunity, editUrl: string): string => {
+const generateListingBlock = (opportunity: Opportunity, editUrl: string, confirmUrl: string): string => {
   const daysSinceCreation = getDaysSinceCreation(opportunity.created_at);
   const positionTitle = opportunity.position_title || opportunity.type;
   
@@ -73,7 +73,10 @@ const generateListingBlock = (opportunity: Opportunity, editUrl: string): string
         </tr>
       </table>
       <div style="text-align: center;">
-        <a href="${editUrl}" style="display: inline-block; background-color: #1e3a5f; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; font-size: 14px;">
+        <a href="${confirmUrl}" style="display: inline-block; background-color: #2e7d32; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; font-size: 14px; margin-right: 10px;">
+          Confirm Still Active
+        </a>
+        <a href="${editUrl}" style="display: inline-block; background-color: #1e3a5f; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; font-size: 14px;">
           Edit This Listing
         </a>
       </div>
@@ -84,7 +87,8 @@ const generateListingBlock = (opportunity: Opportunity, editUrl: string): string
 const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string): string => {
   const listingBlocks = opportunities.map(opp => {
     const editUrl = `${siteUrl}/edit-opportunity/${opp.edit_token}`;
-    return generateListingBlock(opp, editUrl);
+    const confirmUrl = `${siteUrl}/confirm-listing/${opp.edit_token}`;
+    return generateListingBlock(opp, editUrl, confirmUrl);
   }).join('');
 
   const listingCount = opportunities.length;
@@ -119,9 +123,9 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
 <!-- Action Items Card -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Action Items</h2>
+<p style="margin:0 0 8px 0;">&bull; <strong>Confirm your listing</strong> if everything is still accurate, using the Confirm Still Active button below.</p>
 <p style="margin:0 0 8px 0;">&bull; <strong>Update your listing</strong> if availability or details have changed, using the Edit This Listing button below.</p>
-<p style="margin:0 0 8px 0;">&bull; <strong>Remove the listing</strong> if the position has been filled, using the Edit This Listing button below. Scroll to the bottom of the page to deactivate the listing.</p>
-<p style="margin:0 0 0 0;">&bull; <strong>No action needed</strong> if everything is still current.</p>
+<p style="margin:0 0 0 0;">&bull; <strong>Remove the listing</strong> if the position has been filled, using the Edit This Listing button below. Scroll to the bottom of the page to deactivate the listing.</p>
 </div>
 
 <!-- Listing Blocks -->
