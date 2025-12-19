@@ -253,7 +253,7 @@ const ListOpportunity = () => {
             ...formData,
             type: value
           })}>
-              <SelectTrigger>
+              <SelectTrigger id="type">
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
@@ -269,7 +269,7 @@ const ListOpportunity = () => {
             ...formData,
             roleClassification: value
           })}>
-              <SelectTrigger>
+              <SelectTrigger id="roleClassification">
                 <SelectValue placeholder="Select classification" />
               </SelectTrigger>
               <SelectContent>
@@ -431,11 +431,11 @@ const ListOpportunity = () => {
           </div>
 
           <div className="space-y-4">
-            <Label>Standard Requirements</Label>
+            <Label htmlFor="standardRequirements">Standard Requirements</Label>
             <p className="text-sm text-muted-foreground">Add any requirements for workers or volunteers in your organization (e.g., Driver's license)</p>
             
             <div className="flex gap-2">
-              <Input value={currentRequirement} onChange={e => setCurrentRequirement(e.target.value)} onKeyPress={e => {
+              <Input id="standardRequirements" value={currentRequirement} onChange={e => setCurrentRequirement(e.target.value)} onKeyPress={e => {
               if (e.key === "Enter") {
                 e.preventDefault();
                 handleAddRequirement();
