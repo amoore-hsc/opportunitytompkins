@@ -73,7 +73,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 8px 0;"><strong>Requiremen
 <!-- Header -->
 <tr>
 <td style="background-color:#1e3a5f; padding:30px; text-align:center;">
-<h1 style="margin:0; font-size:28px; color:#ffffff;">Your Matched Opportunities</h1>
+<h1 style="margin:0; font-size:28px; color:#ffffff;">Shared Opportunities</h1>
 </td>
 </tr>
 
