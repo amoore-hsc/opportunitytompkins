@@ -86,7 +86,7 @@ const handler = async (req: Request): Promise<Response> => {
                         <!-- Success Banner -->
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 20px 0;">
                           <tr>
-                            <td style="background:#e3f2fd; padding:20px; border-radius:8px; border-top:4px solid #2196f3;">
+                            <td style="background:#e3f2fd; padding:20px; border-radius:8px;">
                               <p style="color:#1565c0; line-height:1.6; font-size:18px; font-weight:bold; margin:0;">
                                 Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting when the opportunity is filled.
                               </p>
@@ -97,7 +97,7 @@ const handler = async (req: Request): Promise<Response> => {
                         <!-- Listing Details -->
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 20px 0;">
                           <tr>
-                            <td style="background:#f8fafc; padding:20px; border-radius:8px; border-top:4px solid #1e3a5f;">
+                            <td style="background:#f8fafc; padding:20px; border-radius:8px;">
                               <h2 style="color:#1e3a5f; margin:0 0 10px 0; font-size:18px;">Your Listing Details</h2>
                               <p style="margin:8px 0; color:#333; font-size:16px;"><strong>Type:</strong> ${opportunityType}</p>
                               <p style="margin:8px 0; color:#333; font-size:16px;"><strong>Role Classification:</strong> ${roleClassification}</p>
@@ -115,7 +115,7 @@ const handler = async (req: Request): Promise<Response> => {
                         <!-- What Happens Next -->
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 20px 0;">
                           <tr>
-                            <td style="background:#e0f2f1; padding:20px; border-radius:8px; border-top:4px solid #00897b;">
+                            <td style="background:#e0f2f1; padding:20px; border-radius:8px;">
                               <h3 style="color:#00695c; margin:0 0 10px 0; font-size:18px;">What Happens Next?</h3>
                               <ol style="color:#333; line-height:1.8; padding-left:20px; font-size:16px; margin:0;">
                                 <li>Clients can apply directly through the platform</li>
@@ -131,7 +131,7 @@ const handler = async (req: Request): Promise<Response> => {
                         <!-- Update / Remove -->
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 20px 0;">
                           <tr>
-                            <td style="background:#e8f5e9; padding:20px; border-radius:8px; border-top:4px solid #7cb342;">
+                            <td style="background:#e8f5e9; padding:20px; border-radius:8px;">
                               <h3 style="color:#1e3a5f; margin:0 0 10px 0; font-size:18px;">Update or Remove Your Listing</h3>
                               <p style="color:#333; line-height:1.6; font-size:16px; margin:0 0 20px 0;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
                               <p style="text-align:center; margin:0 0 15px 0;">
@@ -145,7 +145,7 @@ const handler = async (req: Request): Promise<Response> => {
                         <!-- Need Help -->
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin:0 0 20px 0;">
                           <tr>
-                            <td style="background:#fff3e0; padding:20px; border-radius:8px; border-top:4px solid #f57c00;">
+                            <td style="background:#fff3e0; padding:20px; border-radius:8px;">
                               <h3 style="color:#1e3a5f; margin:0 0 10px 0; font-size:18px;">Need Help?</h3>
                               <p style="color:#333; font-size:16px; margin:0;">For additional assistance, please email: <strong style="color:#1e3a5f;">rhinton@uwtc.org</strong></p>
                             </td>
