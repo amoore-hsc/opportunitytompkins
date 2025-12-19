@@ -235,14 +235,15 @@ const handler = async (req: Request): Promise<Response> => {
 <!-- Summary Stats Row -->
 <table style="width:100%; margin:0 0 25px 0;" cellpadding="0" cellspacing="0">
 <tr>
-<td style="width:50%; padding-right:10px;">
-<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; border-radius:0 8px 8px 0; text-align:center;">
+<td style="width:50%; padding-right:10px; vertical-align:top;">
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; border-radius:0 8px 8px 0; text-align:center; min-height:80px;">
 <p style="margin:0 0 5px 0; font-size:12px; color:#2e7d32; text-transform:uppercase; letter-spacing:1px;">Total Applications</p>
 <p style="margin:0; font-size:36px; font-weight:bold; color:#2e7d32;">${totalApplications}</p>
+<p style="margin:5px 0 0 0; font-size:11px; color:#6b7280;">&nbsp;</p>
 </div>
 </td>
-<td style="width:50%; padding-left:10px;">
-<div style="background-color:#ecfdf5; border-left:4px solid #059669; padding:20px; border-radius:0 8px 8px 0; text-align:center;">
+<td style="width:50%; padding-left:10px; vertical-align:top;">
+<div style="background-color:#ecfdf5; border-left:4px solid #059669; padding:20px; border-radius:0 8px 8px 0; text-align:center; min-height:80px;">
 <p style="margin:0 0 5px 0; font-size:12px; color:#059669; text-transform:uppercase; letter-spacing:1px;">Positions Filled</p>
 <p style="margin:0; font-size:36px; font-weight:bold; color:#059669;">${totalPositionsFilled}</p>
 <p style="margin:5px 0 0 0; font-size:11px; color:#6b7280;">${totalListingsRemoved} listing${totalListingsRemoved !== 1 ? 's' : ''} closed</p>
