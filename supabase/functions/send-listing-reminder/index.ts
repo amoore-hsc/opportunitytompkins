@@ -12,6 +12,7 @@ const corsHeaders = {
 interface Opportunity {
   id: string;
   org_name: string;
+  contact_name: string | null;
   org_email: string;
   position_title: string | null;
   type: string;
@@ -108,7 +109,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
         <!-- Content -->
         <div style="padding: 30px;">
           <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
-            Hello,
+            Hello${opportunities[0]?.contact_name ? ` ${opportunities[0].contact_name}` : ''},
           </p>
           
           <p style="font-size: 16px; color: #333; margin-bottom: 25px;">
@@ -183,7 +184,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { data: opportunities, error: fetchError } = await supabase
       .from("opportunities")
-      .select("id, org_name, org_email, position_title, type, description, location, role_classification, hours_available, days_times_available, created_at, edit_token, updated_at")
+      .select("id, org_name, contact_name, org_email, position_title, type, description, location, role_classification, hours_available, days_times_available, created_at, edit_token, updated_at")
       .eq("active", true)
       .is("reminder_sent_at", null)
       .lte("created_at", sixtyDaysAgo.toISOString());

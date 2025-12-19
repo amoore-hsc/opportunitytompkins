@@ -55,6 +55,7 @@ export const ApplicationDialog = ({ opportunity, children }: ApplicationDialogPr
           hoursRequested: formData.hoursRequested,
           orgEmail: opportunity.org_email,
           orgName: opportunity.org_name,
+          contactName: opportunity.contact_name || opportunity.org_name,
           opportunityDescription: opportunity.description,
           opportunityType: opportunity.type === "volunteer" ? "Volunteer" : "Education & Training",
           positionTitle: opportunity.position_title || "",
