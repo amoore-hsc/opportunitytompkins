@@ -38,7 +38,7 @@ const Index = () => {
                 Tompkins County DSS
               </a>
               <br />
-              <span className="text-primary">(607) 274-5680</span>
+              <a href="tel:607-274-5680" className="text-primary underline hover:no-underline">(607) 274-5680</a>
             </p>
           </div>
         </DialogContent>
