@@ -126,9 +126,9 @@ const handler = async (req: Request): Promise<Response> => {
 <!-- Next Steps Card -->
 <div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">Next Steps</h2>
-<p style="margin:0 0 8px 0;">&bull; Contact the applicant to confirm their availability and interest</p>
-<p style="margin:0 0 8px 0;">&bull; Complete monthly documentation on behalf of the volunteer</p>
-<p style="margin:0 0 0 0;">&bull; Remove your posting when the position has been filled using the edit link from your confirmation email</p>
+<p style="margin:0 0 8px 0;">1. Contact the applicant to confirm their availability and interest</p>
+<p style="margin:0 0 8px 0;">2. Complete monthly documentation on behalf of the volunteer</p>
+<p style="margin:0 0 0 0;">3. Remove your posting when the position has been filled using the edit link from your confirmation email</p>
 </div>
 
 </td>
