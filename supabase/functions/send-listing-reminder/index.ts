@@ -124,9 +124,11 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
 <!-- Action Items Card -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Action Items</h2>
-<p style="margin:0 0 8px 0;">&bull; <strong>Confirm your listing</strong> if everything is still accurate, using the Confirm Still Active button below.</p>
-<p style="margin:0 0 8px 0;">&bull; <strong>Update your listing</strong> if availability or details have changed, using the Edit This Listing button below.</p>
-<p style="margin:0 0 0 0;">&bull; <strong>Remove the listing</strong> if the position has been filled, using the Edit This Listing button below. Scroll to the bottom of the page to deactivate the listing.</p>
+<p style="margin:0 0 12px 0;"><strong>If your listing is still accurate:</strong></p>
+<p style="margin:0 0 16px 0; padding-left:15px;">&bull; Click <strong>Confirm Still Active</strong> below to keep it listed.</p>
+<p style="margin:0 0 12px 0;"><strong>If changes are needed:</strong></p>
+<p style="margin:0 0 8px 0; padding-left:15px;">&bull; <strong>Update your listing</strong> if availability or details have changed, using the Edit This Listing button.</p>
+<p style="margin:0 0 0 0; padding-left:15px;">&bull; <strong>Remove the listing</strong> if the position has been filled. Click Edit This Listing, then scroll to the bottom to deactivate.</p>
 </div>
 
 <!-- Listing Blocks -->
