@@ -65,8 +65,6 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
           
           <div style="padding: 30px 20px;">
-            <p style="color: #1e3a5f; font-size: 16px;">Dear ${contactName},</p>
-            
             <p style="color: #333; line-height: 1.6;">Your opportunity has been successfully published to Tompkins County Opportunity Finder. Use this email to review your post and edit the listing with any corrections OR to remove the posting if the opportunity has been filled.</p>
             
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
