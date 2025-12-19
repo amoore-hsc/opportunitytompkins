@@ -249,7 +249,7 @@ const handler = async (req: Request): Promise<Response> => {
           : `Reminder: Your ${listingCount} Listings Need Attention`;
 
         const emailResponse = await resend.emails.send({
-          from: "Tompkins County Opportunity Finder <onboarding@resend.dev>",
+          from: "Tompkins Opportunity <onboarding@resend.dev>",
           to: [email],
           subject: subject,
           html: emailHtml,
