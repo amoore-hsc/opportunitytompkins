@@ -73,7 +73,7 @@ const generateListingBlock = (opportunity: Opportunity, editUrl: string): string
         </tr>
       </table>
       <div style="text-align: center;">
-        <a href="${editUrl}" style="display: inline-block; background-color: #84cc16; color: #1e3a5f; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; font-size: 14px;">
+        <a href="${editUrl}" style="display: inline-block; background-color: #1e3a5f; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; font-size: 14px;">
           Edit This Listing
         </a>
       </div>
@@ -114,18 +114,18 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">Hello${opportunities[0]?.contact_name ? ` ${opportunities[0].contact_name}` : ''}, you have <strong>${listingCount} opportunity ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates.</p>
+<p style="margin:0 0 25px 0;">Hello${opportunities[0]?.contact_name ? ` ${opportunities[0].contact_name}` : ''}, you have <strong>${listingCount} ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates.</p>
 
-<!-- Listing Blocks -->
-${listingBlocks}
-
-<!-- What You Can Do Card -->
+<!-- Action Items Card -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
-<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">What You Can Do</h2>
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Action Items</h2>
 <p style="margin:0 0 8px 0;">&bull; <strong>Update your listing</strong> if availability or details have changed</p>
 <p style="margin:0 0 8px 0;">&bull; <strong>Remove the listing</strong> if the position has been filled</p>
 <p style="margin:0 0 0 0;">&bull; <strong>No action needed</strong> if everything is still current</p>
 </div>
+
+<!-- Listing Blocks -->
+${listingBlocks}
 
 <p style="margin:0 0 0 0; font-size:13px; color:#666666; text-align:center;">Each edit link is unique to its listing. Please keep them safe.</p>
 
