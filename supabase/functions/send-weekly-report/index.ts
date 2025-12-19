@@ -53,6 +53,20 @@ const handler = async (req: Request): Promise<Response> => {
       throw countsError;
     }
 
+    // Fetch positions filled from deactivated opportunities this week
+    const { data: filledPositions, error: filledError } = await supabaseClient
+      .from('opportunities')
+      .select('org_name, position_title, positions_filled, removal_reason, deactivated_at')
+      .not('positions_filled', 'is', null)
+      .gte('deactivated_at', startDateStr)
+      .lte('deactivated_at', endDate.toISOString());
+
+    if (filledError) {
+      console.error("Error fetching filled positions:", filledError);
+    }
+
+    console.log(`Found ${filledPositions?.length || 0} listings with positions filled`);
+
     console.log(`Found ${counts?.length || 0} application count records`);
 
     // Aggregate by opportunity
@@ -93,6 +107,28 @@ const handler = async (req: Request): Promise<Response> => {
       const orgName = opp.org_name || 'Unknown Organization';
       organizationTotals[orgName] = (organizationTotals[orgName] || 0) + record.count;
     }
+
+    // Aggregate positions filled by organization
+    const positionsFilledByOrg: Record<string, { positions: number; listings: number }> = {};
+    let totalPositionsFilled = 0;
+    let totalListingsRemoved = 0;
+
+    for (const listing of filledPositions || []) {
+      const orgName = listing.org_name || 'Unknown Organization';
+      const filled = listing.positions_filled || 0;
+      
+      if (!positionsFilledByOrg[orgName]) {
+        positionsFilledByOrg[orgName] = { positions: 0, listings: 0 };
+      }
+      positionsFilledByOrg[orgName].positions += filled;
+      positionsFilledByOrg[orgName].listings += 1;
+      totalPositionsFilled += filled;
+      totalListingsRemoved += 1;
+    }
+
+    // Sort positions filled by organization
+    const sortedFilledOrgs = Object.entries(positionsFilledByOrg)
+      .sort((a, b) => b[1].positions - a[1].positions);
 
     // Sort opportunities by count (descending)
     const sortedOpportunities = Object.values(opportunityTotals)
@@ -154,6 +190,23 @@ const handler = async (req: Request): Promise<Response> => {
         `).join('')
       : `<tr><td colspan="2" style="padding: 20px; text-align: center; color: #6b7280;">No applications this week</td></tr>`;
 
+    // Positions filled rows
+    const filledRows = sortedFilledOrgs.length > 0
+      ? sortedFilledOrgs.map(([org, data]) => `
+          <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+              ${org}<br>
+              <span style="color: #6b7280; font-size: 12px;">${data.listings} listing${data.listings > 1 ? 's' : ''} closed</span>
+            </td>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">
+              <span style="background: #059669; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold;">
+                ${data.positions}
+              </span>
+            </td>
+          </tr>
+        `).join('')
+      : `<tr><td colspan="2" style="padding: 20px; text-align: center; color: #6b7280;">No positions filled this week</td></tr>`;
+
     const emailHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -179,11 +232,24 @@ const handler = async (req: Request): Promise<Response> => {
 <tr>
 <td style="padding:30px;">
 
-<!-- Total Applications Card -->
-<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:25px; margin:0 0 25px 0; border-radius:0 8px 8px 0; text-align:center;">
-<p style="margin:0 0 5px 0; font-size:14px; color:#2e7d32; text-transform:uppercase; letter-spacing:1px;">Total Applications</p>
-<p style="margin:0; font-size:48px; font-weight:bold; color:#2e7d32;">${totalApplications}</p>
+<!-- Summary Stats Row -->
+<table style="width:100%; margin:0 0 25px 0;" cellpadding="0" cellspacing="0">
+<tr>
+<td style="width:50%; padding-right:10px;">
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; border-radius:0 8px 8px 0; text-align:center;">
+<p style="margin:0 0 5px 0; font-size:12px; color:#2e7d32; text-transform:uppercase; letter-spacing:1px;">Total Applications</p>
+<p style="margin:0; font-size:36px; font-weight:bold; color:#2e7d32;">${totalApplications}</p>
 </div>
+</td>
+<td style="width:50%; padding-left:10px;">
+<div style="background-color:#ecfdf5; border-left:4px solid #059669; padding:20px; border-radius:0 8px 8px 0; text-align:center;">
+<p style="margin:0 0 5px 0; font-size:12px; color:#059669; text-transform:uppercase; letter-spacing:1px;">Positions Filled</p>
+<p style="margin:0; font-size:36px; font-weight:bold; color:#059669;">${totalPositionsFilled}</p>
+<p style="margin:5px 0 0 0; font-size:11px; color:#6b7280;">${totalListingsRemoved} listing${totalListingsRemoved !== 1 ? 's' : ''} closed</p>
+</div>
+</td>
+</tr>
+</table>
 
 <!-- Applications by Organization Card -->
 <div style="background-color:#f3e8ff; border-left:4px solid #7c3aed; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
@@ -234,6 +300,22 @@ ${roleRows}
 </table>
 </div>
 ` : ''}
+
+<!-- Positions Filled by Organization Card -->
+<div style="background-color:#ecfdf5; border-left:4px solid #059669; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#059669;">Positions Filled by Organization</h2>
+<table style="width:100%; border-collapse:collapse;">
+<thead>
+<tr style="background:#f8fafc;">
+<th style="padding:12px; text-align:left; color:#1e3a5f; border-bottom:2px solid #059669;">Organization</th>
+<th style="padding:12px; text-align:center; color:#1e3a5f; border-bottom:2px solid #059669;">Positions</th>
+</tr>
+</thead>
+<tbody>
+${filledRows}
+</tbody>
+</table>
+</div>
 
 </td>
 </tr>
