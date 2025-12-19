@@ -157,6 +157,84 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Check for test mode
+    let testMode = false;
+    let testEmail = "";
+    
+    if (req.method === "POST") {
+      try {
+        const body = await req.json();
+        testMode = body.testMode === true;
+        testEmail = body.email || "";
+      } catch {
+        // No body or invalid JSON, continue with normal mode
+      }
+    }
+
+    const siteUrl = Deno.env.get("SITE_URL") || "https://oosxopnxaivfdtksrvam.lovableproject.com";
+
+    // Test mode: send dummy data email
+    if (testMode && testEmail) {
+      console.log(`Test mode: sending dummy reminder to ${testEmail}`);
+      
+      const dummyOpportunities: Opportunity[] = [
+        {
+          id: "test-1",
+          org_name: "Sample Organization",
+          contact_name: "Jane Smith",
+          org_email: testEmail,
+          position_title: "Office Assistant",
+          type: "Job",
+          description: "General office duties including filing, data entry, and customer service.",
+          location: "123 Main Street, Ithaca, NY",
+          role_classification: "Administrative",
+          hours_available: "Part-time (20 hours/week)",
+          days_times_available: "Monday-Friday, 9am-1pm",
+          created_at: new Date(Date.now() - 75 * 24 * 60 * 60 * 1000).toISOString(), // 75 days ago
+          edit_token: "test-token-123"
+        },
+        {
+          id: "test-2",
+          org_name: "Sample Organization",
+          contact_name: "Jane Smith",
+          org_email: testEmail,
+          position_title: "Volunteer Coordinator",
+          type: "Volunteer",
+          description: "Help coordinate volunteer activities and community outreach programs.",
+          location: "456 Community Center Dr, Ithaca, NY",
+          role_classification: "Community Service",
+          hours_available: "Flexible (10-15 hours/week)",
+          days_times_available: "Weekends preferred",
+          created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days ago
+          edit_token: "test-token-456"
+        }
+      ];
+
+      const emailHtml = generateConsolidatedEmail(dummyOpportunities, siteUrl);
+      
+      const emailResponse = await resend.emails.send({
+        from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+        to: [testEmail],
+        subject: `[TEST] Reminder: Your 2 Listings Need Attention`,
+        html: emailHtml,
+      });
+
+      console.log("Test email sent successfully:", emailResponse);
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: `Test reminder email sent to ${testEmail}`,
+          testMode: true,
+          emailResponse
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     // Initialize Supabase client with service role for full access
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -221,7 +299,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Grouped into ${groupedByEmail.size} unique contact emails`);
 
-    const siteUrl = Deno.env.get("SITE_URL") || "https://oosxopnxaivfdtksrvam.lovableproject.com";
+    // siteUrl already defined above
     let emailsSent = 0;
     let listingsUpdated = 0;
     const errors: string[] = [];
