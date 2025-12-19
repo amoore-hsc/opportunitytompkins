@@ -13,7 +13,7 @@ const Index = () => {
     // Show popup after a short delay when page loads
     const timer = setTimeout(() => {
       setShowPopup(true);
-    }, 500);
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
   return <div className="min-h-screen bg-background">
