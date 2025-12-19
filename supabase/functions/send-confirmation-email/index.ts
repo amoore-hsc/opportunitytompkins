@@ -61,7 +61,9 @@ const handler = async (req: Request): Promise<Response> => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; font-size: 16px;">
           <div style="padding: 30px 20px;">
-            <p style="color: #333; line-height: 1.6; font-size: 16px;">Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting if the opportunity has been filled.</p>
+            <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
+              <p style="color: #1565c0; line-height: 1.6; font-size: 16px; margin: 0;">Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting if the opportunity has been filled.</p>
+            </div>
             
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
               <h2 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Your Listing Details</h2>
@@ -76,8 +78,8 @@ const handler = async (req: Request): Promise<Response> => {
               ${additionalRequirements ? `<p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ''}
             </div>
 
-            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
-              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">What Happens Next?</h3>
+            <div style="background: #e0f2f1; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #00897b;">
+              <h3 style="color: #00695c; margin-top: 0; font-size: 18px;">What Happens Next?</h3>
               <ul style="color: #333; line-height: 1.8; padding-left: 20px; font-size: 16px;">
                 <li>Clients can apply directly through the platform</li>
                 <li>You'll receive a notification to this address when someone applies</li>
@@ -104,8 +106,7 @@ const handler = async (req: Request): Promise<Response> => {
 
           <div style="background-color: #1e3a5f; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
             <p style="color: #ffffff; font-size: 16px; margin: 0;">
-              🌟 Thank You for Supporting Our Community! 🌟<br>
-              <strong>Tompkins County Opportunity Finder</strong>
+              🌟 Thank You for Supporting Our Community! 🌟
             </p>
           </div>
         </div>
