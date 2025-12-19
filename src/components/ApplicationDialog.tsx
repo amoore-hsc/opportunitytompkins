@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,11 +17,23 @@ import { Opportunity } from "@/pages/Opportunities";
 
 interface ApplicationDialogProps {
   opportunity: Opportunity;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
 }
 
-export const ApplicationDialog = ({ opportunity, children }: ApplicationDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const ApplicationDialog = ({ 
+  opportunity, 
+  children, 
+  externalOpen, 
+  onExternalOpenChange 
+}: ApplicationDialogProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  // Use external control if provided, otherwise use internal state
+  const isControlled = externalOpen !== undefined;
+  const open = isControlled ? externalOpen : internalOpen;
+  const setOpen = isControlled ? (onExternalOpenChange || (() => {})) : setInternalOpen;
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState({
@@ -91,9 +103,11 @@ export const ApplicationDialog = ({ opportunity, children }: ApplicationDialogPr
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      {children && (
+        <DialogTrigger asChild>
+          {children}
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Apply for Opportunity</DialogTitle>
