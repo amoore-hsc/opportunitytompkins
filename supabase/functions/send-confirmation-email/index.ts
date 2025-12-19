@@ -70,7 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
 <!-- Header -->
 <tr>
 <td style="background-color:#1e3a5f; padding:30px; text-align:center;">
-<h1 style="margin:0; font-size:28px; color:#ffffff;">Thank You for Your Submission!</h1>
+<h1 style="margin:0; font-size:28px; color:#ffffff;">🤝 Thank You for Supporting Your Community!</h1>
 </td>
 </tr>
 
