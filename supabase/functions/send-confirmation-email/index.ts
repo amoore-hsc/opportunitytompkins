@@ -92,9 +92,10 @@ ${additionalRequirements ? `<p style="margin:0 0 8px 0;"><strong>Standard Requir
 
 <p style="margin:0 0 15px 0; font-size:18px;"><strong>What Happens Next</strong></p>
 <p style="margin:0 0 8px 0;">1. Clients can apply directly through the platform</p>
-<p style="margin:0 0 8px 0;">2. You will receive applications via email</p>
-<p style="margin:0 0 8px 0;">3. Review and contact applicants directly</p>
-<p style="margin:0 0 8px 0;">4. Update or remove listing when position is filled</p>
+<p style="margin:0 0 8px 0;">2. You'll receive a notification to this email when someone applies</p>
+<p style="margin:0 0 8px 0;">3. Contact applicants to confirm availability and interest</p>
+<p style="margin:0 0 8px 0;">4. Remove your posting when the position has been filled</p>
+<p style="margin:0 0 8px 0;">5. Complete monthly documentation on behalf of the volunteer</p>
 
 <hr style="border:none; border-top:1px solid #dddddd; margin:30px 0;">
 
