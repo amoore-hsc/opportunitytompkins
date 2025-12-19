@@ -8,7 +8,8 @@ const corsHeaders = {
 
 interface UpdateOpportunityRequest {
   token: string;
-  updates: {
+  action?: "update" | "deactivate";
+  updates?: {
     type?: string;
     role_classification?: string;
     position_title?: string | null;
@@ -22,6 +23,10 @@ interface UpdateOpportunityRequest {
     org_email?: string;
     org_phone?: string;
   };
+  deactivation?: {
+    positions_filled: number;
+    removal_reason: string;
+  };
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -32,7 +37,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { token, updates }: UpdateOpportunityRequest = await req.json();
+    const { token, action = "update", updates, deactivation }: UpdateOpportunityRequest = await req.json();
 
     if (!token) {
       return new Response(
@@ -57,7 +62,7 @@ const handler = async (req: Request): Promise<Response> => {
     // First verify the token exists
     const { data: existingOpportunity, error: fetchError } = await supabase
       .from("opportunities")
-      .select("id")
+      .select("id, active")
       .eq("edit_token", token)
       .maybeSingle();
 
@@ -76,7 +81,54 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Perform the update
+    // Handle deactivation action
+    if (action === "deactivate") {
+      if (!deactivation) {
+        return new Response(
+          JSON.stringify({ error: "Deactivation data is required" }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      console.log("Deactivating opportunity:", existingOpportunity.id, "Positions filled:", deactivation.positions_filled);
+
+      const { data: deactivatedOpportunity, error: deactivateError } = await supabase
+        .from("opportunities")
+        .update({
+          active: false,
+          positions_filled: deactivation.positions_filled,
+          removal_reason: deactivation.removal_reason,
+          deactivated_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq("edit_token", token)
+        .select()
+        .single();
+
+      if (deactivateError) {
+        console.error("Deactivation error:", deactivateError);
+        return new Response(
+          JSON.stringify({ error: "Failed to deactivate opportunity" }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      console.log("Opportunity deactivated:", deactivatedOpportunity.id);
+
+      return new Response(
+        JSON.stringify({ success: true, opportunity: { id: deactivatedOpportunity.id }, action: "deactivated" }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Handle regular update action
+    if (!updates) {
+      return new Response(
+        JSON.stringify({ error: "Updates data is required" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     const { data: updatedOpportunity, error: updateError } = await supabase
       .from("opportunities")
       .update({

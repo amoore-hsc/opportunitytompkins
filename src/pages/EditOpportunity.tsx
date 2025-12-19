@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Handshake, ArrowLeft, Plus, X, Loader2 } from "lucide-react";
+import { Handshake, ArrowLeft, Plus, X, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,14 @@ import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const addressSchema = z.string().min(1, "Address is required").refine(val => {
   const parts = val.split(',').map(p => p.trim()).filter(p => p.length > 0);
@@ -83,10 +91,16 @@ const EditOpportunity = () => {
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [removing, setRemoving] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [opportunityId, setOpportunityId] = useState<string | null>(null);
   const [locationError, setLocationError] = useState("");
   const [descriptionWordCount, setDescriptionWordCount] = useState(0);
+  
+  // Remove listing dialog state
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+  const [positionsFilled, setPositionsFilled] = useState<string>("0");
+  const [removalReason, setRemovalReason] = useState<string>("");
   
   const [daySchedule, setDaySchedule] = useState<DaySchedule>(
     DAYS_OF_WEEK.reduce((acc, day) => ({
@@ -259,6 +273,54 @@ const EditOpportunity = () => {
       });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleRemoveListing = async () => {
+    if (!removalReason) {
+      toast({
+        title: "Reason required",
+        description: "Please select a reason for removing this listing.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const filledCount = parseInt(positionsFilled) || 0;
+
+    setRemoving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("update-opportunity-by-token", {
+        body: {
+          token,
+          action: "deactivate",
+          deactivation: {
+            positions_filled: filledCount,
+            removal_reason: removalReason
+          }
+        }
+      });
+
+      if (error || data?.error) {
+        throw new Error(data?.error || error?.message || "Failed to remove listing");
+      }
+
+      toast({
+        title: "Listing Removed",
+        description: filledCount > 0 
+          ? `Thank you! We've recorded that ${filledCount} position${filledCount > 1 ? 's were' : ' was'} filled.`
+          : "Your listing has been removed."
+      });
+      setShowRemoveDialog(false);
+      navigate("/opportunities");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setRemoving(false);
     }
   };
 
@@ -590,17 +652,90 @@ const EditOpportunity = () => {
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={saving}>
-            {saving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving Changes...
-              </>
-            ) : (
-              "Save Changes"
-            )}
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button type="submit" className="flex-1" disabled={saving}>
+              {saving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving Changes...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+              onClick={() => setShowRemoveDialog(true)}
+            >
+              <AlertTriangle className="mr-2 h-4 w-4" />
+              Remove Listing
+            </Button>
+          </div>
         </form>
+
+        {/* Remove Listing Dialog */}
+        <Dialog open={showRemoveDialog} onOpenChange={setShowRemoveDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Remove This Listing</DialogTitle>
+              <DialogDescription>
+                Help us track outcomes by telling us about this opportunity before removing it.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="positionsFilled">How many positions were filled from this listing?</Label>
+                <Input
+                  id="positionsFilled"
+                  type="number"
+                  min="0"
+                  value={positionsFilled}
+                  onChange={e => setPositionsFilled(e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="removalReason">Reason for removing *</Label>
+                <Select value={removalReason} onValueChange={setRemovalReason}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a reason" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Position(s) Filled">Position(s) Filled</SelectItem>
+                    <SelectItem value="No Longer Needed">No Longer Needed</SelectItem>
+                    <SelectItem value="Posted in Error">Posted in Error</SelectItem>
+                    <SelectItem value="Organization Changes">Organization Changes</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowRemoveDialog(false)} disabled={removing}>
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={handleRemoveListing}
+                disabled={removing}
+              >
+                {removing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Removing...
+                  </>
+                ) : (
+                  "Remove Listing"
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
 
       <footer className="border-t border-border bg-muted/50 py-6 mt-8">
