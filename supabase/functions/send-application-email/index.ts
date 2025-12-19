@@ -81,7 +81,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const emailResponse = await resend.emails.send({
-      from: "Tompkins County Opportunity Finder <onboarding@resend.dev>",
+      from: "Tompkins County Opportunity Finder <hello@tompkins-opportunity.org>",
       to: [orgEmail],
       subject: `New Application - ${positionTitle || 'Position'}`,
       html: `
