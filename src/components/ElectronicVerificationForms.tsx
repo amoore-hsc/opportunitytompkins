@@ -36,7 +36,7 @@ export const ElectronicVerificationForms = () => {
       </div>
       
       {/* Row 2 */}
-      <div className="grid gap-6 md:grid-cols-3 items-stretch mt-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3 items-stretch mt-6">
         <a 
           href="https://docs.google.com/document/d/1xAumMXBIV2lEADQuSgpajamqsPoxxoOp/edit" 
           target="_blank" 
