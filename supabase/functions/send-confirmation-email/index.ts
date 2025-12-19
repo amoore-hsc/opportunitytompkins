@@ -99,6 +99,12 @@ ${positionTitle ? `<p style="margin:0 0 8px 0;"><strong>Position:</strong> ${pos
 <p style="margin:0 0 8px 0;"><strong>Schedule:</strong> ${daysTimesAvailable}</p>
 <p style="margin:0 0 8px 0;"><strong>Description:</strong> ${description}</p>
 ${additionalRequirements ? `<p style="margin:0 0 8px 0;"><strong>Requirements:</strong> ${additionalRequirements}</p>` : ""}
+<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${location}</p>
+<p style="margin:0 0 8px 0;"><strong>Bus Route:</strong> ${onBusRoute ? "Yes" : "No"}</p>
+<p style="margin:0 0 8px 0;"><strong>Hours:</strong> ${hoursAvailable}</p>
+<p style="margin:0 0 8px 0;"><strong>Schedule:</strong> ${daysTimesAvailable}</p>
+<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${description}</p>
+${additionalRequirements ? `<p style="margin:0 0 8px 0;"><strong>Requirements:</strong> ${additionalRequirements}</p>` : ""}
 
 <hr style="border:none; border-top:1px solid #dddddd; margin:30px 0;">
 
