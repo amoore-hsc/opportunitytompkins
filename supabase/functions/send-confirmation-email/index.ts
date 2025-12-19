@@ -57,15 +57,11 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
       to: [orgEmail],
-      subject: `${positionTitle || 'Opportunity'} Listed Successfully`,
+      subject: `${positionTitle || 'Opportunity'} Role Listing Confirmation`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; font-size: 16px;">
-          <div style="background-color: #1e3a5f; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0;">
-            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Thank You for Listing an Opportunity!</h1>
-          </div>
-          
           <div style="padding: 30px 20px;">
-            <p style="color: #333; line-height: 1.6; font-size: 16px;">Your opportunity has been successfully published to Tompkins County Opportunity Finder. Use this email to review your post and edit the listing with any corrections OR to remove the posting if the opportunity has been filled.</p>
+            <p style="color: #333; line-height: 1.6; font-size: 16px;">Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting if the opportunity has been filled.</p>
             
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
               <h2 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Your Listing Details</h2>
@@ -80,15 +76,6 @@ const handler = async (req: Request): Promise<Response> => {
               ${additionalRequirements ? `<p style="margin: 8px 0; color: #333; font-size: 16px;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ''}
             </div>
 
-            <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #7cb342;">
-              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Edit Your Listing</h3>
-              <p style="color: #333; line-height: 1.6; font-size: 16px;">Need to make changes or remove your listing? Use the secure link below to edit your listing at any time:</p>
-              <p style="text-align: center; margin: 20px 0;">
-                <a href="${editUrl}" style="background-color: #7cb342; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; font-size: 16px;">Edit Your Listing</a>
-              </p>
-              <p style="font-size: 13px; color: #666; text-align: center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
-            </div>
-
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e3a5f;">
               <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">What Happens Next?</h3>
               <ul style="color: #333; line-height: 1.8; padding-left: 20px; font-size: 16px;">
@@ -98,6 +85,15 @@ const handler = async (req: Request): Promise<Response> => {
                 <li>Complete monthly documentation on behalf of the volunteer</li>
                 <li>Remove your posting when the position has been filled. You can also use the edit link to update hours available per week if a position has been partially filled.</li>
               </ul>
+            </div>
+
+            <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #7cb342;">
+              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Edit Your Listing</h3>
+              <p style="color: #333; line-height: 1.6; font-size: 16px;">Need to make changes or remove your listing? Use the secure link below to edit your listing at any time:</p>
+              <p style="text-align: center; margin: 20px 0;">
+                <a href="${editUrl}" style="background-color: #7cb342; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; font-size: 16px;">Edit Your Listing</a>
+              </p>
+              <p style="font-size: 13px; color: #666; text-align: center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
             </div>
 
             <div style="background: #fff3e0; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f57c00;">
