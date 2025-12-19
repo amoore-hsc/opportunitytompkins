@@ -83,13 +83,13 @@ const handler = async (req: Request): Promise<Response> => {
                 <li>You'll receive a notification to this address when someone applies</li>
                 <li>Contact applicants to confirm availability and interest</li>
                 <li>Complete monthly documentation on behalf of the volunteer</li>
-                <li>Remove your posting when the position has been filled. You can also use the edit link to update hours available per week if a position has been partially filled.</li>
+                <li>Remove your posting when the position has been filled.</li>
               </ul>
             </div>
 
             <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #7cb342;">
-              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Edit Your Listing</h3>
-              <p style="color: #333; line-height: 1.6; font-size: 16px;">Need to make changes or remove your listing? Use the secure link below to edit your listing at any time:</p>
+              <h3 style="color: #1e3a5f; margin-top: 0; font-size: 18px;">Update or Remove Your Listing</h3>
+              <p style="color: #333; line-height: 1.6; font-size: 16px;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
               <p style="text-align: center; margin: 20px 0;">
                 <a href="${editUrl}" style="background-color: #7cb342; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; font-size: 16px;">Edit Your Listing</a>
               </p>
