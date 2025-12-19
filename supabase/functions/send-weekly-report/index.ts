@@ -218,7 +218,7 @@ ${roleRows}
     // Send the email
     const emailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
-      to: ["billmoorebusiness@gmail.com"],
+      to: ["amoore@hsctc.org"],
       subject: `Weekly Application Report - ${formatDate(startDate)} to ${formatDate(endDate)}`,
       html: emailHtml,
     });
