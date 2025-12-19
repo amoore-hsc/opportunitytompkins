@@ -39,20 +39,20 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Sending opportunities email to: ${email}`);
     console.log(`Number of opportunities: ${opportunities.length}`);
 
+    const siteUrl = Deno.env.get("SITE_URL") || "https://oosxopnxaivfdtksrvam.lovableproject.com";
+    
     // Generate HTML for opportunities list
     const opportunitiesHtml = opportunities.map((opp) => `
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 20px 0; border-radius:0 8px 8px 0;">
 <h3 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">${opp.org_name}</h3>
 <p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opp.type}</p>
-<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${opp.location}${opp.on_bus_route ? ' <span style="background-color:#2e7d32; color:white; padding:2px 8px; border-radius:4px; font-size:12px;">🚌 On Bus Route</span>' : ''}</p>
+<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${opp.location}${opp.on_bus_route ? ' <span style="background-color:#2e7d32; color:white; padding:4px 10px; border-radius:4px; font-size:13px; font-weight:bold;">On Bus Route</span>' : ''}</p>
 <p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${opp.hours_available}</p>
 <p style="margin:0 0 8px 0;"><strong>Days/Times:</strong> ${opp.days_times_available}</p>
 <p style="margin:0 0 8px 0;"><strong>Description:</strong> ${opp.description}</p>
 ${opp.additional_requirements ? `<p style="margin:0 0 8px 0;"><strong>Requirements:</strong> ${opp.additional_requirements}</p>` : ''}
-<div style="margin-top:15px; padding-top:15px; border-top:1px solid #ddd;">
-<p style="margin:0 0 4px 0; font-size:14px;"><strong>Contact:</strong></p>
-<p style="margin:0 0 4px 0; font-size:14px;">Phone: ${opp.org_phone}</p>
-<p style="margin:0; font-size:14px;">Email: <a href="mailto:${opp.org_email}" style="color:#1e3a5f;">${opp.org_email}</a></p>
+<div style="margin-top:15px; text-align:center;">
+<a href="${siteUrl}/opportunities?id=${opp.id}" style="display:inline-block; background-color:#1e3a5f; color:white; text-decoration:none; padding:12px 30px; border-radius:6px; font-weight:bold; font-size:14px;">Apply Now</a>
 </div>
 </div>
     `).join('');
@@ -115,7 +115,7 @@ ${opportunitiesHtml}
     const emailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
       to: [email],
-      subject: `Your ${opportunities.length} Filtered ${opportunities.length === 1 ? 'Opportunity' : 'Opportunities'} from Tompkins County`,
+      subject: `Shared Opportunities`,
       html: emailHtml,
     });
 
