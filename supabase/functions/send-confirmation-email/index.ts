@@ -70,8 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
 <!-- Header -->
 <tr>
 <td style="background-color:#1e3a5f; padding:30px; text-align:center;">
-<h1 style="margin:0; font-size:28px; color:#ffffff;">Tompkins Worklink</h1>
-<p style="margin:10px 0 0 0; color:#a0c4e8; font-size:16px;">Listing Confirmation</p>
+<h1 style="margin:0; font-size:28px; color:#ffffff;">Thank You for Your Submission</h1>
 </td>
 </tr>
 
@@ -96,8 +95,8 @@ ${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirem
 </div>
 
 <!-- What Happens Next Card -->
-<div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
-<h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">What Happens Next?</h2>
+<div style="background-color:#f5f0ff; border-left:4px solid #7c3aed; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#7c3aed;">What Happens Next?</h2>
 <p style="margin:0 0 8px 0;">&bull; Clients can apply directly through the platform</p>
 <p style="margin:0 0 8px 0;">&bull; You will receive a notification to this email when someone applies</p>
 <p style="margin:0 0 8px 0;">&bull; Contact applicants to confirm availability and interest</p>
@@ -106,8 +105,8 @@ ${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirem
 </div>
 
 <!-- Update or Remove Card -->
-<div style="background-color:#fff8e6; border-left:4px solid #f5a623; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
-<h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Update or Remove Your Listing</h2>
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Update or Remove Your Listing</h2>
 <p style="margin:0 0 15px 0;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
 <p style="margin:0 0 15px 0; text-align:center;">
 <a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#2e7d32; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit Your Listing</a>
@@ -128,7 +127,7 @@ ${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirem
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">&#11088; Thank You for Supporting Our Community! &#11088;</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px;">Tompkins County Opportunity Finder</p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Tompkins Opportunity</p>
 </td>
 </tr>
 
