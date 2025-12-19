@@ -57,7 +57,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
       to: [orgEmail],
-      subject: "Your Opportunity Has Been Listed!",
+      subject: `${positionTitle || 'Opportunity'} Listed Successfully`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
           <div style="background-color: #1e3a5f; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0;">
