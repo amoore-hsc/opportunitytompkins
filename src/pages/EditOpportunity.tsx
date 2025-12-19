@@ -277,7 +277,7 @@ const EditOpportunity = () => {
           <div className="container mx-auto px-4 py-6">
             <div className="flex items-center gap-2">
               <Handshake className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold text-foreground">Tompkins County Opportunity Finder</h1>
+              <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
             </div>
           </div>
         </header>
@@ -301,7 +301,7 @@ const EditOpportunity = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Handshake className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold text-foreground">Tompkins County Opportunity Finder</h1>
+              <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
             </div>
             <Link to="/opportunities">
               <Button variant="outline" size="sm">

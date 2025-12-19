@@ -114,7 +114,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">Hello${opportunities[0]?.contact_name ? ` ${opportunities[0].contact_name}` : ''}, you have <strong>${listingCount} opportunity ${listingWord}</strong> on the Tompkins County Opportunity Finder that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates.</p>
+<p style="margin:0 0 25px 0;">Hello${opportunities[0]?.contact_name ? ` ${opportunities[0].contact_name}` : ''}, you have <strong>${listingCount} opportunity ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates.</p>
 
 <!-- Listing Blocks -->
 ${listingBlocks}

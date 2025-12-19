@@ -42,7 +42,7 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
       `}</style>
       <div>
         <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>
-          Tompkins County Opportunity Finder
+          Tompkins Opportunity
         </h1>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
           {opportunities.length} {opportunities.length === 1 ? 'Opportunity' : 'Opportunities'} Found
@@ -90,7 +90,7 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
         
         <div style={{ marginTop: '30px', fontSize: '12px', color: '#666', borderTop: '1px solid #e0e0e0', paddingTop: '15px' }}>
           <p>For help or questions, contact: amoore@hsctc.org</p>
-          <p>Powered by Tompkins County Opportunity Finder</p>
+          <p>Powered by Tompkins Opportunity</p>
         </div>
       </div>
     </div>
