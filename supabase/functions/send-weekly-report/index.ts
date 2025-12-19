@@ -65,6 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
     }> = {};
     
     const roleClassificationTotals: Record<string, number> = {};
+    const organizationTotals: Record<string, number> = {};
     let totalApplications = 0;
 
     for (const record of counts || []) {
@@ -87,6 +88,10 @@ const handler = async (req: Request): Promise<Response> => {
       // Track by role classification
       const role = opp.role_classification || 'Uncategorized';
       roleClassificationTotals[role] = (roleClassificationTotals[role] || 0) + record.count;
+
+      // Track by organization
+      const orgName = opp.org_name || 'Unknown Organization';
+      organizationTotals[orgName] = (organizationTotals[orgName] || 0) + record.count;
     }
 
     // Sort opportunities by count (descending)
@@ -95,6 +100,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Sort role classifications by count (descending)
     const sortedRoles = Object.entries(roleClassificationTotals)
+      .sort((a, b) => b[1] - a[1]);
+
+    // Sort organizations by count (descending)
+    const sortedOrgs = Object.entries(organizationTotals)
       .sort((a, b) => b[1] - a[1]);
 
     // Format date range for display
@@ -132,6 +141,19 @@ const handler = async (req: Request): Promise<Response> => {
         `).join('')
       : '';
 
+    const orgRows = sortedOrgs.length > 0
+      ? sortedOrgs.map(([org, count]) => `
+          <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${org}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">
+              <span style="background: #7c3aed; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold;">
+                ${count}
+              </span>
+            </td>
+          </tr>
+        `).join('')
+      : `<tr><td colspan="2" style="padding: 20px; text-align: center; color: #6b7280;">No applications this week</td></tr>`;
+
     const emailHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -161,6 +183,22 @@ const handler = async (req: Request): Promise<Response> => {
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:25px; margin:0 0 25px 0; border-radius:0 8px 8px 0; text-align:center;">
 <p style="margin:0 0 5px 0; font-size:14px; color:#2e7d32; text-transform:uppercase; letter-spacing:1px;">Total Applications</p>
 <p style="margin:0; font-size:48px; font-weight:bold; color:#2e7d32;">${totalApplications}</p>
+</div>
+
+<!-- Applications by Organization Card -->
+<div style="background-color:#f3e8ff; border-left:4px solid #7c3aed; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#7c3aed;">Applications by Organization</h2>
+<table style="width:100%; border-collapse:collapse;">
+<thead>
+<tr style="background:#f8fafc;">
+<th style="padding:12px; text-align:left; color:#1e3a5f; border-bottom:2px solid #7c3aed;">Organization</th>
+<th style="padding:12px; text-align:center; color:#1e3a5f; border-bottom:2px solid #7c3aed;">Applications</th>
+</tr>
+</thead>
+<tbody>
+${orgRows}
+</tbody>
+</table>
 </div>
 
 <!-- Applications by Opportunity Card -->
