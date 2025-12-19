@@ -85,7 +85,7 @@ const Opportunities = () => {
       <SkipNavigation />
       
       {/* Exemption Status Banner */}
-      <div className="py-3 px-4 text-center font-medium transition-colors text-primary-foreground bg-[#2a5f99]">
+      <div className="py-3 px-4 text-center font-medium transition-colors text-primary-foreground bg-primary">
         You may be exempt from new work requirements.<br />
         <a 
           href="https://docs.google.com/forms/d/e/1FAIpQLSfXDths0eQwRcWRMrqVdjjhILjLpi5qz7lMyn27VyhdKTt6nw/viewform" 
