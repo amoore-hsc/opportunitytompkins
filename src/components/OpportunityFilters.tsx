@@ -146,10 +146,19 @@ export const OpportunityFilters = ({
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="hours">Hours per Week: {filters.minHours}</Label>
-              <Slider id="hours" min={0} max={40} step={1} value={[filters.minHours]} onValueChange={value => setFilters({
-              ...filters,
-              minHours: value[0]
-            })} className="mt-2" />
+              <Slider 
+                id="hours" 
+                min={0} 
+                max={40} 
+                step={1} 
+                value={[filters.minHours]} 
+                onValueChange={value => setFilters({
+                  ...filters,
+                  minHours: value[0]
+                })} 
+                className="mt-2"
+                aria-valuetext={`${filters.minHours} hours per week`}
+              />
             </div>
 
             <div className="flex items-center space-x-2">
@@ -158,7 +167,7 @@ export const OpportunityFilters = ({
               busRoute: checked === true
             })} />
             <Label htmlFor="busRoute" className="cursor-pointer flex items-center gap-2">
-              <Bus className="h-4 w-4" />
+              <Bus className="h-4 w-4" aria-hidden="true" />
               On Bus Route Only
             </Label>
             </div>
@@ -184,16 +193,24 @@ export const OpportunityFilters = ({
             </Select>
           </div>
 
-          <div className="flex-1 space-y-2">
-            <Label>Days Available</Label>
+          <div className="flex-1 space-y-2" role="group" aria-labelledby="days-label">
+            <Label id="days-label">Days Available</Label>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex flex-wrap gap-2">
-                {daysOfWeek.map(day => <Button key={day} variant={filters.daysOfWeek.includes(day) ? "default" : "outline"} size="sm" onClick={() => toggleDay(day)} className="transition-all">
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by days of the week">
+                {daysOfWeek.map(day => <Button 
+                  key={day} 
+                  variant={filters.daysOfWeek.includes(day) ? "default" : "outline"} 
+                  size="sm" 
+                  onClick={() => toggleDay(day)} 
+                  className="transition-all"
+                  aria-pressed={filters.daysOfWeek.includes(day)}
+                  aria-label={`Filter by ${day}`}
+                >
                     {day}
                   </Button>)}
               </div>
               <Button variant="secondary" size="sm" onClick={clearAllFilters} className="gap-2 bg-success">
-                <RotateCcw className="h-4 w-4" />
+                <RotateCcw className="h-4 w-4" aria-hidden="true" />
                 Clear All Filters
               </Button>
             </div>

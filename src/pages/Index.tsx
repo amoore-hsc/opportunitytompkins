@@ -48,7 +48,7 @@ const Index = () => {
       <header className="border-b border-border bg-[#eeeeee]">
         <div className="container mx-auto px-4 py-6 bg-primary-foreground">
           <div className="flex items-center gap-2">
-            <Handshake className="h-8 w-8 text-primary" />
+            <Handshake className="h-8 w-8 text-primary" aria-hidden="true" />
             <h1 className="text-2xl font-bold text-foreground">Tompkins County 
 Opportunity Finder</h1>
           </div>
@@ -65,7 +65,7 @@ Opportunity Finder</h1>
           <div className="grid gap-6 sm:grid-cols-2">
             <Link to="/opportunities" className="group">
               <div className="rounded-xl border-2 border-primary bg-card p-8 transition-all hover:scale-105 hover:shadow-lg">
-                <Search className="mx-auto mb-4 h-12 w-12 text-primary" />
+                <Search className="mx-auto mb-4 h-12 w-12 text-primary" aria-hidden="true" />
                 <h3 className="mb-2 text-xl font-semibold text-foreground">Find an Opportunity</h3>
                 <p className="text-muted-foreground">Search for volunteer, training, and educational  opportunities in your area</p>
                 <Button className="mt-6 w-full" size="lg">
@@ -76,7 +76,7 @@ Opportunity Finder</h1>
 
             <Link to="/list-opportunity" className="group">
               <div className="rounded-xl border-2 bg-card p-8 transition-all hover:scale-105 hover:shadow-lg border-success">
-                <ListPlus className="mx-auto mb-4 h-12 w-12 text-success" />
+                <ListPlus className="mx-auto mb-4 h-12 w-12 text-success" aria-hidden="true" />
                 <h3 className="mb-2 text-xl font-semibold text-foreground">List an Opportunity</h3>
                 <p className="text-muted-foreground">Organizations: Post volunteer or training/ educational positions</p>
                 <Button variant="default" size="lg" className="mt-6 w-full bg-success">
