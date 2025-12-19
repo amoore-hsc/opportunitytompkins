@@ -45,7 +45,7 @@ const handler = async (req: Request): Promise<Response> => {
     const opportunitiesHtml = opportunities.map((opp) => `
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 20px 0; border-radius:0 8px 8px 0;">
 <h3 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">${opp.org_name}</h3>
-<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opp.type}</p>
+<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opp.type === 'volunteer' ? 'Volunteer' : opp.type === 'education' ? 'Education & Training' : opp.type}</p>
 <p style="margin:0 0 8px 0;"><strong>Location:</strong> ${opp.location}${opp.on_bus_route ? ' <span style="background-color:#2e7d32; color:white; padding:4px 10px; border-radius:4px; font-size:13px; font-weight:bold;">On Bus Route</span>' : ''}</p>
 <p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${opp.hours_available}</p>
 <p style="margin:0 0 8px 0;"><strong>Days/Times:</strong> ${opp.days_times_available}</p>
