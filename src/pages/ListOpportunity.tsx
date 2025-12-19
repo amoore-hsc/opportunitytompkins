@@ -172,6 +172,7 @@ const ListOpportunity = () => {
         days_times_available: daysTimesAvailable,
         additional_requirements: additionalRequirements.length > 0 ? additionalRequirements.join("; ") : null,
         org_name: formData.orgName,
+        contact_name: formData.contactName,
         org_email: formData.orgEmail,
         org_phone: formData.orgPhone
       }).select().single();
@@ -181,6 +182,7 @@ const ListOpportunity = () => {
       const { error: emailError } = await supabase.functions.invoke("send-confirmation-email", {
         body: {
           orgName: formData.orgName,
+          contactName: formData.contactName,
           orgEmail: formData.orgEmail,
           opportunityType: formData.type === "volunteer" ? "Volunteer" : "Education & Training",
           roleClassification: formData.roleClassification,

@@ -10,6 +10,7 @@ const corsHeaders = {
 
 interface ConfirmationEmailRequest {
   orgName: string;
+  contactName: string;
   orgEmail: string;
   opportunityType: string;
   roleClassification: string;
@@ -34,6 +35,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { 
       orgName, 
+      contactName,
       orgEmail, 
       opportunityType,
       roleClassification,
@@ -63,7 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
           
           <div style="padding: 30px 20px;">
-            <p style="color: #1e3a5f; font-size: 16px;">Dear ${orgName},</p>
+            <p style="color: #1e3a5f; font-size: 16px;">Dear ${contactName},</p>
             
             <p style="color: #333; line-height: 1.6;">Your opportunity has been successfully published to Tompkins County Opportunity Finder. Use this email to review your post and edit the listing with any corrections OR to remove the posting if the opportunity has been filled.</p>
             

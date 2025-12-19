@@ -16,6 +16,7 @@ interface ApplicationEmailRequest {
   hoursRequested: string;
   orgEmail: string;
   orgName: string;
+  contactName: string;
   opportunityDescription: string;
   opportunityType: string;
   positionTitle: string;
@@ -37,6 +38,7 @@ const handler = async (req: Request): Promise<Response> => {
       hoursRequested, 
       orgEmail, 
       orgName,
+      contactName,
       opportunityDescription,
       opportunityType,
       positionTitle,
@@ -91,7 +93,7 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
           
           <div style="padding: 30px 20px;">
-            <p style="color: #1e3a5f; font-size: 16px;">Dear ${orgName},</p>
+            <p style="color: #1e3a5f; font-size: 16px;">Dear ${contactName},</p>
             
             <p style="color: #333; line-height: 1.6;">You have a new application through Tompkins County Opportunity Finder.</p>
             
