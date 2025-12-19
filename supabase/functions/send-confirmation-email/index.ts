@@ -103,8 +103,8 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
 
           <div style="background-color: #1e3a5f; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
-            <p style="color: #ffffff; font-size: 14px; margin: 0;">
-              Thank you for supporting our community!<br>
+            <p style="color: #ffffff; font-size: 16px; margin: 0;">
+              🌟 Thank You for Supporting Our Community! 🌟<br>
               <strong>Tompkins County Opportunity Finder</strong>
             </p>
           </div>
