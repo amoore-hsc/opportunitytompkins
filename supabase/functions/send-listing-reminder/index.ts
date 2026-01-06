@@ -144,7 +144,7 @@ ${listingBlocks}
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">rhinton@uwtc.org</a></p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;"><a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">Contact Us</a></p>
 </td>
 </tr>
 
