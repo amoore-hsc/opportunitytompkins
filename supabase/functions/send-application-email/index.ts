@@ -16,6 +16,7 @@ interface ApplicationEmailRequest {
   hoursRequested: string;
   orgEmail: string;
   orgName: string;
+  orgPhone: string;
   contactName: string;
   opportunityDescription: string;
   opportunityType: string;
@@ -38,6 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
       hoursRequested, 
       orgEmail, 
       orgName,
+      orgPhone,
       contactName,
       opportunityDescription,
       opportunityType,
@@ -208,12 +210,17 @@ const handler = async (req: Request): Promise<Response> => {
 <!-- Next Steps Card -->
 <div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">What Happens Next?</h2>
-<p style="margin:0 0 8px 0;">1. <strong>${orgName}</strong> will review your application</p>
-<p style="margin:0 0 8px 0;">2. A representative will contact you to discuss availability and next steps</p>
-<p style="margin:0 0 0 0;">3. Please keep your phone and email accessible for their outreach</p>
+<p style="margin:0 0 8px 0;"><strong>${orgName}</strong> will review your application. A member of the organization may reach out to you to get more information or discuss next steps.</p>
+<p style="margin:0 0 0 0;">If you don't hear from the organization within 2 weeks, please reach out directly.</p>
 </div>
 
-<p style="margin:0 0 0 0;">If you have any questions, please contact the organization directly or reach out to us for assistance.</p>
+<!-- Organization Contact Card -->
+<div style="background-color:#f5f0ff; border-left:4px solid #6b46c1; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#6b46c1;">Organization Contact Information</h2>
+<p style="margin:0 0 8px 0;"><strong>Name:</strong> ${contactName}</p>
+<p style="margin:0 0 8px 0;"><strong>Email:</strong> ${orgEmail}</p>
+<p style="margin:0 0 0 0;"><strong>Phone:</strong> ${orgPhone}</p>
+</div>
 
 </td>
 </tr>
