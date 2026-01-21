@@ -159,6 +159,8 @@ const Admin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
@@ -298,6 +300,39 @@ const Admin = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/admin`,
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        setResetEmailSent(true);
+        toast({
+          title: "Password Reset Email Sent",
+          description: "Check your inbox for a link to reset your password.",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
@@ -424,6 +459,69 @@ const Admin = () => {
 
   // Show login if not authenticated
   if (!user) {
+    // Forgot password view
+    if (isForgotPassword) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
+            <div className="mb-6 text-center">
+              <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
+              <h1 className="text-2xl font-bold text-foreground">Reset Password</h1>
+              <p className="text-sm text-muted-foreground mt-2">
+                Enter your email to receive a password reset link
+              </p>
+            </div>
+            {resetEmailSent ? (
+              <div className="text-center space-y-4">
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-green-800">
+                    Password reset email sent! Check your inbox for the reset link.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    setIsForgotPassword(false);
+                    setResetEmailSent(false);
+                  }}
+                >
+                  Back to Sign In
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@example.com"
+                    required
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? "Sending..." : "Send Reset Link"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full"
+                  onClick={() => setIsForgotPassword(false)}
+                >
+                  Back to Sign In
+                </Button>
+              </form>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Regular login/signup view
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
@@ -462,6 +560,16 @@ const Admin = () => {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (isSignUp ? "Creating account..." : "Signing in...") : (isSignUp ? "Sign Up" : "Sign In")}
             </Button>
+            {!isSignUp && (
+              <Button
+                type="button"
+                variant="link"
+                className="w-full text-sm"
+                onClick={() => setIsForgotPassword(true)}
+              >
+                Forgot your password?
+              </Button>
+            )}
             <Button
               type="button"
               variant="ghost"
