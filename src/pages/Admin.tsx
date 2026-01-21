@@ -753,6 +753,38 @@ const Admin = () => {
                                 }
                               />
                             </div>
+                            <div className="space-y-2">
+                              <Label>Contact Name</Label>
+                              <Input
+                                value={editingOpportunity.contact_name || ""}
+                                onChange={(e) =>
+                                  setEditingOpportunity({ ...editingOpportunity, contact_name: e.target.value })
+                                }
+                                placeholder="Name of the contact person"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Organization Email</Label>
+                              <Input
+                                type="email"
+                                value={editingOpportunity.org_email}
+                                onChange={(e) =>
+                                  setEditingOpportunity({ ...editingOpportunity, org_email: e.target.value })
+                                }
+                                placeholder="contact@organization.org"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Organization Phone</Label>
+                              <Input
+                                type="tel"
+                                value={editingOpportunity.org_phone}
+                                onChange={(e) =>
+                                  setEditingOpportunity({ ...editingOpportunity, org_phone: e.target.value })
+                                }
+                                placeholder="(607) 555-1234"
+                              />
+                            </div>
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 checked={editingOpportunity.active}
