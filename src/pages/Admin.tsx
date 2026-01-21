@@ -170,30 +170,60 @@ const Admin = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // If we arrived via a password recovery email link, exchange the code for a session
-    // and show the "Set new password" UI.
+    // If we arrived via a password recovery email link, establish a session and show the
+    // "Set new password" UI.
+    // NOTE: Some recovery links put params in the URL hash (e.g. #access_token=...&type=recovery)
+    // rather than the query string.
     const url = new URL(window.location.href);
-    const type = url.searchParams.get("type");
-    const code = url.searchParams.get("code");
+    const hashParams = new URLSearchParams(url.hash.replace(/^#/, ""));
 
-    if (type === "recovery") {
+    const type = url.searchParams.get("type") ?? hashParams.get("type");
+    const code = url.searchParams.get("code");
+    const accessToken = hashParams.get("access_token");
+    const refreshToken = hashParams.get("refresh_token");
+
+    const clearAuthParamsFromUrl = () => {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    };
+
+    const establishRecoverySession = async () => {
+      if (type !== "recovery") return;
+
       setIsResetPassword(true);
 
+      // PKCE flow (code in query string)
       if (code) {
-        supabase.auth.exchangeCodeForSession(window.location.href).then(({ error }) => {
-          if (error) {
-            toast({
-              title: "Password reset link error",
-              description: error.message,
-              variant: "destructive",
-            });
-          }
-
-          // Remove auth params from the URL to avoid confusion on refresh.
-          window.history.replaceState({}, document.title, window.location.pathname);
-        });
+        const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+        if (error) {
+          toast({
+            title: "Password reset link error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+        clearAuthParamsFromUrl();
+        return;
       }
-    }
+
+      // Implicit flow (tokens in hash)
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (error) {
+          toast({
+            title: "Password reset link error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+        clearAuthParamsFromUrl();
+      }
+    };
+
+    // Don't block the rest of auth initialization.
+    void establishRecoverySession();
 
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
