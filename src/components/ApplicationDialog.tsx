@@ -80,7 +80,7 @@ export const ApplicationDialog = ({
 
       toast({
         title: "Application sent!",
-        description: "The organization will contact you soon.",
+        description: "A confirmation email has been sent to your inbox with the application details and next steps.",
       });
 
       setOpen(false);
