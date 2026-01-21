@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
-import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle } from "lucide-react";
+import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -115,6 +115,7 @@ interface Opportunity {
   org_phone: string;
   active: boolean;
   updated_at: string;
+  edit_token: string;
 }
 
 const StaleListingsAlert = ({ opportunities }: { opportunities: Opportunity[] }) => {
@@ -160,6 +161,7 @@ const Admin = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
+  const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -299,6 +301,49 @@ const Admin = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
+  };
+
+  const handleResendEmail = async (opp: Opportunity) => {
+    setSendingEmailId(opp.id);
+
+    try {
+      const siteUrl = window.location.origin;
+
+      const { error } = await supabase.functions.invoke("send-confirmation-email", {
+        body: {
+          orgName: opp.org_name,
+          contactName: opp.contact_name || opp.org_name,
+          orgEmail: opp.org_email,
+          opportunityType: opp.type,
+          roleClassification: opp.role_classification,
+          positionTitle: opp.position_title,
+          additionalRequirements: opp.additional_requirements,
+          description: opp.description,
+          location: opp.location,
+          onBusRoute: opp.on_bus_route,
+          hoursAvailable: opp.hours_available,
+          daysTimesAvailable: opp.days_times_available,
+          editToken: opp.edit_token,
+          siteUrl,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Email Sent",
+        description: `Confirmation email resent to ${opp.org_email}`,
+      });
+    } catch (error: any) {
+      console.error("Error resending email:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to resend email",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingEmailId(null);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -725,6 +770,15 @@ const Admin = () => {
                         )}
                       </DialogContent>
                     </Dialog>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleResendEmail(opp)}
+                      disabled={sendingEmailId === opp.id}
+                      title="Resend confirmation email with magic edit link"
+                    >
+                      <Mail className={`h-4 w-4 ${sendingEmailId === opp.id ? "animate-pulse" : ""}`} />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
