@@ -339,7 +339,7 @@ ${filledRows}
     // Send the email
     const emailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
-      to: ["amoore@hsctc.org"],
+      to: ["amoore@hsctc.org", "cwilcox@hsctc.org", "rhinton@uwtc.org"],
       subject: `Weekly Application Report - ${formatDate(startDate)} to ${formatDate(endDate)}`,
       html: emailHtml,
     });
