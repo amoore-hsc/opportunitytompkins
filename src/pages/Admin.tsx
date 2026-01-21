@@ -161,17 +161,49 @@ const Admin = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [isResetPassword, setIsResetPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
+    // If we arrived via a password recovery email link, exchange the code for a session
+    // and show the "Set new password" UI.
+    const url = new URL(window.location.href);
+    const type = url.searchParams.get("type");
+    const code = url.searchParams.get("code");
+
+    if (type === "recovery") {
+      setIsResetPassword(true);
+
+      if (code) {
+        supabase.auth.exchangeCodeForSession(window.location.href).then(({ error }) => {
+          if (error) {
+            toast({
+              title: "Password reset link error",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+
+          // Remove auth params from the URL to avoid confusion on refresh.
+          window.history.replaceState({}, document.title, window.location.pathname);
+        });
+      }
+    }
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+
+        if (event === "PASSWORD_RECOVERY") {
+          setIsResetPassword(true);
+        }
         
         // Check admin role after auth state changes
         if (session?.user) {
@@ -333,6 +365,59 @@ const Admin = () => {
     }
   };
 
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!newPassword) {
+      toast({
+        title: "Missing password",
+        description: "Please enter a new password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure both password fields match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Password updated",
+        description: "You can now sign in with your new password.",
+      });
+
+      setIsResetPassword(false);
+      setNewPassword("");
+      setConfirmNewPassword("");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
@@ -446,12 +531,69 @@ const Admin = () => {
     }
   };
 
-  if (loading) {
+  if (loading && !isResetPassword) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           <p className="mt-2 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Password reset (set new password) view
+  if (isResetPassword) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
+          <div className="mb-6 text-center">
+            <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
+            <h1 className="text-2xl font-bold text-foreground">Set New Password</h1>
+            <p className="text-sm text-muted-foreground mt-2">
+              Choose a new password for your admin account
+            </p>
+          </div>
+          <form onSubmit={handleUpdatePassword} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input
+                id="new-password"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter a new password"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-new-password">Confirm New Password</Label>
+              <Input
+                id="confirm-new-password"
+                type="password"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                placeholder="Re-enter the new password"
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Updating..." : "Update Password"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                setIsResetPassword(false);
+                setNewPassword("");
+                setConfirmNewPassword("");
+              }}
+            >
+              Cancel
+            </Button>
+          </form>
         </div>
       </div>
     );
@@ -473,8 +615,8 @@ const Admin = () => {
             </div>
             {resetEmailSent ? (
               <div className="text-center space-y-4">
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-green-800">
+                <div className="p-4 bg-muted border border-border rounded-lg">
+                  <p className="text-foreground">
                     Password reset email sent! Check your inbox for the reset link.
                   </p>
                 </div>
