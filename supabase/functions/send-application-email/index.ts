@@ -149,16 +149,100 @@ const handler = async (req: Request): Promise<Response> => {
 </body>
 </html>`;
 
-    const emailResponse = await resend.emails.send({
+    // Email to organization
+    const orgEmailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
       to: [orgEmail],
       subject: `New Application - ${positionTitle || 'Position'}`,
       html: emailHtml,
     });
 
-    console.log("Application email sent successfully:", emailResponse);
+    console.log("Organization email sent successfully:", orgEmailResponse);
 
-    return new Response(JSON.stringify(emailResponse), {
+    // Applicant confirmation email
+    const applicantEmailHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Submitted</title>
+</head>
+<body style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:16px; line-height:1.6; color:#333333; background-color:#f5f5f5;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
+<tr>
+<td align="center" style="padding:40px 20px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; max-width:600px; border-radius:8px; overflow:hidden;">
+
+<!-- Header -->
+<tr>
+<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
+<h1 style="margin:0; font-size:28px; color:#ffffff;">Application Submitted!</h1>
+</td>
+</tr>
+
+<!-- Main Content -->
+<tr>
+<td style="padding:30px;">
+
+<p style="margin:0 0 25px 0;">Hi ${clientName},</p>
+
+<p style="margin:0 0 25px 0;">Thank you for submitting your application through Tompkins Opportunity. Here's a summary of your application:</p>
+
+<!-- Application Details Card -->
+<div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Application Details</h2>
+<p style="margin:0 0 8px 0;"><strong>Position:</strong> ${positionTitle || 'Not specified'}</p>
+<p style="margin:0 0 8px 0;"><strong>Organization:</strong> ${orgName}</p>
+<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opportunityType}</p>
+<p style="margin:0 0 0 0;"><strong>Hours Requested:</strong> ${hoursRequested}</p>
+</div>
+
+<!-- Your Information Card -->
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Your Contact Information</h2>
+<p style="margin:0 0 8px 0;"><strong>Name:</strong> ${clientName}</p>
+<p style="margin:0 0 8px 0;"><strong>Email:</strong> ${clientEmail}</p>
+<p style="margin:0 0 0 0;"><strong>Phone:</strong> ${clientPhone}</p>
+</div>
+
+<!-- Next Steps Card -->
+<div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">What Happens Next?</h2>
+<p style="margin:0 0 8px 0;">1. <strong>${orgName}</strong> will review your application</p>
+<p style="margin:0 0 8px 0;">2. A representative will contact you to discuss availability and next steps</p>
+<p style="margin:0 0 0 0;">3. Please keep your phone and email accessible for their outreach</p>
+</div>
+
+<p style="margin:0 0 0 0;">If you have any questions, please contact the organization directly or reach out to us for assistance.</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
+<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;"><a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">Contact Us</a></p>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
+
+    const applicantEmailResponse = await resend.emails.send({
+      from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+      to: [clientEmail],
+      subject: `Application Submitted - ${positionTitle || 'Position'} at ${orgName}`,
+      html: applicantEmailHtml,
+    });
+
+    console.log("Applicant confirmation email sent successfully:", applicantEmailResponse);
+
+    return new Response(JSON.stringify({ orgEmail: orgEmailResponse, applicantEmail: applicantEmailResponse }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
