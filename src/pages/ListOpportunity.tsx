@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { triggerConfetti } from "@/lib/confetti";
 import { z } from "zod";
 
 const addressSchema = z.string().min(1, "Address is required").refine(val => {
@@ -202,6 +203,8 @@ const ListOpportunity = () => {
         console.error("Email error:", emailError);
       }
 
+      triggerConfetti();
+      
       toast({
         title: "Success!",
         description: "Your opportunity has been listed. Check your email for confirmation."
