@@ -74,7 +74,7 @@ function generateEmail(
               <p style="margin: 0 0 20px 0;">Hi ${contactName},</p>
               
               <p style="margin: 0 0 25px 0;">
-                We're excited to share that your <strong>${positionTitle}</strong> listing at <strong>${opportunity.org_name}</strong> 
+                We're excited to share that your <strong>${positionTitle}</strong> listing 
                 has been generating interest since it was posted on ${formatDate(opportunity.created_at)}!
               </p>
               
@@ -127,16 +127,9 @@ function generateEmail(
           
           <!-- Footer -->
           <tr>
-            <td style="background-color: #1e3a5f; padding: 25px 40px; text-align: center;">
-              <p style="color: #ffffff; margin: 0 0 10px 0; font-size: 14px;">
-                Tompkins Opportunity
-              </p>
-              <p style="color: #94a3b8; margin: 0 0 10px 0; font-size: 12px;">
-                Connecting community members with meaningful opportunities
-              </p>
-              <p style="margin: 0; font-size: 12px;">
-                <a href="mailto:rhinton@uwtc.org" style="color: #94a3b8; text-decoration: underline;">Contact Us</a>
-              </p>
+            <td style="background-color: #1e3a5f; padding: 25px; text-align: center;">
+              <p style="margin: 0 0 5px 0; color: #ffffff; font-size: 16px;">Need Help?</p>
+              <p style="margin: 0; color: #a0c4e8; font-size: 14px;"><a href="mailto:rhinton@uwtc.org" style="color: #ffffff; font-weight: bold;">Contact Us</a></p>
             </td>
           </tr>
           
@@ -210,7 +203,7 @@ const handler = async (req: Request): Promise<Response> => {
       const { error: emailError } = await resend.emails.send({
         from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
         to: [testEmail],
-        subject: `Great News! Your Listing is Generating Interest`,
+        subject: `Great News! Interest In Your Listing`,
         html: testHtml,
       });
 
@@ -309,7 +302,7 @@ const handler = async (req: Request): Promise<Response> => {
         const { error: emailError } = await resend.emails.send({
           from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
           to: [opportunity.org_email],
-          subject: `Great News! Your Listing is Generating Interest`,
+          subject: `Great News! Interest In Your Listing`,
           html: emailHtml,
         });
 
