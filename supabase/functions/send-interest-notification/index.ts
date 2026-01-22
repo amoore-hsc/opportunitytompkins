@@ -86,7 +86,7 @@ function generateEmail(
                       🎉 ${applicationCount} ${applicationCount === 1 ? 'Application' : 'Applications'} Received!
                     </h3>
                     <p style="margin: 0; color: #333333;">
-                      Your listing has received ${applicationCount} ${applicationCount === 1 ? 'application' : 'applications'} in the first two weeks.
+                      Your listing has received ${applicationCount} ${applicationCount === 1 ? 'application' : 'applications'} in the first 2 weeks.
                     </p>
                   </td>
                 </tr>
