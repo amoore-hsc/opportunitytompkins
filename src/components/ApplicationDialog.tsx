@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { triggerConfetti } from "@/lib/confetti";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -78,6 +79,8 @@ export const ApplicationDialog = ({
 
       if (error) throw error;
 
+      triggerConfetti();
+      
       toast({
         title: "Application sent!",
         description: "A confirmation email has been sent to your inbox with the application details and next steps.",
