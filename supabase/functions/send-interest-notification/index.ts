@@ -50,7 +50,7 @@ function generateEmail(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Great News About Your Listing!</title>
+  <title>Outreach Reminder</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.6; color: #333333; background-color: #f5f5f5;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -62,7 +62,7 @@ function generateEmail(
           <tr>
             <td style="background-color: #1e3a5f; padding: 30px 40px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">
-                Great News About Your Listing!
+                Outreach Reminder
               </h1>
             </td>
           </tr>
@@ -86,8 +86,7 @@ function generateEmail(
                       🎉 ${applicationCount} ${applicationCount === 1 ? 'Application' : 'Applications'} Received!
                     </h3>
                     <p style="margin: 0; color: #333333;">
-                      Your listing has received ${applicationCount} ${applicationCount === 1 ? 'application' : 'applications'} in the first two weeks. 
-                      This is a great sign that community members are interested in this opportunity!
+                      Your listing has received ${applicationCount} ${applicationCount === 1 ? 'application' : 'applications'} in the first two weeks.
                     </p>
                   </td>
                 </tr>
@@ -99,9 +98,9 @@ function generateEmail(
                   <td style="border-left: 4px solid #3b82f6; background-color: #eff6ff; padding: 20px;">
                     <h3 style="color: #1e40af; margin: 0 0 15px 0; font-size: 18px;">Suggested Next Steps</h3>
                     <ul style="margin: 0; padding-left: 20px; color: #333333;">
-                      <li style="margin-bottom: 8px;">Review any applications you've received and follow up promptly</li>
+                      <li style="margin-bottom: 8px;">Review any applications you've received and follow up with the applicants within 2 weeks</li>
                       <li style="margin-bottom: 8px;">If you've filled the position, please update or deactivate your listing</li>
-                      <li style="margin-bottom: 0;">Keep your listing details current to attract qualified candidates</li>
+                      <li style="margin-bottom: 0;">Keep your listing details current to attract qualified volunteers</li>
                     </ul>
                   </td>
                 </tr>
@@ -119,10 +118,6 @@ function generateEmail(
                 </tr>
               </table>
               
-              <p style="margin: 0 0 15px 0;">
-                If you have any questions or need assistance, please don't hesitate to reach out to us.
-              </p>
-              
               <p style="margin: 0;">
                 Thank you for being part of the Tompkins Opportunity network!
               </p>
@@ -136,8 +131,11 @@ function generateEmail(
               <p style="color: #ffffff; margin: 0 0 10px 0; font-size: 14px;">
                 Tompkins Opportunity
               </p>
-              <p style="color: #94a3b8; margin: 0; font-size: 12px;">
+              <p style="color: #94a3b8; margin: 0 0 10px 0; font-size: 12px;">
                 Connecting community members with meaningful opportunities
+              </p>
+              <p style="margin: 0; font-size: 12px;">
+                <a href="mailto:rhinton@uwtc.org" style="color: #94a3b8; text-decoration: underline;">Contact Us</a>
               </p>
             </td>
           </tr>
@@ -212,7 +210,7 @@ const handler = async (req: Request): Promise<Response> => {
       const { error: emailError } = await resend.emails.send({
         from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
         to: [testEmail],
-        subject: `Great News! Your ${sampleOpp.position_title || sampleOpp.type} Listing Has Received Interest`,
+        subject: `Great News! Your Listing is Generating Interest`,
         html: testHtml,
       });
 
@@ -311,7 +309,7 @@ const handler = async (req: Request): Promise<Response> => {
         const { error: emailError } = await resend.emails.send({
           from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
           to: [opportunity.org_email],
-          subject: `Great News! Your ${positionTitle} Listing Has Received Interest`,
+          subject: `Great News! Your Listing is Generating Interest`,
           html: emailHtml,
         });
 
