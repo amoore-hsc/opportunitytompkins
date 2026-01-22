@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.confirm-listing-active]
 verify_jwt = false
+
+[functions.send-interest-notification]
+verify_jwt = false

@@ -58,6 +58,7 @@ export type Database = {
           edit_token: string
           hours_available: string
           id: string
+          interest_notification_sent_at: string | null
           location: string
           on_bus_route: boolean
           org_email: string
@@ -82,6 +83,7 @@ export type Database = {
           edit_token?: string
           hours_available: string
           id?: string
+          interest_notification_sent_at?: string | null
           location: string
           on_bus_route?: boolean
           org_email: string
@@ -106,6 +108,7 @@ export type Database = {
           edit_token?: string
           hours_available?: string
           id?: string
+          interest_notification_sent_at?: string | null
           location?: string
           on_bus_route?: boolean
           org_email?: string
