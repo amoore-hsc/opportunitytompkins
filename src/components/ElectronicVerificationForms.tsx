@@ -76,7 +76,7 @@ export const ElectronicVerificationForms = () => {
       </div>
       
       {/* Row 4 - Submit */}
-      <div className="flex justify-center mt-6">
+      <div className="flex flex-col items-center mt-6 gap-2">
         <a 
           href="https://otda.ny.gov/policy/directives/2019/ADM/19-ADM-07-Attachment-1.pdf" 
           target="_blank" 
@@ -89,6 +89,9 @@ export const ElectronicVerificationForms = () => {
             <VisuallyHidden>(opens in new tab)</VisuallyHidden>
           </Button>
         </a>
+        <p className="text-sm text-muted-foreground text-center">
+          If the link doesn't open, right-click the button and select "Open link in new tab"
+        </p>
       </div>
     </div>
   );
