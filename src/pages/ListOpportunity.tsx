@@ -16,11 +16,40 @@ import { useToast } from "@/hooks/use-toast";
 import { triggerConfetti } from "@/lib/confetti";
 import { z } from "zod";
 
+const isValidAddressPattern = (address: string): boolean => {
+  // If has commas, check for at least 2 parts
+  const parts = address.split(',').map(p => p.trim()).filter(p => p.length > 0);
+  if (parts.length >= 2) {
+    return true;
+  }
+  
+  // Check for pattern: [anything] [City] [State] [optional ZIP]
+  // NY state patterns: NY, New York
+  const statePattern = /\b(NY|New York)\s*(\d{5}(-\d{4})?)?$/i;
+  if (!statePattern.test(address)) {
+    return false;
+  }
+  
+  // Remove state and ZIP to get remaining address
+  const beforeState = address.replace(statePattern, '').trim();
+  
+  // Must have street indicator to separate street from city
+  const streetIndicators = /\b(st|ave|rd|dr|ln|blvd|street|avenue|road|drive|lane|boulevard|way|court|ct|place|pl|pkwy|parkway|cir|circle|ter|terrace|hwy|highway)\.?\s+/i;
+  
+  // Check if there's content after a street indicator (the city name)
+  if (streetIndicators.test(beforeState)) {
+    const afterStreet = beforeState.split(streetIndicators).pop()?.trim();
+    // Must have at least one word for city name
+    return !!afterStreet && afterStreet.length > 0;
+  }
+  
+  return false;
+};
+
 const addressSchema = z.string().min(1, "Address is required").refine(val => {
-  const parts = val.split(',').map(p => p.trim()).filter(p => p.length > 0);
-  return parts.length >= 2;
+  return isValidAddressPattern(val);
 }, {
-  message: "Please enter a complete address with street, city, and state (e.g., 123 Main St, Ithaca, NY)"
+  message: "Please enter a complete address with street, city, and state (e.g., 123 Main St, Ithaca, NY or 123 Main St Ithaca NY 14850)"
 });
 
 type DaySchedule = {
@@ -395,7 +424,7 @@ const ListOpportunity = () => {
                   setLocationError(result.error.errors[0].message);
                 }
               }}
-              placeholder="e.g., 123 Main St, Ithaca, NY"
+              placeholder="e.g., 123 Main St, Ithaca, NY or 123 Main St Ithaca NY 14850"
               className={locationError ? "border-destructive" : ""}
             />
             {locationError && (
