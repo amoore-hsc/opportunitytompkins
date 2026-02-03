@@ -38,7 +38,7 @@ export const ElectronicVerificationForms = () => {
       {/* Row 2 */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3 items-stretch mt-6">
         <a 
-          href="https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:a9a48889-e595-447b-92c6-27db0e3408c0" 
+          href="https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:8805a8c0-45ae-4b41-923f-7ce1259fcc67" 
           target="_blank" 
           rel="noopener noreferrer"
           className="h-full"
