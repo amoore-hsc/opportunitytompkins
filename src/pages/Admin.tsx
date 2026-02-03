@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
-import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff } from "lucide-react";
+import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -170,6 +170,7 @@ const Admin = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
+  const [previewingEmailOpp, setPreviewingEmailOpp] = useState<Opportunity | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -497,6 +498,96 @@ const Admin = () => {
     } finally {
       setSendingEmailId(null);
     }
+  };
+
+  const generateEmailPreviewHtml = (opp: Opportunity): string => {
+    const siteUrl = window.location.origin;
+    const editUrl = `${siteUrl}/edit-opportunity/${opp.edit_token}`;
+    
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listing Confirmation</title>
+</head>
+<body style="margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:16px; line-height:1.6; color:#333333; background-color:#f5f5f5;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5;">
+<tr>
+<td align="center" style="padding:40px 20px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; max-width:600px; border-radius:8px; overflow:hidden;">
+
+<!-- Header -->
+<tr>
+<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
+<h1 style="margin:0; font-size:28px; color:#ffffff;">⭐ Thank You for Supporting<br>Our Community ⭐</h1>
+</td>
+</tr>
+
+<!-- Main Content -->
+<tr>
+<td style="padding:30px;">
+
+<p style="margin:0 0 25px 0;">Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting when the opportunity is filled.</p>
+
+<!-- Your Listing Details Card -->
+<div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Your Listing Details</h2>
+<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opp.type}</p>
+<p style="margin:0 0 8px 0;"><strong>Role Classification:</strong> ${opp.role_classification || "Not specified"}</p>
+${opp.position_title ? `<p style="margin:0 0 8px 0;"><strong>Position Title:</strong> ${opp.position_title}</p>` : ""}
+<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${opp.description}</p>
+<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${opp.location}</p>
+<p style="margin:0 0 8px 0;"><strong>On Bus Route:</strong> ${opp.on_bus_route ? "Yes" : "No"}</p>
+<p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${opp.hours_available}</p>
+<p style="margin:0 0 8px 0;"><strong>Days/Times Available:</strong> ${opp.days_times_available}</p>
+${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirements:</strong> ${opp.additional_requirements}</p>` : ""}
+</div>
+
+<!-- What Happens Next Card -->
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">What Happens Next?</h2>
+<p style="margin:0 0 8px 0;">1. Clients can apply directly through the platform</p>
+<p style="margin:0 0 8px 0;">2. You will receive a notification to this email when someone applies</p>
+<p style="margin:0 0 8px 0;">3. Contact applicants to confirm availability and interest</p>
+<p style="margin:0 0 8px 0;">4. Remove your posting when the position has been filled</p>
+<p style="margin:0 0 0 0;">5. Complete monthly documentation on behalf of the volunteer</p>
+</div>
+
+<!-- Update or Remove Card -->
+<div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">Update or Remove Your Listing</h2>
+<p style="margin:0 0 15px 0;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
+<p style="margin:0 0 15px 0; text-align:center;">
+<a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#e67e22; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit Your Listing</a>
+</p>
+<p style="margin:0; font-size:13px; color:#666666; text-align:center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
+</div>
+
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
+<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">rhinton@uwtc.org</a></p>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
+  };
+
+  const handleConfirmSendEmail = async () => {
+    if (!previewingEmailOpp) return;
+    setPreviewingEmailOpp(null);
+    await handleResendEmail(previewingEmailOpp);
   };
 
   const handleDelete = async (id: string) => {
@@ -1121,9 +1212,9 @@ const Admin = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleResendEmail(opp)}
+                      onClick={() => setPreviewingEmailOpp(opp)}
                       disabled={sendingEmailId === opp.id}
-                      title="Resend confirmation email with magic edit link"
+                      title="Preview and resend confirmation email"
                     >
                       <Mail className={`h-4 w-4 ${sendingEmailId === opp.id ? "animate-pulse" : ""}`} />
                     </Button>
@@ -1140,6 +1231,38 @@ const Admin = () => {
             </TableBody>
           </Table>
         </div>
+
+        {/* Email Preview Dialog */}
+        <Dialog open={!!previewingEmailOpp} onOpenChange={(open) => !open && setPreviewingEmailOpp(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+            <DialogHeader>
+              <DialogTitle>Email Preview</DialogTitle>
+              <DialogDescription>
+                Review the confirmation email before sending to{" "}
+                <span className="font-medium text-foreground">{previewingEmailOpp?.org_email}</span>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex-1 min-h-0 overflow-hidden rounded-lg border border-border bg-muted">
+              {previewingEmailOpp && (
+                <iframe
+                  srcDoc={generateEmailPreviewHtml(previewingEmailOpp)}
+                  title="Email Preview"
+                  className="w-full h-[500px] bg-white"
+                  sandbox=""
+                />
+              )}
+            </div>
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setPreviewingEmailOpp(null)}>
+                Cancel
+              </Button>
+              <Button onClick={handleConfirmSendEmail} disabled={sendingEmailId !== null}>
+                <Send className="mr-2 h-4 w-4" />
+                Send Email
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
