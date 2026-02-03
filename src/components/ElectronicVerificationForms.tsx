@@ -10,9 +10,9 @@ export const ElectronicVerificationForms = () => {
       {/* Row 1 */}
       <div className="grid gap-6 md:grid-cols-2 items-stretch">
         <a 
-          href="https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:ae18dfb4-4586-4ba4-a26d-1fb6e34f3b15" 
+          href="https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:9929ffa2-71b0-4752-8e38-ee537cae93b7" 
           target="_blank"
-          rel="noopener noreferrer" 
+          rel="noopener noreferrer"
           className="h-full"
         >
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
