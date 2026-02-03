@@ -50,7 +50,7 @@ export const ElectronicVerificationForms = () => {
           </Button>
         </a>
         <a 
-          href="https://docs.google.com/document/d/1__P8F3DkuJWpo-C4206thP1Ix3JyitZY/edit" 
+          href="https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:24e801ef-9093-4b49-aba4-2eb8a4453126" 
           target="_blank" 
           rel="noopener noreferrer" 
           className="h-full"
