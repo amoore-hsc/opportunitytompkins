@@ -22,9 +22,9 @@ export const ElectronicVerificationForms = () => {
           </Button>
         </a>
         <a 
-          href="https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:8b549792-7171-449e-8337-1054b12b6fb1" 
+          href="https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:babb6df6-e4f0-41cc-8fcb-ef2fa685a6a9" 
           target="_blank" 
-          rel="noopener noreferrer" 
+          rel="noopener noreferrer"
           className="h-full"
         >
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
