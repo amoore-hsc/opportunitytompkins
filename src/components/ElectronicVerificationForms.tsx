@@ -22,7 +22,7 @@ export const ElectronicVerificationForms = () => {
           </Button>
         </a>
         <a 
-          href="https://hipaa.jotform.com/sign/253434861321049/invite/01kc4jf96z3caf7c048e46ea9f" 
+          href="https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:8b549792-7171-449e-8337-1054b12b6fb1" 
           target="_blank" 
           rel="noopener noreferrer" 
           className="h-full"
