@@ -78,8 +78,8 @@ export const ElectronicVerificationForms = () => {
       {/* Row 4 - Submit */}
       <div className="flex flex-col items-center mt-6 gap-2">
         <a 
-          href="https://otda.ny.gov/policy/directives/2019/ADM/19-ADM-07-Attachment-1.pdf" 
-          target="_blank" 
+          href="https://otda.ny.gov/programs/nydocsubmit" 
+          target="_blank"
           rel="noopener noreferrer" 
           className="w-full"
         >
