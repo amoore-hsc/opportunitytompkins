@@ -1,77 +1,41 @@
 
-
-# Plan: Simplified Address Validation (No State/ZIP Required)
+# Plan: Add Helper Text for NYDocSubmit PDF Link
 
 ## Overview
-Simplify the address validation to only require a street address and city name. Since all listings are in the same state (New York), we can remove the state requirement and the ZIP code was already optional.
-
-## How It Will Work
-
-The simplified validation will accept:
-- `388 Upper Oakwood Ave Elmira` (street + city)
-- `123 Main St, Ithaca` (with comma)
-- `388 Upper Oakwood Ave Elmira NY 14903` (full address still works)
-
-Pattern detection uses:
-- **Street indicators**: St, Ave, Rd, Dr, Blvd, etc. to identify where street ends
-- **City name**: At least one word after the street indicator
+Add helper text below the "Submit Documentation to DSS via NYDocSubmit" button explaining that users may need to right-click and select "Open link in new tab" if their browser blocks the PDF.
 
 ## Changes
 
-### File: `src/pages/ListOpportunity.tsx`
+### File: `src/components/ElectronicVerificationForms.tsx`
 
-**1. Simplified helper function (lines 19-47)**
+**Update the Submit button section (lines 78-92)**
 
-```typescript
-const isValidAddressPattern = (address: string): boolean => {
-  // If has commas, check for at least 2 parts (street, city)
-  const parts = address.split(',').map(p => p.trim()).filter(p => p.length > 0);
-  if (parts.length >= 2) {
-    return true;
-  }
-  
-  // For addresses without commas, detect street indicator followed by city name
-  // Optionally may include state and/or ZIP at the end
-  const streetIndicators = /\b(st|ave|rd|dr|ln|blvd|street|avenue|road|drive|lane|boulevard|way|court|ct|place|pl|pkwy|parkway|cir|circle|ter|terrace|hwy|highway)\.?\s+/i;
-  
-  // Check if there's content after a street indicator (the city name)
-  if (streetIndicators.test(address)) {
-    const afterStreet = address.split(streetIndicators).pop()?.trim();
-    // Must have at least one word for city name (ignore optional state/zip at end)
-    return !!afterStreet && afterStreet.length > 0;
-  }
-  
-  return false;
-};
+Add a small helper text paragraph below the button explaining the workaround for Chrome blocking:
+
+```tsx
+{/* Row 4 - Submit */}
+<div className="flex flex-col items-center mt-6 gap-2">
+  <a 
+    href="https://otda.ny.gov/policy/directives/2019/ADM/19-ADM-07-Attachment-1.pdf" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="w-full"
+  >
+    <Button variant="success" className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
+      <Send className="mr-2 h-5 w-5 shrink-0" aria-hidden="true" />
+      Submit Documentation to DSS via NYDocSubmit
+      <VisuallyHidden>(opens in new tab)</VisuallyHidden>
+    </Button>
+  </a>
+  <p className="text-sm text-muted-foreground text-center">
+    If the link doesn't open, right-click the button and select "Open link in new tab"
+  </p>
+</div>
 ```
 
-**2. Update error message (lines 49-53)**
-
-```typescript
-const addressSchema = z.string().min(1, "Address is required").refine(val => {
-  return isValidAddressPattern(val);
-}, {
-  message: "Please enter a complete address with street and city (e.g., 123 Main St, Ithaca or 123 Main St Ithaca)"
-});
-```
-
-**3. Update placeholder text (around line 427)**
-
-```typescript
-placeholder="e.g., 123 Main St, Ithaca or 123 Main St Ithaca"
-```
-
-## Examples of What Will Now Work
-
-| Input | Result |
-|-------|--------|
-| `388 Upper Oakwood Ave Elmira` | Valid |
-| `123 Main St Ithaca` | Valid |
-| `123 Main St, Ithaca` | Valid |
-| `388 Upper Oakwood Ave Elmira NY 14903` | Valid (state/zip still accepted) |
-| `Just some text` | Invalid (no street indicator) |
-| `123 Main St` | Invalid (no city after street) |
+## What Changes
+- Wrapper div changes from `flex justify-center` to `flex flex-col items-center gap-2` to stack button and helper text
+- A new `<p>` element with muted styling provides instructions for users whose browsers block the PDF
 
 ## Files Modified
-- `src/pages/ListOpportunity.tsx`
-
+- `src/components/ElectronicVerificationForms.tsx`
