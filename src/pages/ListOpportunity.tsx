@@ -415,7 +415,7 @@ const ListOpportunity = () => {
                   setLocationError(result.error.errors[0].message);
                 }
               }}
-              placeholder="e.g., 123 Main St, Ithaca or 123 Main St Ithaca"
+              placeholder="e.g., 123 Main St Ithaca"
               className={locationError ? "border-destructive" : ""}
             />
             {locationError && (
