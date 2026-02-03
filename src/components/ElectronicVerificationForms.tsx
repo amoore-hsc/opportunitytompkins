@@ -38,9 +38,9 @@ export const ElectronicVerificationForms = () => {
       {/* Row 2 */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3 items-stretch mt-6">
         <a 
-          href="https://docs.google.com/document/d/1xAumMXBIV2lEADQuSgpajamqsPoxxoOp/edit" 
+          href="https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:a9a48889-e595-447b-92c6-27db0e3408c0" 
           target="_blank" 
-          rel="noopener noreferrer" 
+          rel="noopener noreferrer"
           className="h-full"
         >
           <Button className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
