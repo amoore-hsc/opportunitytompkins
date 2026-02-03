@@ -10,8 +10,8 @@ export const ElectronicVerificationForms = () => {
       {/* Row 1 */}
       <div className="grid gap-6 md:grid-cols-2 items-stretch">
         <a 
-          href="https://docs.google.com/document/d/1n3NCaPuSlK0lQkDQTAw7r5PRIyw0carA/edit" 
-          target="_blank" 
+          href="https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:ae18dfb4-4586-4ba4-a26d-1fb6e34f3b15" 
+          target="_blank"
           rel="noopener noreferrer" 
           className="h-full"
         >
