@@ -3,7 +3,8 @@ import { Briefcase, GraduationCap, Stethoscope, Search, Heart, Send } from "luci
 import { VisuallyHidden } from "@/components/VisuallyHidden";
 export const ElectronicVerificationForms = () => {
   return <div className="mt-16 rounded-xl bg-card border border-border p-8">
-      <h3 className="mb-8 text-2xl font-semibold text-foreground text-center">Electronic Forms</h3>
+      <h3 className="mb-2 text-2xl font-semibold text-foreground text-center">Electronic Forms</h3>
+      <p className="mb-8 text-center text-muted-foreground">Forms can be completed electronically or printed and sent to DSS.</p>
       
       {/* Row 1 */}
       <div className="grid gap-6 md:grid-cols-2 items-stretch">
