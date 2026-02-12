@@ -63,16 +63,28 @@ const parseTimeToHour = (timeStr: string): number => {
   return hour;
 };
 
-const parseDaysTimesAvailable = (daysTimesStr: string): DaySchedule => {
+const parseDaysTimesAvailable = (daysTimesStr: string): { schedule: DaySchedule; isFlexible: boolean } => {
   const schedule: DaySchedule = DAYS_OF_WEEK.reduce((acc, day) => ({
     ...acc,
     [day.key]: { selected: false, startTime: 9, endTime: 17 }
   }), {});
 
-  if (!daysTimesStr) return schedule;
+  if (!daysTimesStr) return { schedule, isFlexible: false };
 
+  let isFlexible = false;
   const entries = daysTimesStr.split(", ");
   entries.forEach(entry => {
+    // Handle "Day: Flexible" format
+    const flexMatch = entry.match(/^(\w+):\s*Flexible$/i);
+    if (flexMatch) {
+      const dayLabel = flexMatch[1];
+      const dayKey = DAYS_OF_WEEK.find(d => d.label.toLowerCase() === dayLabel.toLowerCase())?.key;
+      if (dayKey) {
+        schedule[dayKey] = { selected: true, startTime: 9, endTime: 17 };
+        isFlexible = true;
+      }
+      return;
+    }
     const match = entry.match(/^(\w+):\s*(.+)\s*-\s*(.+)$/);
     if (match) {
       const dayLabel = match[1];
@@ -85,14 +97,17 @@ const parseDaysTimesAvailable = (daysTimesStr: string): DaySchedule => {
     }
   });
 
-  return schedule;
+  return { schedule, isFlexible };
 };
 
-const formatDayScheduleToString = (schedule: DaySchedule): string => {
+const formatDayScheduleToString = (schedule: DaySchedule, flexible: boolean = false): string => {
   return Object.entries(schedule)
     .filter(([_, s]) => s.selected)
     .map(([day, s]) => {
       const dayLabel = DAYS_OF_WEEK.find(d => d.key === day)?.label;
+      if (flexible) {
+        return `${dayLabel}: Flexible`;
+      }
       return `${dayLabel}: ${formatTimeFromHour(s.startTime)} - ${formatTimeFromHour(s.endTime)}`;
     })
     .join(", ");
@@ -173,6 +188,8 @@ const Admin = () => {
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
   const [previewingEmailOpp, setPreviewingEmailOpp] = useState<Opportunity | null>(null);
+  const [editFlexibleTime, setEditFlexibleTime] = useState(false);
+  const [editLocationType, setEditLocationType] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -987,7 +1004,15 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setEditingOpportunity(opp)}
+                          onClick={() => {
+                            setEditingOpportunity(opp);
+                            const { isFlexible } = parseDaysTimesAvailable(opp.days_times_available);
+                            setEditFlexibleTime(isFlexible);
+                            const loc = opp.location.toLowerCase();
+                            if (loc === "remote") setEditLocationType("remote");
+                            else if (loc === "tompkins county") setEditLocationType("general");
+                            else setEditLocationType("specific");
+                          }}
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -1061,23 +1086,50 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label>Location</Label>
-                              <Input
-                                value={editingOpportunity.location}
-                                onChange={(e) =>
-                                  setEditingOpportunity({ ...editingOpportunity, location: e.target.value })
-                                }
-                              />
+                              <Label>Service Location</Label>
+                              <Select
+                                value={editLocationType}
+                                onValueChange={value => {
+                                  setEditLocationType(value);
+                                  if (value === "general") {
+                                    setEditingOpportunity({ ...editingOpportunity, location: "Tompkins County", on_bus_route: false });
+                                  } else if (value === "remote") {
+                                    setEditingOpportunity({ ...editingOpportunity, location: "Remote", on_bus_route: false });
+                                  }
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select location type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="specific">Specific Address</SelectItem>
+                                  <SelectItem value="general">Tompkins County</SelectItem>
+                                  <SelectItem value="remote">Remote</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                checked={editingOpportunity.on_bus_route}
-                                onCheckedChange={(checked) =>
-                                  setEditingOpportunity({ ...editingOpportunity, on_bus_route: checked === true })
-                                }
-                              />
-                              <Label>On Bus Route</Label>
-                            </div>
+                            {editLocationType === "specific" && (
+                              <>
+                                <div className="space-y-2">
+                                  <Label>Address</Label>
+                                  <Input
+                                    value={editingOpportunity.location}
+                                    onChange={(e) =>
+                                      setEditingOpportunity({ ...editingOpportunity, location: e.target.value })
+                                    }
+                                  />
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox
+                                    checked={editingOpportunity.on_bus_route}
+                                    onCheckedChange={(checked) =>
+                                      setEditingOpportunity({ ...editingOpportunity, on_bus_route: checked === true })
+                                    }
+                                  />
+                                  <Label>On Bus Route</Label>
+                                </div>
+                              </>
+                            )}
                             <div className="space-y-2">
                               <Label>Hours Available</Label>
                               <Input
@@ -1091,8 +1143,28 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                               <Label>Days & Times Available</Label>
                               <p className="text-sm text-muted-foreground">Select days and set available hours for each day</p>
                               
+                              <div className="flex items-center space-x-2 mb-3">
+                                <Checkbox
+                                  id="edit-flexible-time"
+                                  checked={editFlexibleTime}
+                                  onCheckedChange={checked => {
+                                    const flexible = checked === true;
+                                    setEditFlexibleTime(flexible);
+                                    // Re-format the schedule string with updated flexible state
+                                    const { schedule } = parseDaysTimesAvailable(editingOpportunity.days_times_available);
+                                    setEditingOpportunity({
+                                      ...editingOpportunity,
+                                      days_times_available: formatDayScheduleToString(schedule, flexible)
+                                    });
+                                  }}
+                                />
+                                <Label htmlFor="edit-flexible-time" className="cursor-pointer text-sm">
+                                  Flexible Hours
+                                </Label>
+                              </div>
+
                               {DAYS_OF_WEEK.map(day => {
-                                const currentSchedule = parseDaysTimesAvailable(editingOpportunity.days_times_available);
+                                const { schedule: currentSchedule } = parseDaysTimesAvailable(editingOpportunity.days_times_available);
                                 return (
                                   <div key={day.key} className="space-y-3 rounded-lg border border-border p-4">
                                     <div className="flex items-center space-x-2">
@@ -1104,7 +1176,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                           updated[day.key] = { ...updated[day.key], selected: checked === true };
                                           setEditingOpportunity({
                                             ...editingOpportunity,
-                                            days_times_available: formatDayScheduleToString(updated)
+                                            days_times_available: formatDayScheduleToString(updated, editFlexibleTime)
                                           });
                                         }}
                                       />
@@ -1113,7 +1185,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                       </Label>
                                     </div>
                                     
-                                    {currentSchedule[day.key].selected && (
+                                    {currentSchedule[day.key].selected && !editFlexibleTime && (
                                       <div className="space-y-3 pl-6 animate-fade-in">
                                         <div className="space-y-2">
                                           <div className="flex items-center justify-between text-sm">
@@ -1140,7 +1212,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                               };
                                               setEditingOpportunity({
                                                 ...editingOpportunity,
-                                                days_times_available: formatDayScheduleToString(updated)
+                                                days_times_available: formatDayScheduleToString(updated, editFlexibleTime)
                                               });
                                             }}
                                             className="w-full"
