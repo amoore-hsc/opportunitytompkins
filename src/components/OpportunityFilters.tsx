@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, Bus, Wifi } from "lucide-react";
+import { RotateCcw, Bus, Wifi, Clock } from "lucide-react";
 import { Opportunity } from "@/pages/Opportunities";
 interface OpportunityFiltersProps {
   opportunities: Opportunity[];
@@ -19,6 +19,7 @@ export const OpportunityFilters = ({
     type: "all",
     busRoute: false,
     remote: false,
+    flexibleHours: false,
     location: "all",
     minHours: 0,
     daysOfWeek: [] as string[],
@@ -66,6 +67,9 @@ export const OpportunityFilters = ({
     if (filters.remote) {
       filtered = filtered.filter(opp => opp.location.toLowerCase() === "remote");
     }
+    if (filters.flexibleHours) {
+      filtered = filtered.filter(opp => opp.days_times_available.toLowerCase().includes("flexible"));
+    }
     if (filters.location !== "all") {
       filtered = filtered.filter(opp => extractCity(opp.location).toLowerCase() === filters.location.toLowerCase());
     }
@@ -103,6 +107,7 @@ export const OpportunityFilters = ({
       type: "all",
       busRoute: false,
       remote: false,
+      flexibleHours: false,
       location: "all",
       minHours: 0,
       daysOfWeek: [],
@@ -185,6 +190,17 @@ export const OpportunityFilters = ({
             <Label htmlFor="remote" className="cursor-pointer flex items-center gap-2">
               <Wifi className="h-4 w-4" aria-hidden="true" />
               Remote Only
+            </Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox id="flexibleHours" checked={filters.flexibleHours} onCheckedChange={checked => setFilters({
+              ...filters,
+              flexibleHours: checked === true
+            })} />
+            <Label htmlFor="flexibleHours" className="cursor-pointer flex items-center gap-2">
+              <Clock className="h-4 w-4" aria-hidden="true" />
+              Flexible Hours
             </Label>
             </div>
           </div>
