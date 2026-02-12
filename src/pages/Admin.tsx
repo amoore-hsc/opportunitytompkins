@@ -981,7 +981,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                       {opp.active ? "Active" : "Inactive"}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right whitespace-nowrap">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
