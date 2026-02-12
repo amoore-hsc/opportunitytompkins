@@ -173,7 +173,7 @@ export const ApplicationDialog = ({
               }
             />
             <Label htmlFor="availability" className="cursor-pointer text-sm">
-              I confirm that I can be available during the listed days and times. *
+              I confirm I am available during the listed days and times. *
             </Label>
           </div>
 
