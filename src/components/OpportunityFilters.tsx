@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, Bus } from "lucide-react";
+import { RotateCcw, Bus, Wifi } from "lucide-react";
 import { Opportunity } from "@/pages/Opportunities";
 interface OpportunityFiltersProps {
   opportunities: Opportunity[];
@@ -18,6 +18,7 @@ export const OpportunityFilters = ({
   const [filters, setFilters] = useState({
     type: "all",
     busRoute: false,
+    remote: false,
     location: "all",
     minHours: 0,
     daysOfWeek: [] as string[],
@@ -62,6 +63,9 @@ export const OpportunityFilters = ({
     if (filters.busRoute) {
       filtered = filtered.filter(opp => opp.on_bus_route);
     }
+    if (filters.remote) {
+      filtered = filtered.filter(opp => opp.location.toLowerCase() === "remote");
+    }
     if (filters.location !== "all") {
       filtered = filtered.filter(opp => extractCity(opp.location).toLowerCase() === filters.location.toLowerCase());
     }
@@ -98,6 +102,7 @@ export const OpportunityFilters = ({
     setFilters({
       type: "all",
       busRoute: false,
+      remote: false,
       location: "all",
       minHours: 0,
       daysOfWeek: [],
@@ -169,6 +174,17 @@ export const OpportunityFilters = ({
             <Label htmlFor="busRoute" className="cursor-pointer flex items-center gap-2">
               <Bus className="h-4 w-4" aria-hidden="true" />
               On Bus Route Only
+            </Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox id="remote" checked={filters.remote} onCheckedChange={checked => setFilters({
+              ...filters,
+              remote: checked === true
+            })} />
+            <Label htmlFor="remote" className="cursor-pointer flex items-center gap-2">
+              <Wifi className="h-4 w-4" aria-hidden="true" />
+              Remote Only
             </Label>
             </div>
           </div>
