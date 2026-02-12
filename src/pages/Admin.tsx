@@ -969,8 +969,8 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                   <TableCell className="font-medium capitalize">{opp.type}</TableCell>
                   <TableCell>{opp.org_name}</TableCell>
                   <TableCell>{opp.position_title || "—"}</TableCell>
-                  <TableCell className="text-sm">{opp.admin_contact_name || <span className="text-muted-foreground">Same as public</span>}</TableCell>
-                  <TableCell className="text-sm">{opp.admin_email || <span className="text-muted-foreground">Same as public</span>}</TableCell>
+                  <TableCell className="text-sm">{opp.admin_contact_name || opp.contact_name || "—"}</TableCell>
+                  <TableCell className="text-sm">{opp.admin_email || opp.org_email}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">
                     {formatDistanceToNow(new Date(opp.updated_at), { addSuffix: true })}
                   </TableCell>
