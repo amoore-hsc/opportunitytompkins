@@ -22,6 +22,7 @@ interface ApplicationEmailRequest {
   opportunityType: string;
   positionTitle: string;
   opportunityId: string;
+  adminEmail?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -44,10 +45,14 @@ const handler = async (req: Request): Promise<Response> => {
       opportunityDescription,
       opportunityType,
       positionTitle,
-      opportunityId
+      opportunityId,
+      adminEmail
     }: ApplicationEmailRequest = await req.json();
 
-    console.log(`Sending application email to ${orgEmail} from ${clientName}`);
+    // Send the application notification to the admin email if available, otherwise to the public org email
+    const notificationEmail = adminEmail || orgEmail;
+
+    console.log(`Sending application email to ${notificationEmail} from ${clientName}`);
 
     // Track application count (aggregated, no personal data stored)
     if (opportunityId) {
@@ -154,7 +159,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Email to organization
     const orgEmailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
-      to: [orgEmail],
+      to: [notificationEmail],
       subject: `New Application - ${positionTitle || 'Position'}`,
       html: emailHtml,
     });

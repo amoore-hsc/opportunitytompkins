@@ -1,22 +1,37 @@
 
-# Plan: Location Type Selector for Listing Page
+# Plan: Dual Contact Support (Public + Admin)
 
 ## Overview
-Replace the plain address text input with a dropdown that lets users choose between three location types:
-1. **Specific Address** – shows the existing address input with validation and bus route checkbox
-2. **Tompkins County (General)** – stores "Tompkins County" automatically, no address input needed
-3. **Remote** – stores "Remote" automatically, no address input needed
+Organizations can now have two contacts: a **public contact** (shown to applicants) and an **admin contact** (receives confirmation emails, edit links, and application notifications). A "Same as public contact" checkbox (checked by default) lets orgs use one person for both.
 
 ## Implementation (Completed)
 
-### File: `src/pages/ListOpportunity.tsx`
+### Database
+- Added `admin_contact_name` (text, nullable) and `admin_email` (text, nullable) to `opportunities` table
+- No `admin_phone` column (removed per user request)
 
-- Added `locationType` state (`""`, `"specific"`, `"general"`, `"remote"`)
-- Replaced the location `<Input>` with a `<Select>` dropdown for location type
-- Conditionally render address input + bus route checkbox only when `locationType === "specific"`
-- When "general" is selected, `formData.location` is set to `"Tompkins County"` and `onBusRoute` to `false`
-- When "remote" is selected, `formData.location` is set to `"Remote"` and `onBusRoute` to `false`
-- Address validation in `handleSubmit` only runs when `locationType === "specific"`
+### ListOpportunity.tsx
+- Added `sameContact` state (default `true`) and `adminContactName`/`adminEmail` form fields
+- Split contact section into "Public Contact" and "Admin Contact" sub-sections
+- When `sameContact` is true, admin fields are hidden and null is stored in DB
+- Confirmation email is sent to admin email when provided, otherwise to public email
 
-## No database changes needed
-The location field stores a regular string regardless of type.
+### EditOpportunity.tsx
+- Same dual contact UI with "Same as public contact" checkbox
+- Loads existing admin contact fields; auto-detects if admin contact was set
+- Saves admin fields via update-opportunity-by-token edge function
+
+### Edge Functions Updated
+- `send-confirmation-email`: receives and uses admin email/name when provided
+- `send-application-email`: accepts optional `adminEmail`, sends notification to admin when available
+- `send-listing-reminder`: groups by admin_email when available instead of org_email
+- `send-interest-notification`: sends to admin_email when available
+- `update-opportunity-by-token`: accepts `admin_contact_name` and `admin_email` in updates
+
+### Opportunity Interface
+- Added `admin_email: string | null` to the Opportunity TypeScript interface
+- ApplicationDialog passes `adminEmail` to the send-application-email function
+
+### No Changes Needed
+- OpportunityCard / public display: still shows `org_email`/`org_phone`/`contact_name` (public contact)
+- `get-opportunity-by-token`: already uses `select("*")` so admin fields are included automatically

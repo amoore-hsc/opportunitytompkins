@@ -13,12 +13,14 @@ interface Opportunity {
   id: string;
   org_name: string;
   org_email: string;
+  admin_email: string | null;
   position_title: string | null;
   type: string;
   description: string;
   created_at: string;
   edit_token: string;
   contact_name: string | null;
+  admin_contact_name: string | null;
 }
 
 interface ApplicationCount {
@@ -41,7 +43,7 @@ function generateEmail(
   siteUrl: string
 ): string {
   const editUrl = `${siteUrl}/edit-opportunity?token=${opportunity.edit_token}`;
-  const contactName = opportunity.contact_name || 'there';
+  const contactName = opportunity.admin_contact_name || opportunity.contact_name || 'there';
   const positionTitle = opportunity.position_title || opportunity.type;
   
   return `
@@ -232,7 +234,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Get active opportunities created 14-21 days ago that haven't been notified
     const { data: eligibleOpportunities, error: oppError } = await supabase
       .from("opportunities")
-      .select("id, org_name, org_email, position_title, type, description, created_at, edit_token, contact_name")
+      .select("id, org_name, org_email, admin_email, admin_contact_name, position_title, type, description, created_at, edit_token, contact_name")
       .eq("active", true)
       .is("interest_notification_sent_at", null)
       .lte("created_at", fourteenDaysAgo.toISOString())
@@ -299,9 +301,11 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         const emailHtml = generateEmail(opportunity as Opportunity, applicationCount, siteUrl);
 
+        const notificationEmail = opportunity.admin_email || opportunity.org_email;
+
         const { error: emailError } = await resend.emails.send({
           from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
-          to: [opportunity.org_email],
+          to: [notificationEmail],
           subject: `Great News! Interest In Your Listing`,
           html: emailHtml,
         });

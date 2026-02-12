@@ -50,6 +50,8 @@ export type Database = {
         Row: {
           active: boolean
           additional_requirements: string | null
+          admin_contact_name: string | null
+          admin_email: string | null
           contact_name: string | null
           created_at: string
           days_times_available: string
@@ -75,6 +77,8 @@ export type Database = {
         Insert: {
           active?: boolean
           additional_requirements?: string | null
+          admin_contact_name?: string | null
+          admin_email?: string | null
           contact_name?: string | null
           created_at?: string
           days_times_available: string
@@ -100,6 +104,8 @@ export type Database = {
         Update: {
           active?: boolean
           additional_requirements?: string | null
+          admin_contact_name?: string | null
+          admin_email?: string | null
           contact_name?: string | null
           created_at?: string
           days_times_available?: string

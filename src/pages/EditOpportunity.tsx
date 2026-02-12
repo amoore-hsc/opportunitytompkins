@@ -112,6 +112,7 @@ const EditOpportunity = () => {
   const [additionalRequirements, setAdditionalRequirements] = useState<string[]>([]);
   const [currentRequirement, setCurrentRequirement] = useState("");
   
+  const [sameContact, setSameContact] = useState(true);
   const [formData, setFormData] = useState({
     type: "",
     roleClassification: "",
@@ -123,7 +124,9 @@ const EditOpportunity = () => {
     orgName: "",
     contactName: "",
     orgEmail: "",
-    orgPhone: ""
+    orgPhone: "",
+    adminContactName: "",
+    adminEmail: ""
   });
 
   useEffect(() => {
@@ -156,10 +159,13 @@ const EditOpportunity = () => {
           onBusRoute: opp.on_bus_route || false,
           hoursAvailable: opp.hours_available || "",
           orgName: opp.org_name || "",
-          contactName: "",
+          contactName: opp.contact_name || "",
           orgEmail: opp.org_email || "",
-          orgPhone: opp.org_phone || ""
+          orgPhone: opp.org_phone || "",
+          adminContactName: opp.admin_contact_name || "",
+          adminEmail: opp.admin_email || ""
         });
+        setSameContact(!opp.admin_email);
         setDescriptionWordCount(countWords(opp.description || ""));
         setDaySchedule(parseScheduleString(opp.days_times_available || ""));
         
@@ -236,6 +242,9 @@ const EditOpportunity = () => {
 
     setSaving(true);
     try {
+      const adminContactName = sameContact ? null : formData.adminContactName;
+      const adminEmail = sameContact ? null : formData.adminEmail;
+
       const { data, error } = await supabase.functions.invoke("update-opportunity-by-token", {
         body: {
           token,
@@ -250,8 +259,11 @@ const EditOpportunity = () => {
             days_times_available: daysTimesAvailable,
             additional_requirements: additionalRequirements.length > 0 ? additionalRequirements.join("; ") : null,
             org_name: formData.orgName,
+            contact_name: formData.contactName,
             org_email: formData.orgEmail,
-            org_phone: formData.orgPhone
+            org_phone: formData.orgPhone,
+            admin_contact_name: adminContactName,
+            admin_email: adminEmail
           }
         }
       });
@@ -627,8 +639,20 @@ const EditOpportunity = () => {
               />
             </div>
 
+            <h4 className="text-md font-medium pt-2">Public Contact (shown to applicants)</h4>
+
             <div className="space-y-2">
-              <Label htmlFor="orgEmail">Organization Email *</Label>
+              <Label htmlFor="contactName">Contact Name *</Label>
+              <Input
+                id="contactName"
+                required
+                value={formData.contactName}
+                onChange={e => setFormData({ ...formData, contactName: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="orgEmail">Email *</Label>
               <Input
                 id="orgEmail"
                 type="email"
@@ -640,7 +664,7 @@ const EditOpportunity = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="orgPhone">Organization Phone *</Label>
+              <Label htmlFor="orgPhone">Phone *</Label>
               <Input
                 id="orgPhone"
                 type="tel"
@@ -650,6 +674,44 @@ const EditOpportunity = () => {
                 placeholder="e.g., 607-555-1234"
               />
             </div>
+
+            <h4 className="text-md font-medium pt-4">Admin Contact (receives confirmation emails & edit link)</h4>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="sameContact"
+                checked={sameContact}
+                onCheckedChange={checked => setSameContact(checked === true)}
+              />
+              <Label htmlFor="sameContact" className="cursor-pointer">
+                Same as public contact
+              </Label>
+            </div>
+
+            {!sameContact && (
+              <div className="space-y-4 animate-fade-in">
+                <div className="space-y-2">
+                  <Label htmlFor="adminContactName">Admin Contact Name *</Label>
+                  <Input
+                    id="adminContactName"
+                    required
+                    value={formData.adminContactName}
+                    onChange={e => setFormData({ ...formData, adminContactName: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="adminEmail">Admin Email *</Label>
+                  <Input
+                    id="adminEmail"
+                    type="email"
+                    required
+                    value={formData.adminEmail}
+                    onChange={e => setFormData({ ...formData, adminEmail: e.target.value })}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">

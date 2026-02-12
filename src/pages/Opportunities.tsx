@@ -28,6 +28,7 @@ export interface Opportunity {
   org_phone: string;
   role_classification: string | null;
   updated_at: string;
+  admin_email: string | null;
 }
 
 const Opportunities = () => {
