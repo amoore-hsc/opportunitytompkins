@@ -167,6 +167,16 @@ const Opportunities = () => {
 
         <ElectronicVerificationForms />
 
+        <footer className="mt-8 text-center text-sm text-muted-foreground">
+          <p>
+            Need Help With Your Posting? Reach out to{" "}
+            <a href="mailto:rhinton@uwtc.org" className="underline hover:text-foreground">
+              rhinton@uwtc.org
+            </a>{" "}
+            for assistance.
+          </p>
+        </footer>
+
         {/* Auto-open application dialog from email link */}
         {autoOpenOpportunity && (
           <ApplicationDialog
