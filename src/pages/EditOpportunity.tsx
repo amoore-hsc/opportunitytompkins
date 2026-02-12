@@ -55,16 +55,27 @@ const countWords = (text: string): number => {
   return text.trim().split(/\s+/).filter(word => word.length > 0).length;
 };
 
-const parseScheduleString = (scheduleStr: string): DaySchedule => {
+const parseScheduleString = (scheduleStr: string): { schedule: DaySchedule; isFlexible: boolean } => {
   const schedule: DaySchedule = DAYS_OF_WEEK.reduce((acc, day) => ({
     ...acc,
     [day.key]: { selected: false, startTime: 9, endTime: 17 }
   }), {});
 
-  if (!scheduleStr) return schedule;
+  if (!scheduleStr) return { schedule, isFlexible: false };
 
+  let isFlexible = false;
   const dayEntries = scheduleStr.split(", ");
   dayEntries.forEach(entry => {
+    // Handle "Day: Flexible" format
+    const flexMatch = entry.match(/^(\w+):\s*Flexible$/i);
+    if (flexMatch) {
+      const dayKey = DAYS_OF_WEEK.find(d => d.label === flexMatch[1])?.key;
+      if (dayKey) {
+        schedule[dayKey] = { selected: true, startTime: 9, endTime: 17 };
+        isFlexible = true;
+      }
+      return;
+    }
     const match = entry.match(/^(\w+): (\d+):00 (AM|PM) - (\d+):00 (AM|PM)$/);
     if (match) {
       const [, dayLabel, startHourStr, startPeriod, endHourStr, endPeriod] = match;
@@ -81,7 +92,7 @@ const parseScheduleString = (scheduleStr: string): DaySchedule => {
     }
   });
 
-  return schedule;
+  return { schedule, isFlexible };
 };
 
 const EditOpportunity = () => {
@@ -108,6 +119,8 @@ const EditOpportunity = () => {
       [day.key]: { selected: false, startTime: 9, endTime: 17 }
     }), {})
   );
+  const [flexibleTime, setFlexibleTime] = useState(false);
+  const [locationType, setLocationType] = useState("");
   
   const [additionalRequirements, setAdditionalRequirements] = useState<string[]>([]);
   const [currentRequirement, setCurrentRequirement] = useState("");
@@ -167,7 +180,13 @@ const EditOpportunity = () => {
         });
         setSameContact(!opp.admin_email);
         setDescriptionWordCount(countWords(opp.description || ""));
-        setDaySchedule(parseScheduleString(opp.days_times_available || ""));
+        const { schedule, isFlexible } = parseScheduleString(opp.days_times_available || "");
+        setDaySchedule(schedule);
+        setFlexibleTime(isFlexible);
+        const loc = (opp.location || "").toLowerCase();
+        if (loc === "remote") setLocationType("remote");
+        else if (loc === "tompkins county") setLocationType("general");
+        else setLocationType("specific");
         
         if (opp.additional_requirements) {
           setAdditionalRequirements(opp.additional_requirements.split("; "));
@@ -224,19 +243,24 @@ const EditOpportunity = () => {
       return;
     }
 
-    const addressValidation = addressSchema.safeParse(formData.location);
-    if (!addressValidation.success) {
-      setLocationError(addressValidation.error.errors[0].message);
-      toast({
-        title: "Invalid address",
-        description: addressValidation.error.errors[0].message,
-        variant: "destructive"
-      });
-      return;
+    if (locationType === "specific") {
+      const addressValidation = addressSchema.safeParse(formData.location);
+      if (!addressValidation.success) {
+        setLocationError(addressValidation.error.errors[0].message);
+        toast({
+          title: "Invalid address",
+          description: addressValidation.error.errors[0].message,
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
     const daysTimesAvailable = selectedDays.map(([day, schedule]) => {
       const dayLabel = DAYS_OF_WEEK.find(d => d.key === day)?.label;
+      if (flexibleTime) {
+        return `${dayLabel}: Flexible`;
+      }
       return `${dayLabel}: ${formatTimeFromHour(schedule.startTime)} - ${formatTimeFromHour(schedule.endTime)}`;
     }).join(", ");
 
@@ -496,35 +520,66 @@ const EditOpportunity = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">Service Location(s) *</Label>
-            <Input
-              id="location"
-              required
-              value={formData.location}
-              onChange={e => {
-                setFormData({ ...formData, location: e.target.value });
+            <Label htmlFor="locationType">Service Location *</Label>
+            <Select
+              value={locationType}
+              onValueChange={value => {
+                setLocationType(value);
                 setLocationError("");
-              }}
-              onBlur={e => {
-                const result = addressSchema.safeParse(e.target.value);
-                if (!result.success && e.target.value) {
-                  setLocationError(result.error.errors[0].message);
+                if (value === "general") {
+                  setFormData({ ...formData, location: "Tompkins County", onBusRoute: false });
+                } else if (value === "remote") {
+                  setFormData({ ...formData, location: "Remote", onBusRoute: false });
+                } else {
+                  setFormData({ ...formData, location: "" });
                 }
               }}
-              placeholder="e.g., 123 Main St, Ithaca, NY"
-              className={locationError ? "border-destructive" : ""}
-            />
-            {locationError && <p className="text-sm text-destructive">{locationError}</p>}
+            >
+              <SelectTrigger id="locationType">
+                <SelectValue placeholder="Select location type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="specific">Specific Address</SelectItem>
+                <SelectItem value="general">Tompkins County</SelectItem>
+                <SelectItem value="remote">Remote</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="busRoute"
-              checked={formData.onBusRoute}
-              onCheckedChange={checked => setFormData({ ...formData, onBusRoute: checked === true })}
-            />
-            <Label htmlFor="busRoute" className="cursor-pointer">On Bus Route</Label>
-          </div>
+          {locationType === "specific" && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="location">Address *</Label>
+                <Input
+                  id="location"
+                  required
+                  value={formData.location}
+                  onChange={e => {
+                    setFormData({ ...formData, location: e.target.value });
+                    setLocationError("");
+                  }}
+                  onBlur={e => {
+                    const result = addressSchema.safeParse(e.target.value);
+                    if (!result.success && e.target.value) {
+                      setLocationError(result.error.errors[0].message);
+                    }
+                  }}
+                  placeholder="e.g., 123 Main St, Ithaca, NY"
+                  className={locationError ? "border-destructive" : ""}
+                />
+                {locationError && <p className="text-sm text-destructive">{locationError}</p>}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="busRoute"
+                  checked={formData.onBusRoute}
+                  onCheckedChange={checked => setFormData({ ...formData, onBusRoute: checked === true })}
+                />
+                <Label htmlFor="busRoute" className="cursor-pointer">On Bus Route</Label>
+              </div>
+            </>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="hours">Hours Available per Week *</Label>
@@ -543,6 +598,17 @@ const EditOpportunity = () => {
             <Label>Days & Times Available *</Label>
             <p className="text-sm text-muted-foreground">Select days and set available hours for each day</p>
             
+            <div className="flex items-center space-x-2 mb-3">
+              <Checkbox
+                id="flexible-time"
+                checked={flexibleTime}
+                onCheckedChange={checked => setFlexibleTime(checked === true)}
+              />
+              <Label htmlFor="flexible-time" className="cursor-pointer text-sm">
+                Flexible Hours
+              </Label>
+            </div>
+
             {DAYS_OF_WEEK.map(day => (
               <div key={day.key} className="space-y-3 rounded-lg border border-border p-4">
                 <div className="flex items-center space-x-2">
@@ -557,7 +623,7 @@ const EditOpportunity = () => {
                   <Label htmlFor={day.key} className="cursor-pointer font-medium">{day.label}</Label>
                 </div>
                 
-                {daySchedule[day.key].selected && (
+                {daySchedule[day.key].selected && !flexibleTime && (
                   <div className="space-y-3 pl-6 animate-fade-in">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
