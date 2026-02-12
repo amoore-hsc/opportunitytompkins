@@ -609,9 +609,16 @@ const EditOpportunity = () => {
               </Label>
             </div>
 
+            <div className={flexibleTime ? "flex flex-wrap gap-2" : "space-y-3"}>
             {DAYS_OF_WEEK.map(day => (
-              <div key={day.key} className="space-y-3 rounded-lg border border-border p-4">
-                <div className="flex items-center space-x-2">
+              flexibleTime ? (
+                <label
+                  key={day.key}
+                  htmlFor={day.key}
+                  className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 cursor-pointer text-sm transition-colors ${
+                    daySchedule[day.key].selected ? 'border-primary bg-primary/10 font-medium' : 'border-border bg-background'
+                  }`}
+                >
                   <Checkbox
                     id={day.key}
                     checked={daySchedule[day.key].selected}
@@ -620,38 +627,53 @@ const EditOpportunity = () => {
                       [day.key]: { ...daySchedule[day.key], selected: checked === true }
                     })}
                   />
-                  <Label htmlFor={day.key} className="cursor-pointer font-medium">{day.label}</Label>
-                </div>
-                
-                {daySchedule[day.key].selected && !flexibleTime && (
-                  <div className="space-y-3 pl-6 animate-fade-in">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Start: </span>
-                          <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].startTime)}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">End: </span>
-                          <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].endTime)}</span>
-                        </div>
-                      </div>
-                      <Slider
-                        value={[daySchedule[day.key].startTime, daySchedule[day.key].endTime]}
-                        onValueChange={([start, end]) => setDaySchedule({
-                          ...daySchedule,
-                          [day.key]: { ...daySchedule[day.key], startTime: start, endTime: end }
-                        })}
-                        min={0}
-                        max={23}
-                        step={1}
-                        className="w-full"
-                      />
-                    </div>
+                  {day.label}
+                </label>
+              ) : (
+                <div key={day.key} className="space-y-3 rounded-lg border border-border p-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={day.key}
+                      checked={daySchedule[day.key].selected}
+                      onCheckedChange={checked => setDaySchedule({
+                        ...daySchedule,
+                        [day.key]: { ...daySchedule[day.key], selected: checked === true }
+                      })}
+                    />
+                    <Label htmlFor={day.key} className="cursor-pointer font-medium">{day.label}</Label>
                   </div>
-                )}
-              </div>
+                  
+                  {daySchedule[day.key].selected && (
+                    <div className="space-y-3 pl-6 animate-fade-in">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Start: </span>
+                            <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].startTime)}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">End: </span>
+                            <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].endTime)}</span>
+                          </div>
+                        </div>
+                        <Slider
+                          value={[daySchedule[day.key].startTime, daySchedule[day.key].endTime]}
+                          onValueChange={([start, end]) => setDaySchedule({
+                            ...daySchedule,
+                            [day.key]: { ...daySchedule[day.key], startTime: start, endTime: end }
+                          })}
+                          min={0}
+                          max={23}
+                          step={1}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
             ))}
+            </div>
           </div>
 
           <div className="space-y-4">
