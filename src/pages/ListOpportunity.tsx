@@ -557,21 +557,8 @@ const ListOpportunity = () => {
                           min={0}
                           max={23}
                           step={1}
-                          className="w-full"
+                          className="w-full [&_.slider-range]:bg-green-500 [&_.slider-track]:bg-muted [&_.slider-track]:h-3"
                         />
-                        {/* Visual time bar */}
-                        <div className="flex w-full h-3 rounded-full overflow-hidden border border-border">
-                          {Array.from({ length: 24 }, (_, i) => {
-                            const isAvailable = i >= daySchedule[day.key].startTime && i < daySchedule[day.key].endTime;
-                            return (
-                              <div
-                                key={i}
-                                className={`flex-1 ${isAvailable ? 'bg-green-500' : 'bg-muted'}`}
-                                title={`${formatTimeFromHour(i)} - ${isAvailable ? 'Available' : 'Unavailable'}`}
-                              />
-                            );
-                          })}
-                        </div>
                         <div className="flex justify-between text-xs text-muted-foreground">
                           <span>12 AM</span>
                           <span>6 AM</span>
