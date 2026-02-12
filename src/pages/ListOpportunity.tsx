@@ -421,7 +421,7 @@ const ListOpportunity = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="specific">Specific Address</SelectItem>
-                <SelectItem value="general">Tompkins County (General)</SelectItem>
+                <SelectItem value="general">Tompkins County</SelectItem>
                 <SelectItem value="remote">Remote</SelectItem>
               </SelectContent>
             </Select>
