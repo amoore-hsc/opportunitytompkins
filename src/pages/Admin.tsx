@@ -960,7 +960,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                 
                 <TableHead>Last Updated</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
