@@ -90,6 +90,7 @@ const ListOpportunity = () => {
   );
   const [additionalRequirements, setAdditionalRequirements] = useState<string[]>([]);
   const [currentRequirement, setCurrentRequirement] = useState("");
+  const [locationType, setLocationType] = useState("");
   const [formData, setFormData] = useState({
     type: "",
     roleClassification: "",
@@ -163,16 +164,18 @@ const ListOpportunity = () => {
       return;
     }
 
-    const addressValidation = addressSchema.safeParse(formData.location);
-    if (!addressValidation.success) {
-      setLocationError(addressValidation.error.errors[0].message);
-      setFormError(addressValidation.error.errors[0].message);
-      toast({
-        title: "Invalid address",
-        description: addressValidation.error.errors[0].message,
-        variant: "destructive"
-      });
-      return;
+    if (locationType === "specific") {
+      const addressValidation = addressSchema.safeParse(formData.location);
+      if (!addressValidation.success) {
+        setLocationError(addressValidation.error.errors[0].message);
+        setFormError(addressValidation.error.errors[0].message);
+        toast({
+          title: "Invalid address",
+          description: addressValidation.error.errors[0].message,
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
     const daysTimesAvailable = selectedDays.map(([day, schedule]) => {
@@ -394,47 +397,82 @@ const ListOpportunity = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="location">
-              Service Location(s) <span aria-hidden="true" className="text-destructive">*</span>
+            <Label htmlFor="locationType">
+              Service Location <span aria-hidden="true" className="text-destructive">*</span>
               <VisuallyHidden>(required)</VisuallyHidden>
             </Label>
-            <Input
-              id="location"
+            <Select
               required
-              aria-required="true"
-              aria-invalid={!!locationError}
-              aria-describedby={locationError ? "location-error" : undefined}
-              value={formData.location}
-              onChange={e => {
-                setFormData({ ...formData, location: e.target.value });
+              value={locationType}
+              onValueChange={value => {
+                setLocationType(value);
                 setLocationError("");
-              }}
-              onBlur={e => {
-                const result = addressSchema.safeParse(e.target.value);
-                if (!result.success && e.target.value) {
-                  setLocationError(result.error.errors[0].message);
+                if (value === "general") {
+                  setFormData({ ...formData, location: "Tompkins County", onBusRoute: false });
+                } else if (value === "remote") {
+                  setFormData({ ...formData, location: "Remote", onBusRoute: false });
+                } else {
+                  setFormData({ ...formData, location: "" });
                 }
               }}
-              placeholder="e.g., 123 Main St Ithaca"
-              className={locationError ? "border-destructive" : ""}
-            />
-            {locationError && (
-              <p id="location-error" className="text-sm text-destructive" role="alert">
-                {locationError}
-              </p>
-            )}
+            >
+              <SelectTrigger id="locationType" aria-required="true">
+                <SelectValue placeholder="Select location type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="specific">Specific Address</SelectItem>
+                <SelectItem value="general">Tompkins County (General)</SelectItem>
+                <SelectItem value="remote">Remote</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="busRoute"
-              checked={formData.onBusRoute}
-              onCheckedChange={checked => setFormData({ ...formData, onBusRoute: checked === true })}
-            />
-            <Label htmlFor="busRoute" className="cursor-pointer">
-              On Bus Route
-            </Label>
-          </div>
+          {locationType === "specific" && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="location">
+                  Address <span aria-hidden="true" className="text-destructive">*</span>
+                  <VisuallyHidden>(required)</VisuallyHidden>
+                </Label>
+                <Input
+                  id="location"
+                  required
+                  aria-required="true"
+                  aria-invalid={!!locationError}
+                  aria-describedby={locationError ? "location-error" : undefined}
+                  value={formData.location}
+                  onChange={e => {
+                    setFormData({ ...formData, location: e.target.value });
+                    setLocationError("");
+                  }}
+                  onBlur={e => {
+                    const result = addressSchema.safeParse(e.target.value);
+                    if (!result.success && e.target.value) {
+                      setLocationError(result.error.errors[0].message);
+                    }
+                  }}
+                  placeholder="e.g., 123 Main St Ithaca"
+                  className={locationError ? "border-destructive" : ""}
+                />
+                {locationError && (
+                  <p id="location-error" className="text-sm text-destructive" role="alert">
+                    {locationError}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="busRoute"
+                  checked={formData.onBusRoute}
+                  onCheckedChange={checked => setFormData({ ...formData, onBusRoute: checked === true })}
+                />
+                <Label htmlFor="busRoute" className="cursor-pointer">
+                  On Bus Route
+                </Label>
+              </div>
+            </>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="hours">

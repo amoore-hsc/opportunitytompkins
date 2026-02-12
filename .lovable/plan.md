@@ -1,41 +1,22 @@
 
-# Plan: Add Helper Text for NYDocSubmit PDF Link
+# Plan: Location Type Selector for Listing Page
 
 ## Overview
-Add helper text below the "Submit Documentation to DSS via NYDocSubmit" button explaining that users may need to right-click and select "Open link in new tab" if their browser blocks the PDF.
+Replace the plain address text input with a dropdown that lets users choose between three location types:
+1. **Specific Address** – shows the existing address input with validation and bus route checkbox
+2. **Tompkins County (General)** – stores "Tompkins County" automatically, no address input needed
+3. **Remote** – stores "Remote" automatically, no address input needed
 
-## Changes
+## Implementation (Completed)
 
-### File: `src/components/ElectronicVerificationForms.tsx`
+### File: `src/pages/ListOpportunity.tsx`
 
-**Update the Submit button section (lines 78-92)**
+- Added `locationType` state (`""`, `"specific"`, `"general"`, `"remote"`)
+- Replaced the location `<Input>` with a `<Select>` dropdown for location type
+- Conditionally render address input + bus route checkbox only when `locationType === "specific"`
+- When "general" is selected, `formData.location` is set to `"Tompkins County"` and `onBusRoute` to `false`
+- When "remote" is selected, `formData.location` is set to `"Remote"` and `onBusRoute` to `false`
+- Address validation in `handleSubmit` only runs when `locationType === "specific"`
 
-Add a small helper text paragraph below the button explaining the workaround for Chrome blocking:
-
-```tsx
-{/* Row 4 - Submit */}
-<div className="flex flex-col items-center mt-6 gap-2">
-  <a 
-    href="https://otda.ny.gov/policy/directives/2019/ADM/19-ADM-07-Attachment-1.pdf" 
-    target="_blank" 
-    rel="noopener noreferrer" 
-    className="w-full"
-  >
-    <Button variant="success" className="w-full text-base h-full py-4 px-6 whitespace-normal text-center flex items-center justify-center" size="lg">
-      <Send className="mr-2 h-5 w-5 shrink-0" aria-hidden="true" />
-      Submit Documentation to DSS via NYDocSubmit
-      <VisuallyHidden>(opens in new tab)</VisuallyHidden>
-    </Button>
-  </a>
-  <p className="text-sm text-muted-foreground text-center">
-    If the link doesn't open, right-click the button and select "Open link in new tab"
-  </p>
-</div>
-```
-
-## What Changes
-- Wrapper div changes from `flex justify-center` to `flex flex-col items-center gap-2` to stack button and helper text
-- A new `<p>` element with muted styling provides instructions for users whose browsers block the PDF
-
-## Files Modified
-- `src/components/ElectronicVerificationForms.tsx`
+## No database changes needed
+The location field stores a regular string regardless of type.
