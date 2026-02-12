@@ -1,37 +1,22 @@
 
-# Plan: Dual Contact Support (Public + Admin)
 
-## Overview
-Organizations can now have two contacts: a **public contact** (shown to applicants) and an **admin contact** (receives confirmation emails, edit links, and application notifications). A "Same as public contact" checkbox (checked by default) lets orgs use one person for both.
+## Problem
 
-## Implementation (Completed)
+When "Flexible Hours" is enabled, each day still renders inside a large bordered card (`rounded-lg border border-border p-4`) with only a single checkbox and label inside. This creates 7 oversized, mostly-empty cards stacked vertically, which looks visually sparse and wastes space.
 
-### Database
-- Added `admin_contact_name` (text, nullable) and `admin_email` (text, nullable) to `opportunities` table
-- No `admin_phone` column (removed per user request)
+## Solution
 
-### ListOpportunity.tsx
-- Added `sameContact` state (default `true`) and `adminContactName`/`adminEmail` form fields
-- Split contact section into "Public Contact" and "Admin Contact" sub-sections
-- When `sameContact` is true, admin fields are hidden and null is stored in DB
-- Confirmation email is sent to admin email when provided, otherwise to public email
+When "Flexible Hours" is toggled on, switch the day selection to a compact layout:
+- Use a horizontal flex-wrap grid of smaller checkboxes instead of full-width bordered cards
+- Each day becomes a small inline chip/checkbox item rather than a full card
+- When "Flexible Hours" is off, keep the current card layout with time sliders
 
-### EditOpportunity.tsx
-- Same dual contact UI with "Same as public contact" checkbox
-- Loads existing admin contact fields; auto-detects if admin contact was set
-- Saves admin fields via update-opportunity-by-token edge function
+## Technical Details
 
-### Edge Functions Updated
-- `send-confirmation-email`: receives and uses admin email/name when provided
-- `send-application-email`: accepts optional `adminEmail`, sends notification to admin when available
-- `send-listing-reminder`: groups by admin_email when available instead of org_email
-- `send-interest-notification`: sends to admin_email when available
-- `update-opportunity-by-token`: accepts `admin_contact_name` and `admin_email` in updates
+**File: `src/pages/ListOpportunity.tsx`** (lines ~528-586)
+- Wrap the day rendering in a conditional:
+  - If `flexibleTime` is true: render days in a `flex flex-wrap gap-2` container with compact styling (small padding, inline layout)
+  - If `flexibleTime` is false: keep the existing card layout with sliders
 
-### Opportunity Interface
-- Added `admin_email: string | null` to the Opportunity TypeScript interface
-- ApplicationDialog passes `adminEmail` to the send-application-email function
-
-### No Changes Needed
-- OpportunityCard / public display: still shows `org_email`/`org_phone`/`contact_name` (public contact)
-- `get-opportunity-by-token`: already uses `select("*")` so admin fields are included automatically
+**File: `src/pages/EditOpportunity.tsx`** and **`src/pages/Admin.tsx`**
+- Apply the same compact layout pattern for consistency across all three pages
