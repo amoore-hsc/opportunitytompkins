@@ -113,6 +113,8 @@ interface Opportunity {
   contact_name: string | null;
   org_email: string;
   org_phone: string;
+  admin_contact_name: string | null;
+  admin_email: string | null;
   active: boolean;
   updated_at: string;
   edit_token: string;
@@ -466,8 +468,8 @@ const Admin = () => {
       const { error } = await supabase.functions.invoke("send-confirmation-email", {
         body: {
           orgName: opp.org_name,
-          contactName: opp.contact_name || opp.org_name,
-          orgEmail: opp.org_email,
+          contactName: opp.admin_contact_name || opp.contact_name || opp.org_name,
+          orgEmail: opp.admin_email || opp.org_email,
           opportunityType: opp.type,
           roleClassification: opp.role_classification,
           positionTitle: opp.position_title,
@@ -486,7 +488,7 @@ const Admin = () => {
 
       toast({
         title: "Email Sent",
-        description: `Confirmation email resent to ${opp.org_email}`,
+        description: `Confirmation email resent to ${opp.admin_email || opp.org_email}`,
       });
     } catch (error: any) {
       console.error("Error resending email:", error);
@@ -634,6 +636,8 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
           org_name: editingOpportunity.org_name,
           org_email: editingOpportunity.org_email,
           org_phone: editingOpportunity.org_phone,
+          admin_contact_name: editingOpportunity.admin_contact_name,
+          admin_email: editingOpportunity.admin_email,
           active: editingOpportunity.active,
         })
         .eq("id", editingOpportunity.id);
@@ -952,6 +956,8 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                 <TableHead>Type</TableHead>
                 <TableHead>Organization</TableHead>
                 <TableHead>Position Title</TableHead>
+                <TableHead>Admin Contact</TableHead>
+                <TableHead>Admin Email</TableHead>
                 <TableHead>Last Updated</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -963,6 +969,8 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                   <TableCell className="font-medium capitalize">{opp.type}</TableCell>
                   <TableCell>{opp.org_name}</TableCell>
                   <TableCell>{opp.position_title || "—"}</TableCell>
+                  <TableCell className="text-sm">{opp.admin_contact_name || <span className="text-muted-foreground">Same as public</span>}</TableCell>
+                  <TableCell className="text-sm">{opp.admin_email || <span className="text-muted-foreground">Same as public</span>}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">
                     {formatDistanceToNow(new Date(opp.updated_at), { addSuffix: true })}
                   </TableCell>
@@ -1192,6 +1200,32 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                 placeholder="(607) 555-1234"
                               />
                             </div>
+                            <div className="border-t border-border pt-4 mt-4">
+                              <h4 className="text-sm font-semibold text-muted-foreground mb-3">Admin Contact (receives emails)</h4>
+                              <div className="space-y-4">
+                                <div className="space-y-2">
+                                  <Label>Admin Contact Name</Label>
+                                  <Input
+                                    value={editingOpportunity.admin_contact_name || ""}
+                                    onChange={(e) =>
+                                      setEditingOpportunity({ ...editingOpportunity, admin_contact_name: e.target.value || null })
+                                    }
+                                    placeholder="Leave empty to use public contact"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Admin Email</Label>
+                                  <Input
+                                    type="email"
+                                    value={editingOpportunity.admin_email || ""}
+                                    onChange={(e) =>
+                                      setEditingOpportunity({ ...editingOpportunity, admin_email: e.target.value || null })
+                                    }
+                                    placeholder="Leave empty to use public email"
+                                  />
+                                </div>
+                              </div>
+                            </div>
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 checked={editingOpportunity.active}
@@ -1239,7 +1273,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
               <DialogTitle>Email Preview</DialogTitle>
               <DialogDescription>
                 Review the confirmation email before sending to{" "}
-                <span className="font-medium text-foreground">{previewingEmailOpp?.org_email}</span>
+                <span className="font-medium text-foreground">{previewingEmailOpp?.admin_email || previewingEmailOpp?.org_email}</span>
               </DialogDescription>
             </DialogHeader>
             <div className="flex-1 min-h-0 overflow-hidden rounded-lg border border-border bg-muted">
