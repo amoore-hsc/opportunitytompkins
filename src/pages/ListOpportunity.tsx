@@ -792,6 +792,9 @@ const ListOpportunity = () => {
           <Button type="submit" size="lg" disabled={loading} className="w-full bg-success">
             {loading ? "Submitting..." : "Submit Opportunity"}
           </Button>
+          <p className="text-sm text-muted-foreground text-center mt-3">
+            Once an opportunity has been submitted, you will receive a confirmation email from hello@tompkins-opportunity.org. Please check your spam folder if you did not receive an email to your inbox.
+          </p>
         </form>
       </main>
 
