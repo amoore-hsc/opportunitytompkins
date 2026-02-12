@@ -48,6 +48,7 @@ type DaySchedule = {
     selected: boolean;
     startTime: number;
     endTime: number;
+    noScheduledTime: boolean;
   };
 };
 
@@ -84,7 +85,8 @@ const ListOpportunity = () => {
       [day.key]: {
         selected: false,
         startTime: 9,
-        endTime: 17
+        endTime: 17,
+        noScheduledTime: false
       }
     }), {})
   );
@@ -183,6 +185,9 @@ const ListOpportunity = () => {
 
     const daysTimesAvailable = selectedDays.map(([day, schedule]) => {
       const dayLabel = DAYS_OF_WEEK.find(d => d.key === day)?.label;
+      if (schedule.noScheduledTime) {
+        return `${dayLabel}: Flexible`;
+      }
       return `${dayLabel}: ${formatTimeFromHour(schedule.startTime)} - ${formatTimeFromHour(schedule.endTime)}`;
     }).join(", ");
 
@@ -532,41 +537,60 @@ const ListOpportunity = () => {
                   
                   {daySchedule[day.key].selected && (
                     <div className="space-y-3 pl-6 animate-fade-in">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <div>
-                            <span className="text-muted-foreground">Start: </span>
-                            <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].startTime)}</span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">End: </span>
-                            <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].endTime)}</span>
-                          </div>
-                        </div>
-                        <Slider
-                          aria-label={`${day.label} time range, from ${formatTimeFromHour(daySchedule[day.key].startTime)} to ${formatTimeFromHour(daySchedule[day.key].endTime)}`}
-                          value={[daySchedule[day.key].startTime, daySchedule[day.key].endTime]}
-                          onValueChange={([start, end]) => setDaySchedule({
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`${day.key}-no-time`}
+                          checked={daySchedule[day.key].noScheduledTime}
+                          onCheckedChange={checked => setDaySchedule({
                             ...daySchedule,
                             [day.key]: {
                               ...daySchedule[day.key],
-                              startTime: start,
-                              endTime: end
+                              noScheduledTime: checked === true
                             }
                           })}
-                          min={0}
-                          max={23}
-                          step={1}
-                          className="w-full [&_.slider-range]:bg-green-500 [&_.slider-track]:bg-muted [&_.slider-track]:h-3"
                         />
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>12 AM</span>
-                          <span>6 AM</span>
-                          <span>12 PM</span>
-                          <span>6 PM</span>
-                          <span>11 PM</span>
-                        </div>
+                        <Label htmlFor={`${day.key}-no-time`} className="cursor-pointer text-sm">
+                          No specific time / Flexible
+                        </Label>
                       </div>
+
+                      {!daySchedule[day.key].noScheduledTime && (
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <div>
+                              <span className="text-muted-foreground">Start: </span>
+                              <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].startTime)}</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">End: </span>
+                              <span className="font-medium">{formatTimeFromHour(daySchedule[day.key].endTime)}</span>
+                            </div>
+                          </div>
+                          <Slider
+                            aria-label={`${day.label} time range, from ${formatTimeFromHour(daySchedule[day.key].startTime)} to ${formatTimeFromHour(daySchedule[day.key].endTime)}`}
+                            value={[daySchedule[day.key].startTime, daySchedule[day.key].endTime]}
+                            onValueChange={([start, end]) => setDaySchedule({
+                              ...daySchedule,
+                              [day.key]: {
+                                ...daySchedule[day.key],
+                                startTime: start,
+                                endTime: end
+                              }
+                            })}
+                            min={0}
+                            max={23}
+                            step={1}
+                            className="w-full [&_.slider-range]:bg-green-500 [&_.slider-track]:bg-muted [&_.slider-track]:h-3"
+                          />
+                          <div className="flex justify-between text-xs text-muted-foreground">
+                            <span>12 AM</span>
+                            <span>6 AM</span>
+                            <span>12 PM</span>
+                            <span>6 PM</span>
+                            <span>11 PM</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
