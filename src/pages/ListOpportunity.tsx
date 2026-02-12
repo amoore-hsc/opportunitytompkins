@@ -793,7 +793,7 @@ const ListOpportunity = () => {
             {loading ? "Submitting..." : "Submit Opportunity"}
           </Button>
           <p className="text-sm text-muted-foreground text-center mt-3">
-            Once an opportunity has been submitted, you will receive a confirmation email from hello@tompkins-opportunity.org. Please check your spam folder if you did not receive an email to your inbox.
+            Once an opportunity has been submitted, you will receive a confirmation email from <span className="whitespace-nowrap">hello@tompkins-opportunity.org</span>. Please check your spam folder if you did not receive an email to your inbox.
           </p>
         </form>
       </main>
