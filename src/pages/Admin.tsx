@@ -1163,9 +1163,32 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                 </Label>
                               </div>
 
+                              <div className={editFlexibleTime ? "flex flex-wrap gap-2" : "space-y-3"}>
                               {DAYS_OF_WEEK.map(day => {
                                 const { schedule: currentSchedule } = parseDaysTimesAvailable(editingOpportunity.days_times_available);
-                                return (
+                                return editFlexibleTime ? (
+                                  <label
+                                    key={day.key}
+                                    htmlFor={`edit-${day.key}`}
+                                    className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 cursor-pointer text-sm transition-colors ${
+                                      currentSchedule[day.key].selected ? 'border-primary bg-primary/10 font-medium' : 'border-border bg-background'
+                                    }`}
+                                  >
+                                    <Checkbox
+                                      id={`edit-${day.key}`}
+                                      checked={currentSchedule[day.key].selected}
+                                      onCheckedChange={(checked) => {
+                                        const updated = { ...currentSchedule };
+                                        updated[day.key] = { ...updated[day.key], selected: checked === true };
+                                        setEditingOpportunity({
+                                          ...editingOpportunity,
+                                          days_times_available: formatDayScheduleToString(updated, editFlexibleTime)
+                                        });
+                                      }}
+                                    />
+                                    {day.label}
+                                  </label>
+                                ) : (
                                   <div key={day.key} className="space-y-3 rounded-lg border border-border p-4">
                                     <div className="flex items-center space-x-2">
                                       <Checkbox
@@ -1230,6 +1253,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                   </div>
                                 );
                               })}
+                              </div>
                             </div>
                             <div className="space-y-2">
                               <Label>Organization Name</Label>
