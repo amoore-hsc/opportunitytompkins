@@ -63,7 +63,7 @@ const Opportunities = () => {
     try {
       const { data, error } = await supabase
         .from("opportunities")
-        .select("*")
+        .select("id, type, role_classification, position_title, description, location, on_bus_route, hours_available, days_times_available, additional_requirements, org_name, org_email, org_phone, contact_name, admin_email, created_at, updated_at")
         .eq("active", true)
         .order("updated_at", { ascending: false });
       if (error) throw error;
