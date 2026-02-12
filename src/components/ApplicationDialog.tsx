@@ -74,6 +74,7 @@ export const ApplicationDialog = ({
           opportunityType: opportunity.type === "volunteer" ? "Volunteer" : "Education & Training",
           positionTitle: opportunity.position_title || "",
           opportunityId: opportunity.id,
+          adminEmail: opportunity.admin_email || undefined,
         },
       });
 

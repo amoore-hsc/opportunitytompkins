@@ -20,8 +20,11 @@ interface UpdateOpportunityRequest {
     days_times_available?: string;
     additional_requirements?: string | null;
     org_name?: string;
+    contact_name?: string;
     org_email?: string;
     org_phone?: string;
+    admin_contact_name?: string | null;
+    admin_email?: string | null;
   };
   deactivation?: {
     positions_filled: number;

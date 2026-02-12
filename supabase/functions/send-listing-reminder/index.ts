@@ -14,6 +14,8 @@ interface Opportunity {
   org_name: string;
   contact_name: string | null;
   org_email: string;
+  admin_contact_name: string | null;
+  admin_email: string | null;
   position_title: string | null;
   type: string;
   description: string;
@@ -193,7 +195,7 @@ const handler = async (req: Request): Promise<Response> => {
       // Fetch up to 3 real active listings to use for testing
       const { data: realListings, error: fetchError } = await supabase
         .from("opportunities")
-        .select("id, org_name, contact_name, org_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token")
+        .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token")
         .eq("active", true)
         .limit(3);
 
@@ -267,7 +269,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { data: opportunities, error: fetchError } = await supabase
       .from("opportunities")
-      .select("id, org_name, contact_name, org_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, updated_at")
+      .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, updated_at")
       .eq("active", true)
       .is("reminder_sent_at", null)
       .lte("created_at", sixtyDaysAgo.toISOString());
@@ -302,10 +304,10 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Group opportunities by org_email
+    // Group opportunities by the email that should receive the reminder (admin_email or org_email)
     const groupedByEmail = new Map<string, Opportunity[]>();
     for (const opp of eligibleOpportunities) {
-      const email = opp.org_email.toLowerCase();
+      const email = (opp.admin_email || opp.org_email).toLowerCase();
       if (!groupedByEmail.has(email)) {
         groupedByEmail.set(email, []);
       }

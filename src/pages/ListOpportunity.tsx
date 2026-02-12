@@ -91,6 +91,7 @@ const ListOpportunity = () => {
   const [additionalRequirements, setAdditionalRequirements] = useState<string[]>([]);
   const [currentRequirement, setCurrentRequirement] = useState("");
   const [locationType, setLocationType] = useState("");
+  const [sameContact, setSameContact] = useState(true);
   const [formData, setFormData] = useState({
     type: "",
     roleClassification: "",
@@ -103,6 +104,8 @@ const ListOpportunity = () => {
     contactName: "",
     orgEmail: "",
     orgPhone: "",
+    adminContactName: "",
+    adminEmail: "",
     acknowledged: false
   });
 
@@ -185,6 +188,9 @@ const ListOpportunity = () => {
 
     setLoading(true);
     try {
+      const adminContactName = sameContact ? null : formData.adminContactName;
+      const adminEmail = sameContact ? null : formData.adminEmail;
+
       const { data, error } = await supabase.from("opportunities").insert({
         type: formData.type,
         role_classification: formData.roleClassification,
@@ -198,16 +204,22 @@ const ListOpportunity = () => {
         org_name: formData.orgName,
         contact_name: formData.contactName,
         org_email: formData.orgEmail,
-        org_phone: formData.orgPhone
+        org_phone: formData.orgPhone,
+        admin_contact_name: adminContactName,
+        admin_email: adminEmail
       }).select().single();
 
       if (error) throw error;
 
+      // Send confirmation email to the admin contact (or public contact if same)
+      const confirmationEmail = adminEmail || formData.orgEmail;
+      const confirmationName = adminContactName || formData.contactName;
+
       const { error: emailError } = await supabase.functions.invoke("send-confirmation-email", {
         body: {
           orgName: formData.orgName,
-          contactName: formData.contactName,
-          orgEmail: formData.orgEmail,
+          contactName: confirmationName,
+          orgEmail: confirmationEmail,
           opportunityType: formData.type === "volunteer" ? "Volunteer" : "Education & Training",
           roleClassification: formData.roleClassification,
           positionTitle: formData.positionTitle || null,
@@ -624,6 +636,8 @@ const ListOpportunity = () => {
                 />
               </div>
 
+              <h4 className="text-md font-medium text-foreground pt-2">Public Contact (shown to applicants)</h4>
+
               <div className="space-y-2">
                 <Label htmlFor="contactName">
                   Contact Name <span aria-hidden="true" className="text-destructive">*</span>
@@ -669,6 +683,52 @@ const ListOpportunity = () => {
                   maxLength={12}
                 />
               </div>
+
+              <h4 className="text-md font-medium text-foreground pt-4">Admin Contact (receives confirmation emails & edit link)</h4>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="sameContact"
+                  checked={sameContact}
+                  onCheckedChange={checked => setSameContact(checked === true)}
+                />
+                <Label htmlFor="sameContact" className="cursor-pointer">
+                  Same as public contact
+                </Label>
+              </div>
+
+              {!sameContact && (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="space-y-2">
+                    <Label htmlFor="adminContactName">
+                      Admin Contact Name <span aria-hidden="true" className="text-destructive">*</span>
+                      <VisuallyHidden>(required)</VisuallyHidden>
+                    </Label>
+                    <Input
+                      id="adminContactName"
+                      required
+                      aria-required="true"
+                      value={formData.adminContactName}
+                      onChange={e => setFormData({ ...formData, adminContactName: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="adminEmail">
+                      Admin Email <span aria-hidden="true" className="text-destructive">*</span>
+                      <VisuallyHidden>(required)</VisuallyHidden>
+                    </Label>
+                    <Input
+                      id="adminEmail"
+                      type="email"
+                      required
+                      aria-required="true"
+                      value={formData.adminEmail}
+                      onChange={e => setFormData({ ...formData, adminEmail: e.target.value })}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
