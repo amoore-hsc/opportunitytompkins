@@ -62,11 +62,26 @@ export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
           
           <div className="flex items-start gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
-            <div className="flex flex-col gap-1">
-              {opportunity.days_times_available.split(',').map((day, index) => (
-                <span key={index}>{day.trim()}</span>
-              ))}
-            </div>
+            {(() => {
+              const parts = opportunity.days_times_available.split(',').map(s => s.trim());
+              const allFlexible = parts.every(p => p.toLowerCase().includes('flexible'));
+              if (allFlexible) {
+                const dayNames = parts.map(p => p.split(':')[0].trim());
+                return (
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium">Flexible Hours</span>
+                    <span>{dayNames.join(', ')}</span>
+                  </div>
+                );
+              }
+              return (
+                <div className="flex flex-col gap-1">
+                  {parts.map((day, index) => (
+                    <span key={index}>{day}</span>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
           
           {opportunity.additional_requirements && (
