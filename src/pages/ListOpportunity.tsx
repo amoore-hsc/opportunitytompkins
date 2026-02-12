@@ -521,7 +521,7 @@ const ListOpportunity = () => {
                 onCheckedChange={checked => setFlexibleTime(checked === true)}
               />
               <Label htmlFor="flexible-time" className="cursor-pointer text-sm">
-                No specific time / Flexible hours
+                Flexible Hours
               </Label>
             </div>
 
