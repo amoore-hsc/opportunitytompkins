@@ -957,7 +957,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                 <TableHead>Organization</TableHead>
                 <TableHead>Position Title</TableHead>
                 <TableHead>Admin Contact</TableHead>
-                <TableHead>Admin Email</TableHead>
+                
                 <TableHead>Last Updated</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -970,7 +970,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                   <TableCell>{opp.org_name}</TableCell>
                   <TableCell>{opp.position_title || "—"}</TableCell>
                   <TableCell className="text-sm">{opp.admin_contact_name || opp.contact_name || "—"}</TableCell>
-                  <TableCell className="text-sm">{opp.admin_email || opp.org_email}</TableCell>
+                  
                   <TableCell className="text-muted-foreground text-sm">
                     {formatDistanceToNow(new Date(opp.updated_at), { addSuffix: true })}
                   </TableCell>
