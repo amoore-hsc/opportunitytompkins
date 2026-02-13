@@ -113,7 +113,7 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
         })}
         
         <div style={{ marginTop: '30px', fontSize: '12px', color: '#666', borderTop: '1px solid #e0e0e0', paddingTop: '15px' }}>
-          <p>For help or questions, contact: amoore@hsctc.org</p>
+          <p>For help or questions, contact: rhinton@uwtc.org</p>
           <p>Powered by Tompkins Opportunity</p>
         </div>
       </div>
