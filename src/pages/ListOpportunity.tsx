@@ -412,6 +412,20 @@ const ListOpportunity = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="orgName">
+                  Organization Name <span aria-hidden="true" className="text-destructive">*</span>
+                  <VisuallyHidden>(required)</VisuallyHidden>
+                </Label>
+                <Input
+                  id="orgName"
+                  required
+                  aria-required="true"
+                  value={formData.orgName}
+                  onChange={e => setFormData({ ...formData, orgName: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="positionTitle">
                   Position Title <span aria-hidden="true" className="text-destructive">*</span>
                   <VisuallyHidden>(required)</VisuallyHidden>
@@ -431,6 +445,10 @@ const ListOpportunity = () => {
           {/* ===== SHARED FIELDS ===== */}
           {formData.type && (
             <>
+
+          {/* ===== EDUCATION-ONLY FIELDS ===== */}
+          {isEducation && (
+            <>
               <div className="space-y-2">
                 <Label htmlFor="orgName">
                   Organization Name <span aria-hidden="true" className="text-destructive">*</span>
@@ -445,9 +463,6 @@ const ListOpportunity = () => {
                 />
               </div>
 
-          {/* ===== EDUCATION-ONLY FIELDS ===== */}
-          {isEducation && (
-            <>
               <div className="space-y-2">
                 <Label htmlFor="programName">
                   Program Name <span aria-hidden="true" className="text-destructive">*</span>
