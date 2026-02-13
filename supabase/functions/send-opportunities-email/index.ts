@@ -20,6 +20,7 @@ interface Opportunity {
   org_name: string;
   org_email: string;
   org_phone: string;
+  website: string | null;
 }
 
 interface OpportunitiesEmailRequest {
@@ -52,7 +53,9 @@ const handler = async (req: Request): Promise<Response> => {
 <p style="margin:0 0 8px 0;"><strong>Description:</strong> ${opp.description}</p>
 ${opp.additional_requirements ? `<p style="margin:0 0 8px 0;"><strong>Requirements:</strong> ${opp.additional_requirements}</p>` : ''}
 <div style="margin-top:15px; text-align:center;">
-<a href="${siteUrl}/opportunities?id=${opp.id}" style="display:inline-block; background-color:#1e3a5f; color:white; text-decoration:none; padding:12px 30px; border-radius:6px; font-weight:bold; font-size:14px;">Apply Now</a>
+${opp.type === 'education' && opp.website
+  ? `<a href="${opp.website}" style="display:inline-block; background-color:#1e3a5f; color:white; text-decoration:none; padding:12px 30px; border-radius:6px; font-weight:bold; font-size:14px;">Program Website</a>`
+  : `<a href="${siteUrl}/opportunities?id=${opp.id}" style="display:inline-block; background-color:#1e3a5f; color:white; text-decoration:none; padding:12px 30px; border-radius:6px; font-weight:bold; font-size:14px;">Apply Now</a>`}
 </div>
 </div>
     `).join('');
