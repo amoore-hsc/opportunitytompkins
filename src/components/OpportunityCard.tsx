@@ -44,12 +44,16 @@ export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
               {opportunity.role_classification}
             </Badge>
           )}
-          {/* Education: Program Components badge */}
+          {/* Education: Program Components badges */}
           {isEducation && opportunity.program_components && (
-            <Badge variant="outline" className="flex items-center gap-1 w-fit mb-2">
-              <GraduationCap className="h-3 w-3" aria-hidden="true" />
-              {opportunity.program_components}
-            </Badge>
+            <div className="flex flex-wrap gap-1 mb-2">
+              {opportunity.program_components.split(", ").map(component => (
+                <Badge key={component} variant="outline" className="flex items-center gap-1 w-fit">
+                  <GraduationCap className="h-3 w-3" aria-hidden="true" />
+                  {component}
+                </Badge>
+              ))}
+            </div>
           )}
           <CardTitle className="text-xl">{opportunity.org_name}</CardTitle>
           {/* Volunteer: position title */}
