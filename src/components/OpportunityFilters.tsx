@@ -152,8 +152,9 @@ export const OpportunityFilters = ({
   const showEducationFilters = filters.type === "all" || filters.type === "education";
 
   return <Card className="mb-8">
-      <CardContent className="pt-6">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <CardContent className="pt-6 space-y-5">
+        {/* Row 1: Dropdowns */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-2">
             <Label htmlFor="type">Opportunity Type</Label>
             <Select value={filters.type} onValueChange={value => setFilters({
@@ -191,67 +192,9 @@ export const OpportunityFilters = ({
             </div>
           )}
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="hours">Hours per Week: {filters.minHours}</Label>
-              <Slider 
-                id="hours" 
-                min={0} 
-                max={40} 
-                step={1} 
-                value={[filters.minHours]} 
-                onValueChange={value => setFilters({
-                  ...filters,
-                  minHours: value[0]
-                })} 
-                className="mt-2"
-                aria-valuetext={`${filters.minHours} hours per week`}
-              />
-            </div>
-
-            {showVolunteerFilters && (
-              <>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="busRoute" checked={filters.busRoute} onCheckedChange={checked => setFilters({
-                  ...filters,
-                  busRoute: checked === true
-                })} />
-                <Label htmlFor="busRoute" className="cursor-pointer flex items-center gap-2">
-                  <Bus className="h-4 w-4" aria-hidden="true" />
-                  On Bus Route Only
-                </Label>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="remote" checked={filters.remote} onCheckedChange={checked => setFilters({
-                  ...filters,
-                  remote: checked === true
-                })} />
-                <Label htmlFor="remote" className="cursor-pointer flex items-center gap-2">
-                  <Wifi className="h-4 w-4" aria-hidden="true" />
-                  Remote Only
-                </Label>
-                </div>
-              </>
-            )}
-
-            <div className="flex items-center space-x-2">
-              <Checkbox id="flexibleHours" checked={filters.flexibleHours} onCheckedChange={checked => setFilters({
-              ...filters,
-              flexibleHours: checked === true
-            })} />
-            <Label htmlFor="flexibleHours" className="cursor-pointer flex items-center gap-2">
-              <Clock className="h-4 w-4" aria-hidden="true" />
-              Flexible Hours
-            </Label>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 flex flex-col lg:flex-row lg:items-end gap-6">
           {showVolunteerFilters && (
-            <div className="space-y-2 w-full lg:w-[calc(33.333%-1rem)] lg:shrink-0">
-              <Label htmlFor="roleClassification">Role Classification (Volunteer)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="roleClassification">Role Classification</Label>
               <Select value={filters.roleClassification} onValueChange={value => setFilters({
               ...filters,
               roleClassification: value
@@ -270,8 +213,8 @@ export const OpportunityFilters = ({
           )}
 
           {showEducationFilters && (
-            <div className="space-y-2 w-full lg:w-[calc(33.333%-1rem)] lg:shrink-0">
-              <Label htmlFor="programComponents">Program Components (Education & Training)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="programComponents">Program Components</Label>
               <Select value={filters.programComponents} onValueChange={value => setFilters({
               ...filters,
               programComponents: value
@@ -289,28 +232,86 @@ export const OpportunityFilters = ({
             </div>
           )}
 
-          <div className="flex-1 space-y-2" role="group" aria-labelledby="days-label">
-            <Label id="days-label">Days Available</Label>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by days of the week">
-                {daysOfWeek.map(day => <Button 
-                  key={day} 
-                  variant={filters.daysOfWeek.includes(day) ? "default" : "outline"} 
-                  size="sm" 
-                  onClick={() => toggleDay(day)} 
-                  className="transition-all"
-                  aria-pressed={filters.daysOfWeek.includes(day)}
-                  aria-label={`Filter by ${day}`}
-                >
-                    {day}
-                  </Button>)}
+          <div className="space-y-2">
+            <Label htmlFor="hours">Hours per Week: {filters.minHours}</Label>
+            <Slider 
+              id="hours" 
+              min={0} 
+              max={40} 
+              step={1} 
+              value={[filters.minHours]} 
+              onValueChange={value => setFilters({
+                ...filters,
+                minHours: value[0]
+              })} 
+              className="mt-3"
+              aria-valuetext={`${filters.minHours} hours per week`}
+            />
+          </div>
+        </div>
+
+        {/* Row 2: Checkboxes + Days + Clear */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          {showVolunteerFilters && (
+            <>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="busRoute" checked={filters.busRoute} onCheckedChange={checked => setFilters({
+                ...filters,
+                busRoute: checked === true
+              })} />
+              <Label htmlFor="busRoute" className="cursor-pointer flex items-center gap-2">
+                <Bus className="h-4 w-4" aria-hidden="true" />
+                On Bus Route Only
+              </Label>
               </div>
-              <Button variant="secondary" size="sm" onClick={clearAllFilters} className="gap-2 bg-success">
-                <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                Clear All Filters
-              </Button>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox id="remote" checked={filters.remote} onCheckedChange={checked => setFilters({
+                ...filters,
+                remote: checked === true
+              })} />
+              <Label htmlFor="remote" className="cursor-pointer flex items-center gap-2">
+                <Wifi className="h-4 w-4" aria-hidden="true" />
+                Remote Only
+              </Label>
+              </div>
+            </>
+          )}
+
+          <div className="flex items-center space-x-2">
+            <Checkbox id="flexibleHours" checked={filters.flexibleHours} onCheckedChange={checked => setFilters({
+            ...filters,
+            flexibleHours: checked === true
+          })} />
+          <Label htmlFor="flexibleHours" className="cursor-pointer flex items-center gap-2">
+            <Clock className="h-4 w-4" aria-hidden="true" />
+            Flexible Hours
+          </Label>
+          </div>
+        </div>
+
+        {/* Row 3: Days Available + Clear */}
+        <div className="flex flex-wrap items-center justify-between gap-3" role="group" aria-labelledby="days-label">
+          <div className="flex items-center gap-3">
+            <Label id="days-label" className="shrink-0">Days Available</Label>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by days of the week">
+              {daysOfWeek.map(day => <Button 
+                key={day} 
+                variant={filters.daysOfWeek.includes(day) ? "default" : "outline"} 
+                size="sm" 
+                onClick={() => toggleDay(day)} 
+                className="transition-all"
+                aria-pressed={filters.daysOfWeek.includes(day)}
+                aria-label={`Filter by ${day}`}
+              >
+                  {day}
+                </Button>)}
             </div>
           </div>
+          <Button variant="secondary" size="sm" onClick={clearAllFilters} className="gap-2 bg-success">
+            <RotateCcw className="h-4 w-4" aria-hidden="true" />
+            Clear All Filters
+          </Button>
         </div>
       </CardContent>
     </Card>;
