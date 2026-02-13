@@ -108,20 +108,6 @@ export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
             </div>
           )}
 
-          {/* Website - education only */}
-          {isEducation && opportunity.website && (
-            <div className="flex items-start gap-2 text-sm text-muted-foreground">
-              <Globe className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
-              <a 
-                href={opportunity.website.startsWith("http") ? opportunity.website : `https://${opportunity.website}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline hover:no-underline"
-              >
-                Program Website
-              </a>
-            </div>
-          )}
           
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
