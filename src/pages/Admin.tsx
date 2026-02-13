@@ -113,6 +113,17 @@ const formatDayScheduleToString = (schedule: DaySchedule, flexible: boolean = fa
     .join(", ");
 };
 
+const PROGRAM_COMPONENTS = [
+  { value: "GED", label: "GED" },
+  { value: "English as a Second Language (ESL)", label: "English as a Second Language (ESL)" },
+  { value: "Work-Based Learning", label: "Work-Based Learning" },
+  { value: "Job Search", label: "Job Search" },
+  { value: "Adult Basic Education", label: "Adult Basic Education" },
+  { value: "Vocational or Technical Training", label: "Vocational or Technical Training" },
+  { value: "Job Readiness Training", label: "Job Readiness Training" },
+  { value: "Other", label: "Other" },
+];
+
 interface Opportunity {
   id: string;
   type: string;
@@ -133,6 +144,9 @@ interface Opportunity {
   active: boolean;
   updated_at: string;
   edit_token: string;
+  program_name: string | null;
+  website: string | null;
+  program_components: string | null;
 }
 
 const StaleListingsAlert = ({ opportunities }: { opportunities: Opportunity[] }) => {
@@ -637,25 +651,33 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
   const handleUpdate = async () => {
     if (!editingOpportunity) return;
 
+    const isEducation = editingOpportunity.type === "education";
+
     try {
       const { error } = await supabase
         .from("opportunities")
         .update({
           type: editingOpportunity.type,
-          role_classification: editingOpportunity.role_classification,
-          position_title: editingOpportunity.position_title,
           description: editingOpportunity.description,
-          location: editingOpportunity.location,
-          on_bus_route: editingOpportunity.on_bus_route,
           hours_available: editingOpportunity.hours_available,
           days_times_available: editingOpportunity.days_times_available,
           additional_requirements: editingOpportunity.additional_requirements,
           org_name: editingOpportunity.org_name,
           org_email: editingOpportunity.org_email,
-          org_phone: editingOpportunity.org_phone,
-          admin_contact_name: editingOpportunity.admin_contact_name,
-          admin_email: editingOpportunity.admin_email,
           active: editingOpportunity.active,
+          // Volunteer-only fields (clear for education)
+          role_classification: isEducation ? null : editingOpportunity.role_classification,
+          position_title: isEducation ? null : editingOpportunity.position_title,
+          location: isEducation ? "N/A" : editingOpportunity.location,
+          on_bus_route: isEducation ? false : editingOpportunity.on_bus_route,
+          contact_name: isEducation ? null : editingOpportunity.contact_name,
+          org_phone: isEducation ? "N/A" : editingOpportunity.org_phone,
+          admin_contact_name: isEducation ? null : editingOpportunity.admin_contact_name,
+          admin_email: isEducation ? null : editingOpportunity.admin_email,
+          // Education-only fields (clear for volunteer)
+          program_name: isEducation ? editingOpportunity.program_name : null,
+          website: isEducation ? editingOpportunity.website : null,
+          program_components: isEducation ? editingOpportunity.program_components : null,
         })
         .eq("id", editingOpportunity.id);
 
@@ -972,7 +994,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
               <TableRow>
                 <TableHead>Type</TableHead>
                 <TableHead>Organization</TableHead>
-                <TableHead>Position Title</TableHead>
+                <TableHead>Position / Program</TableHead>
                 <TableHead>Admin Contact</TableHead>
                 
                 <TableHead>Last Updated</TableHead>
@@ -985,7 +1007,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                 <TableRow key={opp.id}>
                   <TableCell className="font-medium capitalize">{opp.type}</TableCell>
                   <TableCell>{opp.org_name}</TableCell>
-                  <TableCell>{opp.position_title || "—"}</TableCell>
+                  <TableCell>{opp.type === "education" ? (opp.program_name || "—") : (opp.position_title || "—")}</TableCell>
                   <TableCell className="text-sm">{opp.admin_contact_name || opp.contact_name || "—"}</TableCell>
                   
                   <TableCell className="text-muted-foreground text-sm">
@@ -1043,39 +1065,119 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                 </SelectContent>
                               </Select>
                             </div>
+
                             <div className="space-y-2">
-                              <Label>Role Classification</Label>
-                              <Select
-                                value={editingOpportunity.role_classification || ""}
-                                onValueChange={(value) =>
-                                  setEditingOpportunity({ ...editingOpportunity, role_classification: value || null })
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select classification" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Administrative & Office Support">Administrative & Office Support</SelectItem>
-                                  <SelectItem value="Community Engagement & Public Service">Community Engagement & Public Service</SelectItem>
-                                  <SelectItem value="Education & Mentoring">Education & Mentoring</SelectItem>
-                                  <SelectItem value="Human & Social Support Services">Human & Social Support Services</SelectItem>
-                                  <SelectItem value="Physical, Outdoor & Environmental Work">Physical, Outdoor & Environmental Work</SelectItem>
-                                  <SelectItem value="Creative, Media & Communications">Creative, Media & Communications</SelectItem>
-                                  <SelectItem value="Technology & Digital Support">Technology & Digital Support</SelectItem>
-                                  <SelectItem value="Fundraising & Development">Fundraising & Development</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Position Title</Label>
+                              <Label>Organization Name</Label>
                               <Input
-                                value={editingOpportunity.position_title || ""}
+                                value={editingOpportunity.org_name}
                                 onChange={(e) =>
-                                  setEditingOpportunity({ ...editingOpportunity, position_title: e.target.value || null })
+                                  setEditingOpportunity({ ...editingOpportunity, org_name: e.target.value })
                                 }
-                                placeholder="e.g., Kitchen Assistant, Office Volunteer"
                               />
                             </div>
+
+                            {/* ===== VOLUNTEER-ONLY FIELDS ===== */}
+                            {editingOpportunity.type === "volunteer" && (
+                              <>
+                                <div className="space-y-2">
+                                  <Label>Role Classification</Label>
+                                  <Select
+                                    value={editingOpportunity.role_classification || ""}
+                                    onValueChange={(value) =>
+                                      setEditingOpportunity({ ...editingOpportunity, role_classification: value || null })
+                                    }
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select classification" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="Administrative & Office Support">Administrative & Office Support</SelectItem>
+                                      <SelectItem value="Community Engagement & Public Service">Community Engagement & Public Service</SelectItem>
+                                      <SelectItem value="Education & Mentoring">Education & Mentoring</SelectItem>
+                                      <SelectItem value="Human & Social Support Services">Human & Social Support Services</SelectItem>
+                                      <SelectItem value="Physical, Outdoor & Environmental Work">Physical, Outdoor & Environmental Work</SelectItem>
+                                      <SelectItem value="Creative, Media & Communications">Creative, Media & Communications</SelectItem>
+                                      <SelectItem value="Technology & Digital Support">Technology & Digital Support</SelectItem>
+                                      <SelectItem value="Fundraising & Development">Fundraising & Development</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Position Title</Label>
+                                  <Input
+                                    value={editingOpportunity.position_title || ""}
+                                    onChange={(e) =>
+                                      setEditingOpportunity({ ...editingOpportunity, position_title: e.target.value || null })
+                                    }
+                                    placeholder="e.g., Kitchen Assistant, Office Volunteer"
+                                  />
+                                </div>
+                              </>
+                            )}
+
+                            {/* ===== EDUCATION-ONLY FIELDS ===== */}
+                            {editingOpportunity.type === "education" && (
+                              <>
+                                <div className="space-y-2">
+                                  <Label>Program Name</Label>
+                                  <Input
+                                    value={editingOpportunity.program_name || ""}
+                                    onChange={(e) =>
+                                      setEditingOpportunity({ ...editingOpportunity, program_name: e.target.value || null })
+                                    }
+                                    placeholder="e.g., GED Preparation Program"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Website <span className="text-destructive">*</span></Label>
+                                  <Input
+                                    type="url"
+                                    value={editingOpportunity.website || ""}
+                                    onChange={(e) =>
+                                      setEditingOpportunity({ ...editingOpportunity, website: e.target.value || null })
+                                    }
+                                    placeholder="https://example.org/program"
+                                    required
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label>Program Components</Label>
+                                  <div className="space-y-2">
+                                    {PROGRAM_COMPONENTS.map((component) => {
+                                      const currentComponents = editingOpportunity.program_components
+                                        ? editingOpportunity.program_components.split(", ")
+                                        : [];
+                                      const isChecked = currentComponents.includes(component.value);
+                                      return (
+                                        <div key={component.value} className="flex items-center space-x-2">
+                                          <Checkbox
+                                            id={`edit-component-${component.value}`}
+                                            checked={isChecked}
+                                            onCheckedChange={(checked) => {
+                                              let updated: string[];
+                                              if (checked) {
+                                                updated = [...currentComponents, component.value];
+                                              } else {
+                                                updated = currentComponents.filter(c => c !== component.value);
+                                              }
+                                              setEditingOpportunity({
+                                                ...editingOpportunity,
+                                                program_components: updated.length > 0 ? updated.join(", ") : null
+                                              });
+                                            }}
+                                          />
+                                          <Label htmlFor={`edit-component-${component.value}`} className="cursor-pointer text-sm">
+                                            {component.label}
+                                          </Label>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              </>
+                            )}
+
+                            {/* ===== SHARED FIELDS ===== */}
                             <div className="space-y-2">
                               <Label>Description</Label>
                               <Textarea
@@ -1085,51 +1187,58 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                 }
                               />
                             </div>
-                            <div className="space-y-2">
-                              <Label>Service Location</Label>
-                              <Select
-                                value={editLocationType}
-                                onValueChange={value => {
-                                  setEditLocationType(value);
-                                  if (value === "general") {
-                                    setEditingOpportunity({ ...editingOpportunity, location: "Tompkins County", on_bus_route: false });
-                                  } else if (value === "remote") {
-                                    setEditingOpportunity({ ...editingOpportunity, location: "Remote", on_bus_route: false });
-                                  }
-                                }}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select location type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="specific">Specific Address</SelectItem>
-                                  <SelectItem value="general">Tompkins County</SelectItem>
-                                  <SelectItem value="remote">Remote</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            {editLocationType === "specific" && (
+
+                            {/* Service Location - Volunteer only */}
+                            {editingOpportunity.type === "volunteer" && (
                               <>
                                 <div className="space-y-2">
-                                  <Label>Address</Label>
-                                  <Input
-                                    value={editingOpportunity.location}
-                                    onChange={(e) =>
-                                      setEditingOpportunity({ ...editingOpportunity, location: e.target.value })
-                                    }
-                                  />
+                                  <Label>Service Location</Label>
+                                  <Select
+                                    value={editLocationType}
+                                    onValueChange={value => {
+                                      setEditLocationType(value);
+                                      if (value === "general") {
+                                        setEditingOpportunity({ ...editingOpportunity, location: "Tompkins County", on_bus_route: false });
+                                      } else if (value === "remote") {
+                                        setEditingOpportunity({ ...editingOpportunity, location: "Remote", on_bus_route: false });
+                                      }
+                                    }}
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select location type" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="specific">Specific Address</SelectItem>
+                                      <SelectItem value="general">Tompkins County</SelectItem>
+                                      <SelectItem value="remote">Remote</SelectItem>
+                                    </SelectContent>
+                                  </Select>
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                  <Checkbox
-                                    checked={editingOpportunity.on_bus_route}
-                                    onCheckedChange={(checked) =>
-                                      setEditingOpportunity({ ...editingOpportunity, on_bus_route: checked === true })
-                                    }
-                                  />
-                                  <Label>On Bus Route</Label>
-                                </div>
+                                {editLocationType === "specific" && (
+                                  <>
+                                    <div className="space-y-2">
+                                      <Label>Address</Label>
+                                      <Input
+                                        value={editingOpportunity.location}
+                                        onChange={(e) =>
+                                          setEditingOpportunity({ ...editingOpportunity, location: e.target.value })
+                                        }
+                                      />
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox
+                                        checked={editingOpportunity.on_bus_route}
+                                        onCheckedChange={(checked) =>
+                                          setEditingOpportunity({ ...editingOpportunity, on_bus_route: checked === true })
+                                        }
+                                      />
+                                      <Label>On Bus Route</Label>
+                                    </div>
+                                  </>
+                                )}
                               </>
                             )}
+
                             <div className="space-y-2">
                               <Label>Hours Available</Label>
                               <Input
@@ -1150,7 +1259,6 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                   onCheckedChange={checked => {
                                     const flexible = checked === true;
                                     setEditFlexibleTime(flexible);
-                                    // Re-format the schedule string with updated flexible state
                                     const { schedule } = parseDaysTimesAvailable(editingOpportunity.days_times_available);
                                     setEditingOpportunity({
                                       ...editingOpportunity,
@@ -1256,22 +1364,12 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                               </div>
                             </div>
                             <div className="space-y-2">
-                              <Label>Organization Name</Label>
-                              <Input
-                                value={editingOpportunity.org_name}
+                              <Label>{editingOpportunity.type === "education" ? "Minimum Requirements" : "Additional Requirements"}</Label>
+                              <Textarea
+                                value={editingOpportunity.additional_requirements || ""}
                                 onChange={(e) =>
-                                  setEditingOpportunity({ ...editingOpportunity, org_name: e.target.value })
+                                  setEditingOpportunity({ ...editingOpportunity, additional_requirements: e.target.value || null })
                                 }
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Contact Name</Label>
-                              <Input
-                                value={editingOpportunity.contact_name || ""}
-                                onChange={(e) =>
-                                  setEditingOpportunity({ ...editingOpportunity, contact_name: e.target.value })
-                                }
-                                placeholder="Name of the contact person"
                               />
                             </div>
                             <div className="space-y-2">
@@ -1285,43 +1383,60 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                 placeholder="contact@organization.org"
                               />
                             </div>
-                            <div className="space-y-2">
-                              <Label>Organization Phone</Label>
-                              <Input
-                                type="tel"
-                                value={editingOpportunity.org_phone}
-                                onChange={(e) =>
-                                  setEditingOpportunity({ ...editingOpportunity, org_phone: e.target.value })
-                                }
-                                placeholder="(607) 555-1234"
-                              />
-                            </div>
-                            <div className="border-t border-border pt-4 mt-4">
-                              <h4 className="text-sm font-semibold text-muted-foreground mb-3">Admin Contact (receives emails)</h4>
-                              <div className="space-y-4">
+
+                            {/* Volunteer-only: Contact, Phone, Admin Contact */}
+                            {editingOpportunity.type === "volunteer" && (
+                              <>
                                 <div className="space-y-2">
-                                  <Label>Admin Contact Name</Label>
+                                  <Label>Contact Name</Label>
                                   <Input
-                                    value={editingOpportunity.admin_contact_name || ""}
+                                    value={editingOpportunity.contact_name || ""}
                                     onChange={(e) =>
-                                      setEditingOpportunity({ ...editingOpportunity, admin_contact_name: e.target.value || null })
+                                      setEditingOpportunity({ ...editingOpportunity, contact_name: e.target.value })
                                     }
-                                    placeholder="Leave empty to use public contact"
+                                    placeholder="Name of the contact person"
                                   />
                                 </div>
                                 <div className="space-y-2">
-                                  <Label>Admin Email</Label>
+                                  <Label>Organization Phone</Label>
                                   <Input
-                                    type="email"
-                                    value={editingOpportunity.admin_email || ""}
+                                    type="tel"
+                                    value={editingOpportunity.org_phone}
                                     onChange={(e) =>
-                                      setEditingOpportunity({ ...editingOpportunity, admin_email: e.target.value || null })
+                                      setEditingOpportunity({ ...editingOpportunity, org_phone: e.target.value })
                                     }
-                                    placeholder="Leave empty to use public email"
+                                    placeholder="(607) 555-1234"
                                   />
                                 </div>
-                              </div>
-                            </div>
+                                <div className="border-t border-border pt-4 mt-4">
+                                  <h4 className="text-sm font-semibold text-muted-foreground mb-3">Admin Contact (receives emails)</h4>
+                                  <div className="space-y-4">
+                                    <div className="space-y-2">
+                                      <Label>Admin Contact Name</Label>
+                                      <Input
+                                        value={editingOpportunity.admin_contact_name || ""}
+                                        onChange={(e) =>
+                                          setEditingOpportunity({ ...editingOpportunity, admin_contact_name: e.target.value || null })
+                                        }
+                                        placeholder="Leave empty to use public contact"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Admin Email</Label>
+                                      <Input
+                                        type="email"
+                                        value={editingOpportunity.admin_email || ""}
+                                        onChange={(e) =>
+                                          setEditingOpportunity({ ...editingOpportunity, admin_email: e.target.value || null })
+                                        }
+                                        placeholder="Leave empty to use public email"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </>
+                            )}
+
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 checked={editingOpportunity.active}
