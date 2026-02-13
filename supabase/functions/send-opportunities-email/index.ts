@@ -58,7 +58,7 @@ ${opp.type === 'volunteer' && opp.position_title ? `<p style="margin:0 0 5px 0; 
 ${opp.type === 'education' && opp.program_name ? `<p style="margin:0 0 5px 0; font-size:15px; font-weight:600;">${opp.program_name}</p>` : ''}
 <p style="margin:0 0 12px 0; color:#666;">${opp.description}</p>
 ${opp.type === 'volunteer' && opp.location && opp.location !== 'N/A' ? `<p style="margin:0 0 8px 0;">📍 <strong>Location:</strong> ${opp.location}</p>` : ''}
-${opp.type === 'education' && opp.website ? `<p style="margin:0 0 8px 0;">🌐 <strong>Website:</strong> <a href="${opp.website.startsWith('http') ? opp.website : 'https://' + opp.website}" style="color:#1e3a5f;">${opp.website}</a></p>` : ''}
+
 <p style="margin:0 0 8px 0;">🕐 <strong>Hours Available:</strong> ${opp.hours_available} per week</p>
 ${opp.days_times_available && opp.days_times_available !== 'N/A' ? `<p style="margin:0 0 8px 0;">📅 <strong>${opp.type === 'education' ? 'Schedule' : 'Days/Times'}:</strong> ${opp.days_times_available}</p>` : ''}
 ${opp.additional_requirements ? `<p style="margin:0 0 8px 0;">📋 <strong>${opp.type === 'education' ? 'Minimum Requirements' : 'Additional Requirements'}:</strong> ${opp.additional_requirements}</p>` : ''}
