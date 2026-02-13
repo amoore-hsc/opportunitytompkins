@@ -1,4 +1,5 @@
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { MapPin, Clock, Calendar, Bus, FileText, Briefcase, CalendarPlus, GraduationCap, Globe } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,38 @@ interface OpportunityCardProps {
   opportunity: Opportunity;
   isHighlighted?: boolean;
 }
+
+const REQUIREMENTS_TRUNCATE_LENGTH = 120;
+
+const ExpandableRequirements = ({ text, label }: { text: string; label: string }) => {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = text.length > REQUIREMENTS_TRUNCATE_LENGTH;
+
+  return (
+    <div className="flex items-start gap-2 text-sm text-muted-foreground">
+      <FileText className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+      <div className="flex-1">
+        <span className="font-normal">
+          <strong>{label}</strong>{" "}
+          {isLong && !expanded ? `${text.slice(0, REQUIREMENTS_TRUNCATE_LENGTH)}…` : text}
+        </span>
+        {isLong && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="ml-1 inline-flex items-center gap-0.5 text-primary hover:underline text-xs font-medium"
+            aria-expanded={expanded}
+          >
+            {expanded ? (
+              <>Show less <ChevronUp className="h-3 w-3" aria-hidden="true" /></>
+            ) : (
+              <>Show more <ChevronDown className="h-3 w-3" aria-hidden="true" /></>
+            )}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
   ({ opportunity, isHighlighted = false }, ref) => {
@@ -125,12 +158,10 @@ export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
           )}
           
           {opportunity.additional_requirements && (
-            <div className="flex items-start gap-2 text-sm text-muted-foreground">
-              <FileText className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
-              <span className="font-normal">
-                <strong>{isEducation ? "Minimum Requirements:" : "Additional Requirements:"}</strong> {opportunity.additional_requirements}
-              </span>
-            </div>
+            <ExpandableRequirements
+              text={opportunity.additional_requirements}
+              label={isEducation ? "Minimum Requirements:" : "Additional Requirements:"}
+            />
           )}
           
           {/* Apply button - volunteer only */}
