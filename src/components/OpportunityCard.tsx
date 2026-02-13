@@ -40,7 +40,7 @@ export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
           {/* Volunteer: Role Classification badge */}
           {!isEducation && opportunity.role_classification && (
             <Badge variant="outline" className="flex items-center gap-1 w-fit mb-2">
-              <Briefcase className="h-3 w-3" aria-hidden="true" />
+             <Briefcase className="h-3 w-3" aria-hidden="true" />
               {opportunity.role_classification}
             </Badge>
           )}

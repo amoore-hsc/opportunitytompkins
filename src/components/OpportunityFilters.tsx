@@ -251,7 +251,7 @@ export const OpportunityFilters = ({
         <div className="mt-6 flex flex-col lg:flex-row lg:items-end gap-6">
           {showVolunteerFilters && (
             <div className="space-y-2 w-full lg:w-[calc(33.333%-1rem)] lg:shrink-0">
-              <Label htmlFor="roleClassification">Role Classification</Label>
+              <Label htmlFor="roleClassification">Role Classification (Volunteer)</Label>
               <Select value={filters.roleClassification} onValueChange={value => setFilters({
               ...filters,
               roleClassification: value
@@ -271,7 +271,7 @@ export const OpportunityFilters = ({
 
           {showEducationFilters && (
             <div className="space-y-2 w-full lg:w-[calc(33.333%-1rem)] lg:shrink-0">
-              <Label htmlFor="programComponents">Program Components</Label>
+              <Label htmlFor="programComponents">Program Components (Education & Training)</Label>
               <Select value={filters.programComponents} onValueChange={value => setFilters({
               ...filters,
               programComponents: value
