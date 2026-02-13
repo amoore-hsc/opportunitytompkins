@@ -113,7 +113,7 @@ const ListOpportunity = () => {
     acknowledged: false,
     programName: "",
     website: "",
-    programComponents: ""
+    programComponents: [] as string[]
   });
 
   const isEducation = formData.type === "education";
@@ -221,7 +221,7 @@ const ListOpportunity = () => {
             ...baseData,
             program_name: formData.programName || null,
             website: formData.website || null,
-            program_components: formData.programComponents || null,
+            program_components: formData.programComponents.length > 0 ? formData.programComponents.join(", ") : null,
             location: "N/A",
             on_bus_route: false,
             org_phone: "N/A",
@@ -428,6 +428,23 @@ const ListOpportunity = () => {
             </>
           )}
 
+          {/* ===== SHARED FIELDS ===== */}
+          {formData.type && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="orgName">
+                  Organization Name <span aria-hidden="true" className="text-destructive">*</span>
+                  <VisuallyHidden>(required)</VisuallyHidden>
+                </Label>
+                <Input
+                  id="orgName"
+                  required
+                  aria-required="true"
+                  value={formData.orgName}
+                  onChange={e => setFormData({ ...formData, orgName: e.target.value })}
+                />
+              </div>
+
           {/* ===== EDUCATION-ONLY FIELDS ===== */}
           {isEducation && (
             <>
@@ -446,26 +463,35 @@ const ListOpportunity = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="programComponents">
+              <div className="space-y-2" role="group" aria-labelledby="programComponents-label">
+                <Label id="programComponents-label">
                   Program Components <span aria-hidden="true" className="text-destructive">*</span>
-                  <VisuallyHidden>(required)</VisuallyHidden>
+                  <VisuallyHidden>(required, select one or more)</VisuallyHidden>
                 </Label>
-                <Select required value={formData.programComponents} onValueChange={value => setFormData({ ...formData, programComponents: value })}>
-                  <SelectTrigger id="programComponents" aria-required="true">
-                    <SelectValue placeholder="Select program type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PROGRAM_COMPONENTS.map(pc => (
-                      <SelectItem key={pc.value} value={pc.value}>
-                        <div className="flex flex-col items-start py-1">
-                          <span className="font-medium">{pc.label}</span>
-                          <span className="text-xs text-muted-foreground group-hover:text-foreground group-data-[highlighted]:text-foreground">{pc.description}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="space-y-3 rounded-md border border-border p-4">
+                  {PROGRAM_COMPONENTS.map(pc => (
+                    <div key={pc.value} className="flex items-start space-x-3">
+                      <Checkbox
+                        id={`pc-${pc.value}`}
+                        checked={formData.programComponents.includes(pc.value)}
+                        onCheckedChange={(checked) => {
+                          setFormData(prev => ({
+                            ...prev,
+                            programComponents: checked
+                              ? [...prev.programComponents, pc.value]
+                              : prev.programComponents.filter(v => v !== pc.value)
+                          }));
+                        }}
+                      />
+                      <div className="grid gap-0.5 leading-none">
+                        <Label htmlFor={`pc-${pc.value}`} className="cursor-pointer font-medium">
+                          {pc.label}
+                        </Label>
+                        <p className="text-xs text-muted-foreground">{pc.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -480,23 +506,6 @@ const ListOpportunity = () => {
               </div>
             </>
           )}
-
-          {/* ===== SHARED FIELDS ===== */}
-          {formData.type && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="orgName">
-                  Organization Name <span aria-hidden="true" className="text-destructive">*</span>
-                  <VisuallyHidden>(required)</VisuallyHidden>
-                </Label>
-                <Input
-                  id="orgName"
-                  required
-                  aria-required="true"
-                  value={formData.orgName}
-                  onChange={e => setFormData({ ...formData, orgName: e.target.value })}
-                />
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="description">

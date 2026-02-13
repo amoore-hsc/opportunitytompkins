@@ -69,7 +69,7 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
               </div>
               {isEducation && opp.program_components && (
                 <div style={{ fontSize: '14px', marginBottom: '5px' }}>
-                  <strong>Program Component:</strong> {opp.program_components}
+                  <strong>Program Components:</strong> {opp.program_components}
                 </div>
               )}
               {!isEducation && opp.location && opp.location !== "N/A" && (

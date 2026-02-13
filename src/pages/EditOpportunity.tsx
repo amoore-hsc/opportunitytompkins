@@ -151,7 +151,7 @@ const EditOpportunity = () => {
     adminEmail: "",
     programName: "",
     website: "",
-    programComponents: ""
+    programComponents: [] as string[]
   });
 
   const isEducation = formData.type === "education";
@@ -193,7 +193,7 @@ const EditOpportunity = () => {
           adminEmail: opp.admin_email || "",
           programName: opp.program_name || "",
           website: opp.website || "",
-          programComponents: opp.program_components || ""
+          programComponents: opp.program_components ? opp.program_components.split(", ") : []
         });
         setSameContact(!opp.admin_email);
         setDescriptionWordCount(countWords(opp.description || ""));
@@ -306,7 +306,7 @@ const EditOpportunity = () => {
       if (isEducation) {
         updates.program_name = formData.programName || null;
         updates.website = formData.website || null;
-        updates.program_components = formData.programComponents || null;
+        updates.program_components = formData.programComponents.length > 0 ? formData.programComponents.join(", ") : null;
         updates.location = "N/A";
         updates.on_bus_route = false;
         updates.org_phone = "N/A";
@@ -549,6 +549,18 @@ const EditOpportunity = () => {
             </>
           )}
 
+          {/* ===== SHARED FIELDS ===== */}
+          <div className="space-y-2">
+            <Label htmlFor="orgName">Organization Name *</Label>
+            <Input
+              id="orgName"
+              required
+              value={formData.orgName}
+              onChange={e => setFormData({ ...formData, orgName: e.target.value })}
+              placeholder="e.g., Tompkins County Food Bank"
+            />
+          </div>
+
           {/* ===== EDUCATION-ONLY FIELDS ===== */}
           {isEducation && (
             <>
@@ -563,23 +575,32 @@ const EditOpportunity = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="programComponents">Program Components *</Label>
-                <Select required value={formData.programComponents} onValueChange={value => setFormData({ ...formData, programComponents: value })}>
-                  <SelectTrigger id="programComponents">
-                    <SelectValue placeholder="Select program type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PROGRAM_COMPONENTS.map(pc => (
-                      <SelectItem key={pc.value} value={pc.value}>
-                        <div className="flex flex-col items-start py-1">
-                          <span className="font-medium">{pc.label}</span>
-                          <span className="text-xs text-muted-foreground">{pc.description}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="space-y-2" role="group" aria-labelledby="edit-programComponents-label">
+                <Label id="edit-programComponents-label">Program Components *</Label>
+                <div className="space-y-3 rounded-md border border-border p-4">
+                  {PROGRAM_COMPONENTS.map(pc => (
+                    <div key={pc.value} className="flex items-start space-x-3">
+                      <Checkbox
+                        id={`edit-pc-${pc.value}`}
+                        checked={formData.programComponents.includes(pc.value)}
+                        onCheckedChange={(checked) => {
+                          setFormData(prev => ({
+                            ...prev,
+                            programComponents: checked
+                              ? [...prev.programComponents, pc.value]
+                              : prev.programComponents.filter(v => v !== pc.value)
+                          }));
+                        }}
+                      />
+                      <div className="grid gap-0.5 leading-none">
+                        <Label htmlFor={`edit-pc-${pc.value}`} className="cursor-pointer font-medium">
+                          {pc.label}
+                        </Label>
+                        <p className="text-xs text-muted-foreground">{pc.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -594,18 +615,6 @@ const EditOpportunity = () => {
               </div>
             </>
           )}
-
-          {/* ===== SHARED FIELDS ===== */}
-          <div className="space-y-2">
-            <Label htmlFor="orgName">Organization Name *</Label>
-            <Input
-              id="orgName"
-              required
-              value={formData.orgName}
-              onChange={e => setFormData({ ...formData, orgName: e.target.value })}
-              placeholder="e.g., Tompkins County Food Bank"
-            />
-          </div>
 
           <div className="space-y-2">
             <Label htmlFor="description">{isEducation ? "Program Description" : "Short Description"} (25 words max) *</Label>

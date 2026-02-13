@@ -106,7 +106,7 @@ export const OpportunityFilters = ({
       filtered = filtered.filter(opp => opp.role_classification === filters.roleClassification);
     }
     if (filters.programComponents !== "all") {
-      filtered = filtered.filter(opp => opp.program_components === filters.programComponents);
+      filtered = filtered.filter(opp => opp.program_components?.includes(filters.programComponents));
     }
     onFilterChange(filtered);
   };
