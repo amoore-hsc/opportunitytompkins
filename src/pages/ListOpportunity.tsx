@@ -220,7 +220,7 @@ const ListOpportunity = () => {
         ? {
             ...baseData,
             program_name: formData.programName || null,
-            website: formData.website || null,
+            website: formData.website,
             program_components: formData.programComponents.length > 0 ? formData.programComponents.join(", ") : null,
             location: "N/A",
             on_bus_route: false,
@@ -495,10 +495,11 @@ const ListOpportunity = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="website">Website *</Label>
                 <Input
                   id="website"
                   type="url"
+                  required
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                   placeholder="e.g., https://www.example.org/program"

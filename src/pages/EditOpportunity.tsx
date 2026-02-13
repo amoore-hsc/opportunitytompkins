@@ -305,7 +305,7 @@ const EditOpportunity = () => {
 
       if (isEducation) {
         updates.program_name = formData.programName || null;
-        updates.website = formData.website || null;
+        updates.website = formData.website;
         updates.program_components = formData.programComponents.length > 0 ? formData.programComponents.join(", ") : null;
         updates.location = "N/A";
         updates.on_bus_route = false;
@@ -604,10 +604,11 @@ const EditOpportunity = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="website">Website *</Label>
                 <Input
                   id="website"
                   type="url"
+                  required
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                   placeholder="e.g., https://www.example.org/program"
