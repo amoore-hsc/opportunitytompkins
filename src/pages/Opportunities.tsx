@@ -137,7 +137,7 @@ const Opportunities = () => {
 
         <OpportunityFilters opportunities={opportunities} onFilterChange={setFilteredOpportunities} />
         
-        <p className="text-sm text-muted-foreground italic mb-6">Don't See a Match? Check Back Soon for More Opportunities</p>
+        <p className="text-lg text-muted-foreground italic mb-6 text-center">Don't See a Match? Check Back Soon for More Opportunities</p>
         
         <PrintableOpportunities opportunities={filteredOpportunities} />
 
