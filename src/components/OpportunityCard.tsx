@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { MapPin, Clock, Calendar, Bus, FileText, Briefcase, CalendarPlus } from "lucide-react";
+import { MapPin, Clock, Calendar, Bus, FileText, Briefcase, CalendarPlus, GraduationCap, Globe } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ interface OpportunityCardProps {
 
 export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
   ({ opportunity, isHighlighted = false }, ref) => {
+    const isEducation = opportunity.type === "education";
+
     return (
       <Card 
         ref={ref}
@@ -25,33 +27,64 @@ export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
       >
         <CardHeader>
           <div className="flex items-start justify-between flex-wrap gap-2">
-            <Badge variant={opportunity.type === "volunteer" ? "default" : "secondary"} className="mb-2">
-              {opportunity.type === "volunteer" ? "Volunteer" : "Education & Training"}
+            <Badge variant={isEducation ? "secondary" : "default"} className="mb-2">
+              {isEducation ? "Education & Training" : "Volunteer"}
             </Badge>
-            {opportunity.on_bus_route && (
+            {!isEducation && opportunity.on_bus_route && (
               <Badge variant="outline" className="flex items-center gap-1">
                 <Bus className="h-3 w-3" aria-hidden="true" />
                 On Bus Route
               </Badge>
             )}
           </div>
-          {opportunity.role_classification && (
+          {/* Volunteer: Role Classification badge */}
+          {!isEducation && opportunity.role_classification && (
             <Badge variant="outline" className="flex items-center gap-1 w-fit mb-2">
               <Briefcase className="h-3 w-3" aria-hidden="true" />
               {opportunity.role_classification}
             </Badge>
           )}
+          {/* Education: Program Components badge */}
+          {isEducation && opportunity.program_components && (
+            <Badge variant="outline" className="flex items-center gap-1 w-fit mb-2">
+              <GraduationCap className="h-3 w-3" aria-hidden="true" />
+              {opportunity.program_components}
+            </Badge>
+          )}
           <CardTitle className="text-xl">{opportunity.org_name}</CardTitle>
-          {opportunity.position_title && (
+          {/* Volunteer: position title */}
+          {!isEducation && opportunity.position_title && (
             <p className="text-base font-medium text-foreground">{opportunity.position_title}</p>
+          )}
+          {/* Education: program name */}
+          {isEducation && opportunity.program_name && (
+            <p className="text-base font-medium text-foreground">{opportunity.program_name}</p>
           )}
           <CardDescription>{opportunity.description}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
-            <span>{opportunity.location}</span>
-          </div>
+          {/* Location - only show for volunteer or if meaningful */}
+          {!isEducation && opportunity.location && opportunity.location !== "N/A" && (
+            <div className="flex items-start gap-2 text-sm text-muted-foreground">
+              <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+              <span>{opportunity.location}</span>
+            </div>
+          )}
+
+          {/* Website - education only */}
+          {isEducation && opportunity.website && (
+            <div className="flex items-start gap-2 text-sm text-muted-foreground">
+              <Globe className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+              <a 
+                href={opportunity.website.startsWith("http") ? opportunity.website : `https://${opportunity.website}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline hover:no-underline"
+              >
+                {opportunity.website}
+              </a>
+            </div>
+          )}
           
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
@@ -60,42 +93,48 @@ export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
             </span>
           </div>
           
-          <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
-            {(() => {
-              const parts = opportunity.days_times_available.split(',').map(s => s.trim());
-              const allFlexible = parts.every(p => p.toLowerCase().includes('flexible'));
-              if (allFlexible) {
-                const dayNames = parts.map(p => p.split(':')[0].trim());
+          {/* Schedule - show if not N/A */}
+          {opportunity.days_times_available && opportunity.days_times_available !== "N/A" && (
+            <div className="flex items-start gap-2 text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+              {(() => {
+                const parts = opportunity.days_times_available.split(',').map(s => s.trim());
+                const allFlexible = parts.every(p => p.toLowerCase().includes('flexible'));
+                if (allFlexible) {
+                  const dayNames = parts.map(p => p.split(':')[0].trim());
+                  return (
+                    <div className="flex flex-col gap-1">
+                      <span className="font-medium">Flexible Hours</span>
+                      <span>{dayNames.join(', ')}</span>
+                    </div>
+                  );
+                }
                 return (
                   <div className="flex flex-col gap-1">
-                    <span className="font-medium">Flexible Hours</span>
-                    <span>{dayNames.join(', ')}</span>
+                    {parts.map((day, index) => (
+                      <span key={index}>{day}</span>
+                    ))}
                   </div>
                 );
-              }
-              return (
-                <div className="flex flex-col gap-1">
-                  {parts.map((day, index) => (
-                    <span key={index}>{day}</span>
-                  ))}
-                </div>
-              );
-            })()}
-          </div>
+              })()}
+            </div>
+          )}
           
           {opportunity.additional_requirements && (
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
               <FileText className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
               <span className="font-normal">
-                <strong>Additional Requirements:</strong> {opportunity.additional_requirements}
+                <strong>{isEducation ? "Minimum Requirements:" : "Additional Requirements:"}</strong> {opportunity.additional_requirements}
               </span>
             </div>
           )}
           
-          <ApplicationDialog opportunity={opportunity}>
-            <Button className="w-full mt-4 bg-success">Apply</Button>
-          </ApplicationDialog>
+          {/* Apply button - volunteer only */}
+          {!isEducation && (
+            <ApplicationDialog opportunity={opportunity}>
+              <Button className="w-full mt-4 bg-success">Apply</Button>
+            </ApplicationDialog>
+          )}
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t border-border">
             <CalendarPlus className="h-3 w-3 flex-shrink-0" aria-hidden="true" />

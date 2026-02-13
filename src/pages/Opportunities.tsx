@@ -29,6 +29,9 @@ export interface Opportunity {
   role_classification: string | null;
   updated_at: string;
   admin_email: string | null;
+  program_name: string | null;
+  website: string | null;
+  program_components: string | null;
 }
 
 const Opportunities = () => {
@@ -45,15 +48,12 @@ const Opportunities = () => {
     fetchOpportunities();
   }, []);
 
-  // Handle auto-opening apply dialog when id param is present
   useEffect(() => {
     const targetId = searchParams.get("id");
     if (targetId && !loading && filteredOpportunities.length > 0) {
       const targetOpportunity = filteredOpportunities.find(opp => opp.id === targetId);
       if (targetOpportunity) {
-        // Auto-open the application dialog
         setAutoOpenOpportunity(targetOpportunity);
-        // Clear the id param from URL to prevent re-opening on navigation
         setSearchParams({}, { replace: true });
       }
     }
@@ -63,7 +63,7 @@ const Opportunities = () => {
     try {
       const { data, error } = await supabase
         .from("opportunities")
-        .select("id, type, role_classification, position_title, description, location, on_bus_route, hours_available, days_times_available, additional_requirements, org_name, org_email, org_phone, contact_name, admin_email, created_at, updated_at")
+        .select("id, type, role_classification, position_title, description, location, on_bus_route, hours_available, days_times_available, additional_requirements, org_name, org_email, org_phone, contact_name, admin_email, created_at, updated_at, program_name, website, program_components")
         .eq("active", true)
         .order("updated_at", { ascending: false });
       if (error) throw error;
@@ -84,7 +84,6 @@ const Opportunities = () => {
     <div className="min-h-screen bg-background">
       <SkipNavigation />
       
-      {/* Exemption Status Banner */}
       <div className="py-3 px-4 text-center font-medium transition-colors text-primary-foreground bg-primary">
         You may be exempt from new work requirements.<br />
         <a 
@@ -177,7 +176,6 @@ const Opportunities = () => {
           </p>
         </footer>
 
-        {/* Auto-open application dialog from email link */}
         {autoOpenOpportunity && (
           <ApplicationDialog
             opportunity={autoOpenOpportunity}

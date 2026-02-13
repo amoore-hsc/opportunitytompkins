@@ -68,11 +68,14 @@ export type Database = {
           org_phone: string
           position_title: string | null
           positions_filled: number | null
+          program_components: string | null
+          program_name: string | null
           reminder_sent_at: string | null
           removal_reason: string | null
           role_classification: string | null
           type: string
           updated_at: string
+          website: string | null
         }
         Insert: {
           active?: boolean
@@ -95,11 +98,14 @@ export type Database = {
           org_phone: string
           position_title?: string | null
           positions_filled?: number | null
+          program_components?: string | null
+          program_name?: string | null
           reminder_sent_at?: string | null
           removal_reason?: string | null
           role_classification?: string | null
           type: string
           updated_at?: string
+          website?: string | null
         }
         Update: {
           active?: boolean
@@ -122,11 +128,14 @@ export type Database = {
           org_phone?: string
           position_title?: string | null
           positions_filled?: number | null
+          program_components?: string | null
+          program_name?: string | null
           reminder_sent_at?: string | null
           removal_reason?: string | null
           role_classification?: string | null
           type?: string
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
