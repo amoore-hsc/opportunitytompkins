@@ -48,45 +48,69 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
           {opportunities.length} {opportunities.length === 1 ? 'Opportunity' : 'Opportunities'} Found
         </p>
         
-        {opportunities.map((opp, index) => (
-          <div key={opp.id} style={{ 
-            marginBottom: '20px', 
-            paddingBottom: '15px', 
-            borderBottom: index < opportunities.length - 1 ? '1px solid #e0e0e0' : 'none' 
-          }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
-              {opp.org_name}
-            </h2>
-            <div style={{ fontSize: '14px', marginBottom: '5px' }}>
-              <strong>Type:</strong> {opp.type}
-            </div>
-            <div style={{ fontSize: '14px', marginBottom: '5px' }}>
-              <strong>Location:</strong> {opp.location}
-              {opp.on_bus_route && <span style={{ marginLeft: '8px', fontSize: '12px', color: '#0066cc' }}>🚌 On Bus Route</span>}
-            </div>
-            <div style={{ fontSize: '14px', marginBottom: '5px' }}>
-              <strong>Hours:</strong> {opp.hours_available}
-            </div>
-            <div style={{ fontSize: '14px', marginBottom: '5px' }}>
-              <strong>Days/Times:</strong> {opp.days_times_available}
-            </div>
-            <div style={{ fontSize: '14px', marginBottom: '8px' }}>
-              <strong>Description:</strong> {opp.description}
-            </div>
-            {opp.additional_requirements && (
+        {opportunities.map((opp, index) => {
+          const isEducation = opp.type === "education";
+          return (
+            <div key={opp.id} style={{ 
+              marginBottom: '20px', 
+              paddingBottom: '15px', 
+              borderBottom: index < opportunities.length - 1 ? '1px solid #e0e0e0' : 'none' 
+            }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
+                {opp.org_name}
+              </h2>
+              {isEducation && opp.program_name && (
+                <div style={{ fontSize: '14px', marginBottom: '5px' }}>
+                  <strong>Program:</strong> {opp.program_name}
+                </div>
+              )}
+              <div style={{ fontSize: '14px', marginBottom: '5px' }}>
+                <strong>Type:</strong> {isEducation ? "Education & Training" : "Volunteer"}
+              </div>
+              {isEducation && opp.program_components && (
+                <div style={{ fontSize: '14px', marginBottom: '5px' }}>
+                  <strong>Program Component:</strong> {opp.program_components}
+                </div>
+              )}
+              {!isEducation && opp.location && opp.location !== "N/A" && (
+                <div style={{ fontSize: '14px', marginBottom: '5px' }}>
+                  <strong>Location:</strong> {opp.location}
+                  {opp.on_bus_route && <span style={{ marginLeft: '8px', fontSize: '12px', color: '#0066cc' }}>🚌 On Bus Route</span>}
+                </div>
+              )}
+              {isEducation && opp.website && (
+                <div style={{ fontSize: '14px', marginBottom: '5px' }}>
+                  <strong>Website:</strong> {opp.website}
+                </div>
+              )}
+              <div style={{ fontSize: '14px', marginBottom: '5px' }}>
+                <strong>Hours:</strong> {opp.hours_available}
+              </div>
+              {opp.days_times_available && opp.days_times_available !== "N/A" && (
+                <div style={{ fontSize: '14px', marginBottom: '5px' }}>
+                  <strong>{isEducation ? "Schedule:" : "Days/Times:"}</strong> {opp.days_times_available}
+                </div>
+              )}
               <div style={{ fontSize: '14px', marginBottom: '8px' }}>
-                <strong>Requirements:</strong> {opp.additional_requirements}
+                <strong>Description:</strong> {opp.description}
               </div>
-            )}
-            <div style={{ fontSize: '14px', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #f0f0f0' }}>
-              <strong>Contact:</strong>
-              <div style={{ marginLeft: '10px' }}>
-                Phone: {opp.org_phone}<br />
-                Email: {opp.org_email}
-              </div>
+              {opp.additional_requirements && (
+                <div style={{ fontSize: '14px', marginBottom: '8px' }}>
+                  <strong>{isEducation ? "Minimum Requirements:" : "Requirements:"}</strong> {opp.additional_requirements}
+                </div>
+              )}
+              {!isEducation && (
+                <div style={{ fontSize: '14px', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #f0f0f0' }}>
+                  <strong>Contact:</strong>
+                  <div style={{ marginLeft: '10px' }}>
+                    Phone: {opp.org_phone}<br />
+                    Email: {opp.org_email}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
         
         <div style={{ marginTop: '30px', fontSize: '12px', color: '#666', borderTop: '1px solid #e0e0e0', paddingTop: '15px' }}>
           <p>For help or questions, contact: amoore@hsctc.org</p>

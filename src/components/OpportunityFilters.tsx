@@ -7,10 +7,23 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Bus, Wifi, Clock } from "lucide-react";
 import { Opportunity } from "@/pages/Opportunities";
+
 interface OpportunityFiltersProps {
   opportunities: Opportunity[];
   onFilterChange: (filtered: Opportunity[]) => void;
 }
+
+const PROGRAM_COMPONENTS_LIST = [
+  "GED",
+  "English as a Second Language (ESL)",
+  "Work-Based Learning",
+  "Job Search",
+  "Adult Basic Education",
+  "Vocational or Technical Training",
+  "Job Readiness Training",
+  "Other"
+];
+
 export const OpportunityFilters = ({
   opportunities,
   onFilterChange
@@ -23,11 +36,14 @@ export const OpportunityFilters = ({
     location: "all",
     minHours: 0,
     daysOfWeek: [] as string[],
-    roleClassification: "all"
+    roleClassification: "all",
+    programComponents: "all"
   });
+
   useEffect(() => {
     applyFilters();
   }, [filters, opportunities]);
+
   const extractCity = (location: string): string => {
     const statePattern = /,?\s*NY(?:\s*\d{5})?(?:-\d{4})?$/i;
     const newYorkPattern = /,?\s*New York(?:\s*\d{5})?(?:-\d{4})?$/i;
@@ -56,6 +72,7 @@ export const OpportunityFilters = ({
     }
     return location;
   };
+
   const applyFilters = () => {
     let filtered = [...opportunities];
     if (filters.type !== "all") {
@@ -88,20 +105,33 @@ export const OpportunityFilters = ({
     if (filters.roleClassification !== "all") {
       filtered = filtered.filter(opp => opp.role_classification === filters.roleClassification);
     }
+    if (filters.programComponents !== "all") {
+      filtered = filtered.filter(opp => opp.program_components === filters.programComponents);
+    }
     onFilterChange(filtered);
   };
+
   const normalizeCity = (city: string): string => {
-    // Capitalize first letter of each word
     return city.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
-  const uniqueCities = Array.from(new Set(opportunities.map(opp => normalizeCity(extractCity(opp.location))))).sort();
+
+  const uniqueCities = Array.from(
+    new Set(
+      opportunities
+        .filter(opp => opp.location && opp.location !== "N/A")
+        .map(opp => normalizeCity(extractCity(opp.location)))
+    )
+  ).sort();
+
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
   const toggleDay = (day: string) => {
     setFilters(prev => ({
       ...prev,
       daysOfWeek: prev.daysOfWeek.includes(day) ? prev.daysOfWeek.filter(d => d !== day) : [...prev.daysOfWeek, day]
     }));
   };
+
   const clearAllFilters = () => {
     setFilters({
       type: "all",
@@ -111,10 +141,16 @@ export const OpportunityFilters = ({
       location: "all",
       minHours: 0,
       daysOfWeek: [],
-      roleClassification: "all"
+      roleClassification: "all",
+      programComponents: "all"
     });
   };
+
   const roleClassifications = ["Administrative & Office Support", "Community Engagement & Public Service", "Education & Mentoring", "Human & Social Support Services", "Physical, Outdoor & Environmental Work", "Creative, Media & Communications", "Technology & Digital Support", "Fundraising & Development"];
+
+  const showVolunteerFilters = filters.type === "all" || filters.type === "volunteer";
+  const showEducationFilters = filters.type === "all" || filters.type === "education";
+
   return <Card className="mb-8">
       <CardContent className="pt-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -135,23 +171,25 @@ export const OpportunityFilters = ({
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Select value={filters.location} onValueChange={value => setFilters({
-            ...filters,
-            location: value
-          })}>
-              <SelectTrigger id="location">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                {uniqueCities.map(city => <SelectItem key={city} value={city}>
-                    {city}
-                  </SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+          {showVolunteerFilters && (
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Select value={filters.location} onValueChange={value => setFilters({
+              ...filters,
+              location: value
+            })}>
+                <SelectTrigger id="location">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Locations</SelectItem>
+                  {uniqueCities.map(city => <SelectItem key={city} value={city}>
+                      {city}
+                    </SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-4">
             <div className="space-y-2">
@@ -171,27 +209,31 @@ export const OpportunityFilters = ({
               />
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox id="busRoute" checked={filters.busRoute} onCheckedChange={checked => setFilters({
-              ...filters,
-              busRoute: checked === true
-            })} />
-            <Label htmlFor="busRoute" className="cursor-pointer flex items-center gap-2">
-              <Bus className="h-4 w-4" aria-hidden="true" />
-              On Bus Route Only
-            </Label>
-            </div>
+            {showVolunteerFilters && (
+              <>
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="busRoute" checked={filters.busRoute} onCheckedChange={checked => setFilters({
+                  ...filters,
+                  busRoute: checked === true
+                })} />
+                <Label htmlFor="busRoute" className="cursor-pointer flex items-center gap-2">
+                  <Bus className="h-4 w-4" aria-hidden="true" />
+                  On Bus Route Only
+                </Label>
+                </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox id="remote" checked={filters.remote} onCheckedChange={checked => setFilters({
-              ...filters,
-              remote: checked === true
-            })} />
-            <Label htmlFor="remote" className="cursor-pointer flex items-center gap-2">
-              <Wifi className="h-4 w-4" aria-hidden="true" />
-              Remote Only
-            </Label>
-            </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="remote" checked={filters.remote} onCheckedChange={checked => setFilters({
+                  ...filters,
+                  remote: checked === true
+                })} />
+                <Label htmlFor="remote" className="cursor-pointer flex items-center gap-2">
+                  <Wifi className="h-4 w-4" aria-hidden="true" />
+                  Remote Only
+                </Label>
+                </div>
+              </>
+            )}
 
             <div className="flex items-center space-x-2">
               <Checkbox id="flexibleHours" checked={filters.flexibleHours} onCheckedChange={checked => setFilters({
@@ -207,23 +249,45 @@ export const OpportunityFilters = ({
         </div>
 
         <div className="mt-6 flex flex-col lg:flex-row lg:items-end gap-6">
-          <div className="space-y-2 w-full lg:w-[calc(33.333%-1rem)] lg:shrink-0">
-            <Label htmlFor="roleClassification">Role Classification</Label>
-            <Select value={filters.roleClassification} onValueChange={value => setFilters({
-            ...filters,
-            roleClassification: value
-          })}>
-              <SelectTrigger id="roleClassification">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Classifications</SelectItem>
-                {roleClassifications.map(role => <SelectItem key={role} value={role}>
-                    {role}
-                  </SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
+          {showVolunteerFilters && (
+            <div className="space-y-2 w-full lg:w-[calc(33.333%-1rem)] lg:shrink-0">
+              <Label htmlFor="roleClassification">Role Classification</Label>
+              <Select value={filters.roleClassification} onValueChange={value => setFilters({
+              ...filters,
+              roleClassification: value
+            })}>
+                <SelectTrigger id="roleClassification">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Classifications</SelectItem>
+                  {roleClassifications.map(role => <SelectItem key={role} value={role}>
+                      {role}
+                    </SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {showEducationFilters && (
+            <div className="space-y-2 w-full lg:w-[calc(33.333%-1rem)] lg:shrink-0">
+              <Label htmlFor="programComponents">Program Components</Label>
+              <Select value={filters.programComponents} onValueChange={value => setFilters({
+              ...filters,
+              programComponents: value
+            })}>
+                <SelectTrigger id="programComponents">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Programs</SelectItem>
+                  {PROGRAM_COMPONENTS_LIST.map(pc => <SelectItem key={pc} value={pc}>
+                      {pc}
+                    </SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="flex-1 space-y-2" role="group" aria-labelledby="days-label">
             <Label id="days-label">Days Available</Label>
