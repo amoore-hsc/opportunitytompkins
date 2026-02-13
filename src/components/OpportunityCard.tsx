@@ -118,7 +118,7 @@ export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
                 rel="noopener noreferrer"
                 className="text-primary underline hover:no-underline"
               >
-                {opportunity.website}
+                Program Website
               </a>
             </div>
           )}
