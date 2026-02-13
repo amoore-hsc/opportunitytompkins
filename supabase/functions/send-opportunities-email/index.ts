@@ -11,6 +11,7 @@ const corsHeaders = {
 interface Opportunity {
   id: string;
   type: string;
+  position_title: string | null;
   description: string;
   location: string;
   on_bus_route: boolean;
@@ -20,7 +21,11 @@ interface Opportunity {
   org_name: string;
   org_email: string;
   org_phone: string;
+  role_classification: string | null;
+  updated_at: string;
+  program_name: string | null;
   website: string | null;
+  program_components: string | null;
 }
 
 interface OpportunitiesEmailRequest {
@@ -45,16 +50,22 @@ const handler = async (req: Request): Promise<Response> => {
     // Generate HTML for opportunities list
     const opportunitiesHtml = opportunities.map((opp) => `
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 20px 0; border-radius:0 8px 8px 0;">
-<h3 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">${opp.org_name}</h3>
-<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opp.type === 'volunteer' ? 'Volunteer' : opp.type === 'education' ? 'Education & Training' : opp.type}</p>
-<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${opp.location}${opp.on_bus_route ? ' <span style="background-color:#2e7d32; color:white; padding:4px 10px; border-radius:4px; font-size:13px; font-weight:bold;">On Bus Route</span>' : ''}</p>
-<p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${opp.hours_available}</p>
-<p style="margin:0 0 8px 0;"><strong>Days/Times:</strong> ${opp.days_times_available}</p>
-<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${opp.description}</p>
-${opp.additional_requirements ? `<p style="margin:0 0 8px 0;"><strong>Requirements:</strong> ${opp.additional_requirements}</p>` : ''}
-<div style="margin-top:15px; text-align:center;">
+<p style="margin:0 0 8px 0;"><span style="display:inline-block; background-color:${opp.type === 'education' ? '#2d4a6f' : '#1e3a5f'}; color:white; padding:3px 10px; border-radius:4px; font-size:13px; font-weight:bold;">${opp.type === 'volunteer' ? 'Volunteer' : 'Education & Training'}</span>${opp.type === 'volunteer' && opp.on_bus_route ? ' <span style="background-color:#2e7d32; color:white; padding:3px 10px; border-radius:4px; font-size:13px; font-weight:bold;">🚌 On Bus Route</span>' : ''}</p>
+${opp.type === 'volunteer' && opp.role_classification ? `<p style="margin:0 0 8px 0;"><span style="display:inline-block; border:1px solid #ccc; padding:3px 10px; border-radius:4px; font-size:13px;">${opp.role_classification}</span></p>` : ''}
+${opp.type === 'education' && opp.program_components ? `<p style="margin:0 0 8px 0;">${opp.program_components.split(', ').map(c => `<span style="display:inline-block; border:1px solid #ccc; padding:3px 10px; border-radius:4px; font-size:13px; margin-right:4px; margin-bottom:4px;">${c}</span>`).join('')}</p>` : ''}
+<h3 style="margin:0 0 5px 0; font-size:18px; color:#1e3a5f;">${opp.org_name}</h3>
+${opp.type === 'volunteer' && opp.position_title ? `<p style="margin:0 0 5px 0; font-size:15px; font-weight:600;">${opp.position_title}</p>` : ''}
+${opp.type === 'education' && opp.program_name ? `<p style="margin:0 0 5px 0; font-size:15px; font-weight:600;">${opp.program_name}</p>` : ''}
+<p style="margin:0 0 12px 0; color:#666;">${opp.description}</p>
+${opp.type === 'volunteer' && opp.location && opp.location !== 'N/A' ? `<p style="margin:0 0 8px 0;">📍 <strong>Location:</strong> ${opp.location}</p>` : ''}
+${opp.type === 'education' && opp.website ? `<p style="margin:0 0 8px 0;">🌐 <strong>Website:</strong> <a href="${opp.website.startsWith('http') ? opp.website : 'https://' + opp.website}" style="color:#1e3a5f;">${opp.website}</a></p>` : ''}
+<p style="margin:0 0 8px 0;">🕐 <strong>Hours Available:</strong> ${opp.hours_available} per week</p>
+${opp.days_times_available && opp.days_times_available !== 'N/A' ? `<p style="margin:0 0 8px 0;">📅 <strong>${opp.type === 'education' ? 'Schedule' : 'Days/Times'}:</strong> ${opp.days_times_available}</p>` : ''}
+${opp.additional_requirements ? `<p style="margin:0 0 8px 0;">📋 <strong>${opp.type === 'education' ? 'Minimum Requirements' : 'Additional Requirements'}:</strong> ${opp.additional_requirements}</p>` : ''}
+<p style="margin:0 0 12px 0; font-size:12px; color:#999;">Updated ${new Date(opp.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+<div style="text-align:center;">
 ${opp.type === 'education' && opp.website
-  ? `<a href="${opp.website}" style="display:inline-block; background-color:#1e3a5f; color:white; text-decoration:none; padding:12px 30px; border-radius:6px; font-weight:bold; font-size:14px;">Program Website</a>`
+  ? `<a href="${opp.website.startsWith('http') ? opp.website : 'https://' + opp.website}" style="display:inline-block; background-color:#1e3a5f; color:white; text-decoration:none; padding:12px 30px; border-radius:6px; font-weight:bold; font-size:14px;">Program Website</a>`
   : `<a href="${siteUrl}/opportunities?id=${opp.id}" style="display:inline-block; background-color:#1e3a5f; color:white; text-decoration:none; padding:12px 30px; border-radius:6px; font-weight:bold; font-size:14px;">Apply Now</a>`}
 </div>
 </div>

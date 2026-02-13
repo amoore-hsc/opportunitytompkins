@@ -56,22 +56,35 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
               paddingBottom: '15px', 
               borderBottom: index < opportunities.length - 1 ? '1px solid #e0e0e0' : 'none' 
             }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px' }}>
                 {opp.org_name}
               </h2>
+              {!isEducation && opp.position_title && (
+                <div style={{ fontSize: '15px', fontWeight: 600, marginBottom: '5px' }}>
+                  {opp.position_title}
+                </div>
+              )}
               {isEducation && opp.program_name && (
-                <div style={{ fontSize: '14px', marginBottom: '5px' }}>
-                  <strong>Program:</strong> {opp.program_name}
+                <div style={{ fontSize: '15px', fontWeight: 600, marginBottom: '5px' }}>
+                  {opp.program_name}
                 </div>
               )}
               <div style={{ fontSize: '14px', marginBottom: '5px' }}>
                 <strong>Type:</strong> {isEducation ? "Education & Training" : "Volunteer"}
               </div>
+              {!isEducation && opp.role_classification && (
+                <div style={{ fontSize: '14px', marginBottom: '5px' }}>
+                  <strong>Role Classification:</strong> {opp.role_classification}
+                </div>
+              )}
               {isEducation && opp.program_components && (
                 <div style={{ fontSize: '14px', marginBottom: '5px' }}>
                   <strong>Program Components:</strong> {opp.program_components}
                 </div>
               )}
+              <div style={{ fontSize: '14px', marginBottom: '8px' }}>
+                <strong>Description:</strong> {opp.description}
+              </div>
               {!isEducation && opp.location && opp.location !== "N/A" && (
                 <div style={{ fontSize: '14px', marginBottom: '5px' }}>
                   <strong>Location:</strong> {opp.location}
@@ -84,19 +97,16 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
                 </div>
               )}
               <div style={{ fontSize: '14px', marginBottom: '5px' }}>
-                <strong>Hours:</strong> {opp.hours_available}
+                <strong>Hours Available:</strong> {opp.hours_available} per week
               </div>
               {opp.days_times_available && opp.days_times_available !== "N/A" && (
                 <div style={{ fontSize: '14px', marginBottom: '5px' }}>
                   <strong>{isEducation ? "Schedule:" : "Days/Times:"}</strong> {opp.days_times_available}
                 </div>
               )}
-              <div style={{ fontSize: '14px', marginBottom: '8px' }}>
-                <strong>Description:</strong> {opp.description}
-              </div>
               {opp.additional_requirements && (
                 <div style={{ fontSize: '14px', marginBottom: '8px' }}>
-                  <strong>{isEducation ? "Minimum Requirements:" : "Requirements:"}</strong> {opp.additional_requirements}
+                  <strong>{isEducation ? "Minimum Requirements:" : "Additional Requirements:"}</strong> {opp.additional_requirements}
                 </div>
               )}
               {!isEducation && (
@@ -108,6 +118,9 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
                   </div>
                 </div>
               )}
+              <div style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>
+                Updated {new Date(opp.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </div>
             </div>
           );
         })}
