@@ -171,6 +171,17 @@ export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
             </ApplicationDialog>
           )}
 
+          {/* Learn More button - education only */}
+          {isEducation && opportunity.website && (
+            <a
+              href={opportunity.website.startsWith("http") ? opportunity.website : `https://${opportunity.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button className="w-full mt-4 bg-success">Learn More</Button>
+            </a>
+          )}
+
           <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t border-border">
             <CalendarPlus className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
             <span>Updated {formatDistanceToNow(new Date(opportunity.updated_at), { addSuffix: true })}</span>
