@@ -54,9 +54,11 @@ const DAYS_OF_WEEK = [
 ];
 
 const formatTimeFromHour = (hour: number): string => {
-  const period = hour >= 12 ? "PM" : "AM";
-  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-  return `${displayHour}:00 ${period}`;
+  const wholeHour = Math.floor(hour);
+  const minutes = hour % 1 === 0.5 ? "30" : "00";
+  const period = wholeHour >= 12 ? "PM" : "AM";
+  const displayHour = wholeHour === 0 ? 12 : wholeHour > 12 ? wholeHour - 12 : wholeHour;
+  return `${displayHour}:${minutes} ${period}`;
 };
 
 const countWords = (text: string): number => {
@@ -734,8 +736,8 @@ const ListOpportunity = () => {
                                 }
                               })}
                               min={0}
-                              max={23}
-                              step={1}
+                              max={23.5}
+                              step={0.5}
                               className="w-full [&_.slider-range]:bg-green-500 [&_.slider-track]:bg-muted [&_.slider-track]:h-3"
                             />
                             <div className="flex justify-between text-xs text-muted-foreground">
