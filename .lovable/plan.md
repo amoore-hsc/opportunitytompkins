@@ -1,19 +1,17 @@
 
-# Disable Education & Training Listing with "Coming Soon" Label
 
-## What will change
+# Add Half-Hour Increments to Hours Slider on List Opportunity Page
 
-The "Education & Training" option in the opportunity type dropdown on the listing form will be disabled and show a "(Coming Soon)" label, preventing users from selecting it while signaling it will be available in the future.
+## Overview
+Update the hours slider on the "List an Opportunity" page to support half-hour increments (0.5 steps) for more precise hour entry, without changing the public-facing Opportunities filter page.
 
 ## Changes
 
 **File: `src/pages/ListOpportunity.tsx`**
 
-1. Update the Education & Training `SelectItem` to be disabled and append "(Coming Soon)" to its label:
-   - Change `<SelectItem value="education">Education & Training</SelectItem>` to `<SelectItem value="education" disabled>Education & Training (Coming Soon)</SelectItem>`
+1. Change the hours `Slider` `step` prop from `1` to `0.5`
+2. Update the label to display half-hour values cleanly (e.g., "20.5")
+3. Update the `aria-valuetext` to reflect the new precision
 
-This is a single-line change that:
-- Prevents selection of the education type
-- Clearly communicates the feature is coming soon
-- Keeps the volunteer listing flow completely unaffected
-- No other files need changes since the education form fields are already conditionally rendered behind `isEducation` checks
+No changes to `src/components/OpportunityFilters.tsx` or any other file.
+
