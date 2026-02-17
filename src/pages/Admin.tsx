@@ -48,9 +48,11 @@ const DAYS_OF_WEEK = [
 ];
 
 const formatTimeFromHour = (hour: number): string => {
-  const period = hour >= 12 ? "PM" : "AM";
-  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-  return `${displayHour}:00 ${period}`;
+  const wholeHour = Math.floor(hour);
+  const minutes = hour % 1 === 0.5 ? "30" : "00";
+  const period = wholeHour >= 12 ? "PM" : "AM";
+  const displayHour = wholeHour === 0 ? 12 : wholeHour > 12 ? wholeHour - 12 : wholeHour;
+  return `${displayHour}:${minutes} ${period}`;
 };
 
 const parseTimeToHour = (timeStr: string): number => {
@@ -1332,8 +1334,8 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                           <Slider
                                             value={[currentSchedule[day.key].startTime, currentSchedule[day.key].endTime]}
                                             min={0}
-                                            max={23}
-                                            step={1}
+                                            max={23.5}
+                                            step={0.5}
                                             onValueChange={(values) => {
                                               const updated = { ...currentSchedule };
                                               updated[day.key] = {
