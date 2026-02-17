@@ -637,22 +637,16 @@ const ListOpportunity = () => {
                   Hours Available per Week <span aria-hidden="true" className="text-destructive">*</span>
                   <VisuallyHidden>(required)</VisuallyHidden>
                 </Label>
-                <div className="flex items-center gap-4">
-                  <Slider
-                    id="hours"
-                    aria-label="Hours available per week"
-                    aria-valuetext={`${formData.hoursAvailable || 0} hours per week`}
-                    value={[Number(formData.hoursAvailable) || 1]}
-                    onValueChange={([val]) => setFormData({ ...formData, hoursAvailable: String(val) })}
-                    min={0.5}
-                    max={40}
-                    step={0.5}
-                    className="flex-1"
-                  />
-                  <span className="text-sm font-medium text-foreground min-w-[4rem] text-right">
-                    {formData.hoursAvailable || "0"} hrs
-                  </span>
-                </div>
+                <Input
+                  id="hours"
+                  type="number"
+                  required
+                  aria-required="true"
+                  min="1"
+                  value={formData.hoursAvailable}
+                  onChange={e => setFormData({ ...formData, hoursAvailable: e.target.value })}
+                  placeholder="e.g., 20"
+                />
               </div>
 
               <div className="space-y-4">
