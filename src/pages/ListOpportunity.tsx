@@ -245,44 +245,48 @@ const ListOpportunity = () => {
 
       if (error) throw error;
 
-      // Only send confirmation email for volunteer listings
-      if (!isEducation) {
-        const adminEmail = sameContact ? null : formData.adminEmail;
-        const adminContactName = sameContact ? null : formData.adminContactName;
-        const confirmationEmail = adminEmail || formData.orgEmail;
-        const confirmationName = adminContactName || formData.contactName;
+      // Send confirmation email for all listing types
+      const adminEmail = !isEducation && !sameContact ? formData.adminEmail : null;
+      const adminContactName = !isEducation && !sameContact ? formData.adminContactName : null;
+      const confirmationEmail = adminEmail || formData.orgEmail;
+      const confirmationName = adminContactName || formData.contactName || formData.orgName;
 
-        const { error: emailError } = await supabase.functions.invoke("send-confirmation-email", {
-          body: {
-            orgName: formData.orgName,
-            contactName: confirmationName,
-            orgEmail: confirmationEmail,
-            opportunityType: "Volunteer",
-            roleClassification: formData.roleClassification,
-            positionTitle: formData.positionTitle || null,
-            additionalRequirements: additionalRequirements.length > 0 ? additionalRequirements.join("; ") : null,
-            description: formData.description,
-            location: formData.location,
-            onBusRoute: formData.onBusRoute,
-            hoursAvailable: formData.hoursAvailable,
-            daysTimesAvailable: daysTimesAvailable,
-            editToken: data.edit_token,
-            siteUrl: window.location.origin
-          }
-        });
+      const emailBody: Record<string, any> = {
+        orgName: formData.orgName,
+        contactName: confirmationName,
+        orgEmail: confirmationEmail,
+        opportunityType: isEducation ? "Education & Training" : "Volunteer",
+        roleClassification: formData.roleClassification,
+        positionTitle: formData.positionTitle || null,
+        additionalRequirements: additionalRequirements.length > 0 ? additionalRequirements.join("; ") : null,
+        description: formData.description,
+        location: formData.location,
+        onBusRoute: formData.onBusRoute,
+        hoursAvailable: formData.hoursAvailable,
+        daysTimesAvailable: daysTimesAvailable,
+        editToken: data.edit_token,
+        siteUrl: window.location.origin,
+      };
 
-        if (emailError) {
-          console.error("Email error:", emailError);
-        }
+      if (isEducation) {
+        emailBody.programName = formData.programName || null;
+        emailBody.website = formData.website || null;
+        emailBody.programComponents = formData.programComponents.length > 0 ? formData.programComponents.join(", ") : null;
+      }
+
+      const { error: emailError } = await supabase.functions.invoke("send-confirmation-email", {
+        body: emailBody,
+      });
+
+      if (emailError) {
+        console.error("Email error:", emailError);
       }
 
       triggerConfetti();
       
       toast({
         title: "Success!",
-        description: isEducation
-          ? "Your education & training program has been listed."
-          : "Your opportunity has been listed. Check your email for confirmation."
+        description: "Your opportunity has been listed. Check your email for confirmation."
       });
       navigate("/opportunities");
     } catch (error: any) {
