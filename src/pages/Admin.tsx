@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
-import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send } from "lucide-react";
+import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send, Link2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1467,6 +1467,18 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                       title="Preview and resend confirmation email"
                     >
                       <Mail className={`h-4 w-4 ${sendingEmailId === opp.id ? "animate-pulse" : ""}`} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const editUrl = `${window.location.origin}/edit-opportunity/${opp.edit_token}`;
+                        navigator.clipboard.writeText(editUrl);
+                        toast({ title: "Edit link copied to clipboard" });
+                      }}
+                      title="Copy magic edit link"
+                    >
+                      <Link2 className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
