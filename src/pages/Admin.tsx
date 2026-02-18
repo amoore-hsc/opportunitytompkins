@@ -660,7 +660,6 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       const { error } = await supabase
         .from("opportunities")
         .update({
-          type: editingOpportunity.type,
           description: editingOpportunity.description,
           hours_available: editingOpportunity.hours_available,
           days_times_available: editingOpportunity.days_times_available,
@@ -1053,20 +1052,11 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                           <div className="space-y-4">
                             <div className="space-y-2">
                               <Label>Type</Label>
-                              <Select
-                                value={editingOpportunity.type}
-                                onValueChange={(value) =>
-                                  setEditingOpportunity({ ...editingOpportunity, type: value })
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="volunteer">Volunteer</SelectItem>
-                                  <SelectItem value="education">Education & Training</SelectItem>
-                                </SelectContent>
-                              </Select>
+                              <Input
+                                value={editingOpportunity.type === "education" ? "Education & Training" : "Volunteer"}
+                                disabled
+                                className="bg-muted"
+                              />
                             </div>
 
                             <div className="space-y-2">
