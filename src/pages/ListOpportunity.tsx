@@ -343,7 +343,7 @@ const ListOpportunity = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="volunteer">Volunteer</SelectItem>
-                <SelectItem value="education" disabled>Education & Training (Coming Soon)</SelectItem>
+                <SelectItem value="education">Education & Training</SelectItem>
               </SelectContent>
             </Select>
           </div>
