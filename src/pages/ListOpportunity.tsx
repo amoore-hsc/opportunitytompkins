@@ -227,7 +227,7 @@ const ListOpportunity = () => {
             location: "N/A",
             on_bus_route: false,
             org_phone: "N/A",
-            contact_name: null as string | null,
+            contact_name: formData.contactName || null,
           }
         : {
             ...baseData,
@@ -921,20 +921,35 @@ const ListOpportunity = () => {
               {isEducation && (
                 <div className="border-t border-border pt-6">
                   <h3 className="mb-4 text-lg font-semibold text-foreground">Contact Information</h3>
-                  <div className="space-y-2">
-                    <Label htmlFor="orgEmail">
-                      Contact Email <span aria-hidden="true" className="text-destructive">*</span>
-                      <VisuallyHidden>(required)</VisuallyHidden>
-                    </Label>
-                    <p className="text-sm text-muted-foreground">This email will not be displayed publicly. It is only used to send you an edit link for your listing.</p>
-                    <Input
-                      id="orgEmail"
-                      type="email"
-                      required
-                      aria-required="true"
-                      value={formData.orgEmail}
-                      onChange={e => setFormData({ ...formData, orgEmail: e.target.value })}
-                    />
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="contactName">
+                        Contact Name <span aria-hidden="true" className="text-destructive">*</span>
+                        <VisuallyHidden>(required)</VisuallyHidden>
+                      </Label>
+                      <Input
+                        id="contactName"
+                        required
+                        aria-required="true"
+                        value={formData.contactName}
+                        onChange={e => setFormData({ ...formData, contactName: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="orgEmail">
+                        Contact Email <span aria-hidden="true" className="text-destructive">*</span>
+                        <VisuallyHidden>(required)</VisuallyHidden>
+                      </Label>
+                      <p className="text-sm text-muted-foreground">This email will not be displayed publicly. It is only used to send you an edit link for your listing.</p>
+                      <Input
+                        id="orgEmail"
+                        type="email"
+                        required
+                        aria-required="true"
+                        value={formData.orgEmail}
+                        onChange={e => setFormData({ ...formData, orgEmail: e.target.value })}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
