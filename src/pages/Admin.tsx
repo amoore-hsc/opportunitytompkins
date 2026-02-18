@@ -333,6 +333,7 @@ const Admin = () => {
       const { data, error } = await supabase
         .from("opportunities")
         .select("*")
+        .order("active", { ascending: false })
         .order("created_at", { ascending: false });
 
       if (error) throw error;
