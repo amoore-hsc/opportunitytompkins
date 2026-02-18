@@ -1167,16 +1167,6 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                     })}
                                   </div>
                                 </div>
-                                <div className="space-y-2">
-                                  <Label>Contact Name</Label>
-                                  <Input
-                                    value={editingOpportunity.contact_name || ""}
-                                    onChange={(e) =>
-                                      setEditingOpportunity({ ...editingOpportunity, contact_name: e.target.value || null })
-                                    }
-                                    placeholder="Name of the contact person"
-                                  />
-                                </div>
                               </>
                             )}
 
@@ -1375,6 +1365,18 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                 }
                               />
                             </div>
+                            {editingOpportunity.type === "education" && (
+                              <div className="space-y-2">
+                                <Label>Contact Name</Label>
+                                <Input
+                                  value={editingOpportunity.contact_name || ""}
+                                  onChange={(e) =>
+                                    setEditingOpportunity({ ...editingOpportunity, contact_name: e.target.value || null })
+                                  }
+                                  placeholder="Name of the contact person"
+                                />
+                              </div>
+                            )}
                             <div className="space-y-2">
                               <Label>Contact Email</Label>
                               <Input
