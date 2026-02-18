@@ -135,7 +135,23 @@ ${listingDetailsHtml}
 
 ${whatHappensNextHtml}
 
-<!-- Update or Remove Card -->
+${isEducation
+? `<!-- Update or Remove Card - Education (Green) -->
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Update or Remove Your Listing</h2>
+<p style="margin:0 0 15px 0;">${updateRemoveText}</p>
+<p style="margin:0 0 15px 0; text-align:center;">
+<a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#2e7d32; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit Your Listing</a>
+</p>
+<p style="margin:0; font-size:13px; color:#666666; text-align:center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
+</div>
+
+<!-- Need Help Card - Education -->
+<div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Need Help?</h2>
+<p style="margin:0;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#1e3a5f; font-weight:bold;">rhinton@uwtc.org</a></p>
+</div>`
+: `<!-- Update or Remove Card - Volunteer (Orange) -->
 <div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">Update or Remove Your Listing</h2>
 <p style="margin:0 0 15px 0;">${updateRemoveText}</p>
@@ -143,7 +159,7 @@ ${whatHappensNextHtml}
 <a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#e67e22; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit Your Listing</a>
 </p>
 <p style="margin:0; font-size:13px; color:#666666; text-align:center;">This link is unique to your listing. Please keep it safe and do not share it publicly.</p>
-</div>
+</div>`}
 
 
 </td>
@@ -151,10 +167,14 @@ ${whatHappensNextHtml}
 
 <!-- Footer -->
 <tr>
-<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
+${isEducation
+? `<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
+<h1 style="margin:0; font-size:28px; color:#ffffff;">⭐ Thank You for Supporting<br>Our Community ⭐</h1>
+</td>`
+: `<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
 <p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">rhinton@uwtc.org</a></p>
-</td>
+</td>`}
 </tr>
 
 </table>
