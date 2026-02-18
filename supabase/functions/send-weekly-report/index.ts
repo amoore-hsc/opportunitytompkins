@@ -67,6 +67,21 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Found ${filledPositions?.length || 0} listings with positions filled`);
 
+    // Fetch new Education & Training opportunities added this week
+    const { data: newEducationOpps, error: educationError } = await supabaseClient
+      .from('opportunities')
+      .select('org_name, program_name, program_components, website, description')
+      .eq('type', 'Education & Training')
+      .eq('active', true)
+      .gte('created_at', startDateStr)
+      .lte('created_at', endDate.toISOString());
+
+    if (educationError) {
+      console.error("Error fetching new education opportunities:", educationError);
+    }
+
+    console.log(`Found ${newEducationOpps?.length || 0} new Education & Training opportunities`);
+
     console.log(`Found ${counts?.length || 0} application count records`);
 
     // Aggregate by opportunity
@@ -317,6 +332,35 @@ ${filledRows}
 </tbody>
 </table>
 </div>
+
+${(newEducationOpps && newEducationOpps.length > 0) ? `
+<!-- New Education & Training Opportunities -->
+<div style="background-color:#e8f4fd; border-left:4px solid #2196f3; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 5px 0; font-size:18px; color:#2196f3;">New Education & Training Listings</h2>
+<p style="margin:0 0 15px 0; font-size:14px; color:#6b7280;">${newEducationOpps.length} new listing${newEducationOpps.length !== 1 ? 's' : ''} added this week</p>
+<table style="width:100%; border-collapse:collapse;">
+<thead>
+<tr style="background:#f8fafc;">
+<th style="padding:12px; text-align:left; color:#1e3a5f; border-bottom:2px solid #2196f3;">Program</th>
+<th style="padding:12px; text-align:left; color:#1e3a5f; border-bottom:2px solid #2196f3;">Components</th>
+</tr>
+</thead>
+<tbody>
+${newEducationOpps.map(opp => `
+<tr>
+<td style="padding:12px; border-bottom:1px solid #e5e7eb;">
+<strong>${opp.program_name || 'Untitled Program'}</strong><br>
+<span style="color:#6b7280; font-size:14px;">${opp.org_name}</span>
+</td>
+<td style="padding:12px; border-bottom:1px solid #e5e7eb; font-size:14px;">
+${opp.program_components ? opp.program_components.split(',').map((c: string) => c.trim()).join(', ') : '—'}
+</td>
+</tr>
+`).join('')}
+</tbody>
+</table>
+</div>
+` : ''}
 
 </td>
 </tr>
