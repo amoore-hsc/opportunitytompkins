@@ -1366,7 +1366,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label>Organization Email</Label>
+                              <Label>Contact Email</Label>
                               <Input
                                 type="email"
                                 value={editingOpportunity.org_email}
