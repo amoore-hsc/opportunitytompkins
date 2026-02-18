@@ -147,17 +147,14 @@ const ListOpportunity = () => {
     e.preventDefault();
     setFormError("");
 
-    // Volunteer-only validations
-    if (!isEducation) {
-      if (!formData.acknowledged) {
-        setFormError("Please confirm that you will complete the required documentation.");
-        toast({
-          title: "Acknowledgement required",
-          description: "Please confirm that you will complete the required documentation.",
-          variant: "destructive"
-        });
-        return;
-      }
+    if (!formData.acknowledged) {
+      setFormError("Please confirm that you will complete the required documentation.");
+      toast({
+        title: "Acknowledgement required",
+        description: "Please confirm that you will complete the required documentation.",
+        variant: "destructive"
+      });
+      return;
     }
 
     if (descriptionWordCount > 25) {
@@ -954,8 +951,8 @@ const ListOpportunity = () => {
                 </div>
               )}
 
-              {/* Acknowledgement - volunteer only */}
-              {!isEducation && (
+              {/* Acknowledgement */}
+              {formData.type && (
                 <div className="flex items-start space-x-2 rounded-lg bg-muted p-4">
                   <Checkbox
                     id="acknowledged"
@@ -964,8 +961,10 @@ const ListOpportunity = () => {
                     aria-required="true"
                   />
                   <Label htmlFor="acknowledged" className="cursor-pointer text-sm">
-                    I confirm that I am a non-profit or public organization and will complete the required 
-                    documentation on behalf of the beneficiary. <span aria-hidden="true" className="text-destructive">*</span>
+                    {isEducation
+                      ? "I confirm I will complete the required documentation on behalf of the beneficiary."
+                      : "I confirm that I am a non-profit or public organization and will complete the required documentation on behalf of the beneficiary."
+                    } <span aria-hidden="true" className="text-destructive">*</span>
                     <VisuallyHidden>(required)</VisuallyHidden>
                   </Label>
                 </div>
@@ -974,11 +973,9 @@ const ListOpportunity = () => {
               <Button type="submit" size="lg" disabled={loading} className="w-full bg-success">
                 {loading ? "Submitting..." : isEducation ? "Submit Program" : "Submit Opportunity"}
               </Button>
-              {!isEducation && (
-                <p className="text-sm text-muted-foreground text-center mt-3">
-                  Once an opportunity has been submitted, you will receive a confirmation email from <span className="whitespace-nowrap">hello@tompkins-opportunity.org</span>. Please check your spam folder if you did not receive an email.
-                </p>
-              )}
+              <p className="text-sm text-muted-foreground text-center mt-3">
+                Once an opportunity has been submitted, you will receive a confirmation email from <span className="whitespace-nowrap">hello@tompkins-opportunity.org</span>. Please check your spam folder if you did not receive an email.
+              </p>
             </>
           )}
         </form>
