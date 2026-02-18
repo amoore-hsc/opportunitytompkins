@@ -23,6 +23,10 @@ interface ConfirmationEmailRequest {
   daysTimesAvailable: string;
   editToken: string;
   siteUrl: string;
+  // Education-specific fields
+  programName?: string | null;
+  website?: string | null;
+  programComponents?: string | null;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -33,6 +37,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    const body: ConfirmationEmailRequest = await req.json();
     const {
       orgName,
       contactName,
@@ -48,11 +53,53 @@ const handler = async (req: Request): Promise<Response> => {
       daysTimesAvailable,
       editToken,
       siteUrl,
-    }: ConfirmationEmailRequest = await req.json();
+      programName,
+      website,
+      programComponents,
+    } = body;
 
     console.log(`Sending confirmation email to ${orgEmail}`);
 
     const editUrl = `${siteUrl}/edit-opportunity/${editToken}`;
+    const isEducation = opportunityType === "Education & Training";
+
+    const listingDetailsHtml = isEducation
+      ? `<p style="margin:0 0 8px 0;"><strong>Organization:</strong> ${orgName}</p>
+<p style="margin:0 0 8px 0;"><strong>Program Name:</strong> ${programName || "Not specified"}</p>
+<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${description}</p>
+<p style="margin:0 0 8px 0;"><strong>Website:</strong> <a href="${website}" style="color:#1e3a5f;">${website}</a></p>
+<p style="margin:0 0 8px 0;"><strong>Program Components:</strong> ${programComponents || "Not specified"}</p>
+<p style="margin:0 0 8px 0;"><strong>Hours Available per Week:</strong> ${hoursAvailable}</p>
+${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Minimum Requirements:</strong> ${additionalRequirements}</p>` : ""}`
+      : `<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opportunityType}</p>
+<p style="margin:0 0 8px 0;"><strong>Role Classification:</strong> ${roleClassification || "Not specified"}</p>
+${positionTitle ? `<p style="margin:0 0 8px 0;"><strong>Position Title:</strong> ${positionTitle}</p>` : ""}
+<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${description}</p>
+<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${location}</p>
+<p style="margin:0 0 8px 0;"><strong>On Bus Route:</strong> ${onBusRoute ? "Yes" : "No"}</p>
+<p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${hoursAvailable}</p>
+<p style="margin:0 0 8px 0;"><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
+${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ""}`;
+
+    const whatHappensNextHtml = isEducation
+      ? ""
+      : `<!-- What Happens Next Card -->
+<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
+<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">What Happens Next?</h2>
+<p style="margin:0 0 8px 0;">1. Clients can apply directly through the platform</p>
+<p style="margin:0 0 8px 0;">2. You will receive a notification to this email when someone applies</p>
+<p style="margin:0 0 8px 0;">3. Contact applicants to confirm availability and interest</p>
+<p style="margin:0 0 8px 0;">4. Remove your posting when the position has been filled</p>
+<p style="margin:0 0 0 0;">5. Complete monthly documentation on behalf of the volunteer</p>
+</div>`;
+
+    const introText = isEducation
+      ? "Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting."
+      : "Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting when the opportunity is filled.";
+
+    const updateRemoveText = isEducation
+      ? "Need to make changes or remove your listing? You can use the edit button below to update your listing or remove it. The listing will remain active until you remove it."
+      : "Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.";
 
     const emailHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -78,36 +125,20 @@ const handler = async (req: Request): Promise<Response> => {
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">Your opportunity has been successfully published. Use this email to review your post and edit the listing with any corrections OR to remove the posting when the opportunity is filled.</p>
+<p style="margin:0 0 25px 0;">${introText}</p>
 
 <!-- Your Listing Details Card -->
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Your Listing Details</h2>
-<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opportunityType}</p>
-<p style="margin:0 0 8px 0;"><strong>Role Classification:</strong> ${roleClassification || "Not specified"}</p>
-${positionTitle ? `<p style="margin:0 0 8px 0;"><strong>Position Title:</strong> ${positionTitle}</p>` : ""}
-<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${description}</p>
-<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${location}</p>
-<p style="margin:0 0 8px 0;"><strong>On Bus Route:</strong> ${onBusRoute ? "Yes" : "No"}</p>
-<p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${hoursAvailable}</p>
-<p style="margin:0 0 8px 0;"><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
-${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ""}
+${listingDetailsHtml}
 </div>
 
-<!-- What Happens Next Card -->
-<div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
-<h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">What Happens Next?</h2>
-<p style="margin:0 0 8px 0;">1. Clients can apply directly through the platform</p>
-<p style="margin:0 0 8px 0;">2. You will receive a notification to this email when someone applies</p>
-<p style="margin:0 0 8px 0;">3. Contact applicants to confirm availability and interest</p>
-<p style="margin:0 0 8px 0;">4. Remove your posting when the position has been filled</p>
-<p style="margin:0 0 0 0;">5. Complete monthly documentation on behalf of the volunteer</p>
-</div>
+${whatHappensNextHtml}
 
 <!-- Update or Remove Card -->
 <div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">Update or Remove Your Listing</h2>
-<p style="margin:0 0 15px 0;">Need to make changes or remove your listing? You can use the edit button below to update available hours or remove the listing when the position is filled.</p>
+<p style="margin:0 0 15px 0;">${updateRemoveText}</p>
 <p style="margin:0 0 15px 0; text-align:center;">
 <a href="${editUrl}" style="display:inline-block; padding:14px 28px; background-color:#e67e22; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Edit Your Listing</a>
 </p>
@@ -133,10 +164,14 @@ ${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirem
 </body>
 </html>`;
 
+    const subjectTitle = isEducation
+      ? `${programName || "Program"} - Listing Confirmation`
+      : `${positionTitle || "Opportunity"} Role - Listing Confirmation`;
+
     const emailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
       to: [orgEmail],
-      subject: `${positionTitle || "Opportunity"} Role - Listing Confirmation`,
+      subject: subjectTitle,
       html: emailHtml,
     });
 
