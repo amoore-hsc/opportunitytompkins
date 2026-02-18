@@ -112,7 +112,7 @@ export const OpportunityCard = forwardRef<HTMLDivElement, OpportunityCardProps>(
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
             <span className="font-normal">
-              <strong>Hours Available:</strong> {opportunity.hours_available} per week
+              <strong>Hours Available:</strong> {opportunity.hours_available}{/week|per week/i.test(opportunity.hours_available) ? "" : " per week"}
             </span>
           </div>
           
