@@ -1,17 +1,22 @@
 
 
-# Add Half-Hour Increments to Hours Slider on List Opportunity Page
+# Enable Education & Training on List Opportunity Page
 
 ## Overview
-Update the hours slider on the "List an Opportunity" page to support half-hour increments (0.5 steps) for more precise hour entry, without changing the public-facing Opportunities filter page.
+Remove the `disabled` attribute and "(Coming Soon)" label from the Education & Training option in the opportunity type selector.
 
-## Changes
+## Change
 
-**File: `src/pages/ListOpportunity.tsx`**
+**File: `src/pages/ListOpportunity.tsx` (line 346)**
 
-1. Change the hours `Slider` `step` prop from `1` to `0.5`
-2. Update the label to display half-hour values cleanly (e.g., "20.5")
-3. Update the `aria-valuetext` to reflect the new precision
+Update:
+```
+<SelectItem value="education" disabled>Education & Training (Coming Soon)</SelectItem>
+```
+To:
+```
+<SelectItem value="education">Education & Training</SelectItem>
+```
 
-No changes to `src/components/OpportunityFilters.tsx` or any other file.
+Single line change -- the rest of the Education & Training form logic (conditional fields, submission handling, success message) is already fully implemented.
 
