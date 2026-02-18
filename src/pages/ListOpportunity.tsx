@@ -920,7 +920,8 @@ const ListOpportunity = () => {
               {/* Education contact - just email for edit link */}
               {isEducation && (
                 <div className="border-t border-border pt-6">
-                  <h3 className="mb-4 text-lg font-semibold text-foreground">Contact Information</h3>
+                  <h3 className="mb-2 text-lg font-semibold text-foreground">Contact Information</h3>
+                  <p className="text-sm text-muted-foreground mb-4">This information will not be displayed publicly, it will only be available to platform administrators. The provided email will receive a confirmation email enabling you to modify and remove your posting.</p>
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="contactName">
@@ -940,7 +941,6 @@ const ListOpportunity = () => {
                         Contact Email <span aria-hidden="true" className="text-destructive">*</span>
                         <VisuallyHidden>(required)</VisuallyHidden>
                       </Label>
-                      <p className="text-sm text-muted-foreground">This email will not be displayed publicly. It is only used to send you an edit link for your listing.</p>
                       <Input
                         id="orgEmail"
                         type="email"
