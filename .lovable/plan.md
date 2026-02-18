@@ -1,23 +1,17 @@
 
+# Add "Copy Edit Link" Button to Admin Panel
 
-## Create Test Education & Training Opportunity
+Add a button next to the existing Resend Email (Mail) button in the admin table that copies the magic edit link to the clipboard, allowing admins to share it through alternative channels (e.g., phone, text, different email).
 
-Insert a test record into the `opportunities` table with the following details:
+## Changes
 
-- **Type**: Education & Training
-- **Organization Name**: Test Education Organization
-- **Program Name**: Career Development Program
-- **Description**: A test education and training program for admin panel verification.
-- **Website**: https://example.com
-- **Program Components**: GED, ESL
-- **Hours Available**: 20 hours/week
-- **Days/Times Available**: Monday-Friday, 9am-5pm
-- **Location**: Ithaca, NY
-- **Contact Email**: test@example.com
-- **Contact Phone**: (607) 555-0100
-- **Active**: true
+**File: `src/pages/Admin.tsx`**
 
-### Technical Details
+1. Import the `Link2` (or `Copy`) icon from `lucide-react` alongside existing icons.
 
-A single SQL INSERT into the `opportunities` table using all required fields and education-specific fields (`program_name`, `website`, `program_components`). No schema changes needed -- the table already supports this type.
+2. Add a new button between the Mail and Trash buttons in the actions column (around line 1470):
+   - Ghost variant, small size, with a link/copy icon
+   - On click, constructs the edit URL (`${window.location.origin}/edit-opportunity/${opp.edit_token}`) and copies it to the clipboard using `navigator.clipboard.writeText()`
+   - Shows a success toast confirming the link was copied
 
+No database or backend changes needed -- the `edit_token` is already fetched in the admin query.
