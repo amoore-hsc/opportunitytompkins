@@ -116,9 +116,13 @@ ${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirem
 
 <!-- Header -->
 <tr>
-<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
+${isEducation
+? `<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
+<h1 style="margin:0; font-size:28px; color:#ffffff;">Listing Confirmation</h1>
+</td>`
+: `<td style="background-color:#1e3a5f; padding:30px; text-align:center;">
 <h1 style="margin:0; font-size:28px; color:#ffffff;">⭐ Thank You for Supporting<br>Our Community ⭐</h1>
-</td>
+</td>`}
 </tr>
 
 <!-- Main Content -->
