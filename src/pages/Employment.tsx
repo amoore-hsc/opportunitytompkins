@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Handshake, ArrowLeft, Briefcase, MapPin, DollarSign, Clock, ExternalLink } from "lucide-react";
+import { Handshake, ArrowLeft, Briefcase, MapPin, DollarSign, Clock, ExternalLink, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,13 +18,13 @@ export interface EmploymentOpportunity {
   employment_type: string | null;
   wage: string | null;
   location: string | null;
-  
   posting_url: string;
   source_site: string;
   is_manual: boolean;
   active: boolean;
   created_at: string;
   updated_at: string;
+  job_category: string | null;
 }
 
 const normalizeEmploymentType = (raw: string | null): string[] => {
@@ -44,12 +44,26 @@ const formatEmploymentType = (raw: string | null): string | null => {
   return types.length > 0 ? types.join(', ') : null;
 };
 
+const CATEGORY_COLORS: Record<string, string> = {
+  Education: "bg-blue-100 text-blue-800 border-blue-200",
+  Healthcare: "bg-red-100 text-red-800 border-red-200",
+  Hospitality: "bg-amber-100 text-amber-800 border-amber-200",
+  Government: "bg-slate-100 text-slate-800 border-slate-200",
+  Technology: "bg-violet-100 text-violet-800 border-violet-200",
+  "Trades/Labor": "bg-orange-100 text-orange-800 border-orange-200",
+  Administrative: "bg-cyan-100 text-cyan-800 border-cyan-200",
+  "Social Services": "bg-emerald-100 text-emerald-800 border-emerald-200",
+  Other: "bg-gray-100 text-gray-800 border-gray-200",
+};
+
 const Employment = () => {
   const [jobs, setJobs] = useState<EmploymentOpportunity[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<EmploymentOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
+  const [employerFilter, setEmployerFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
@@ -68,6 +82,14 @@ const Employment = () => {
       filtered = filtered.filter(j => j.source_site === sourceFilter);
     }
 
+    if (employerFilter !== "all") {
+      filtered = filtered.filter(j => j.employer === employerFilter);
+    }
+
+    if (categoryFilter !== "all") {
+      filtered = filtered.filter(j => j.job_category === categoryFilter);
+    }
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(j =>
@@ -78,7 +100,7 @@ const Employment = () => {
     }
 
     setFilteredJobs(filtered);
-  }, [jobs, typeFilter, sourceFilter, searchQuery]);
+  }, [jobs, typeFilter, sourceFilter, employerFilter, categoryFilter, searchQuery]);
 
   const fetchJobs = async () => {
     try {
@@ -107,6 +129,20 @@ const Employment = () => {
 
   const sources = Array.from(
     new Set(jobs.map(j => j.source_site).filter(Boolean))
+  ).sort();
+
+  // Only show employers with 2+ jobs
+  const employerCounts = jobs.reduce((acc, j) => {
+    acc[j.employer] = (acc[j.employer] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const employers = Object.entries(employerCounts)
+    .filter(([, count]) => count >= 2)
+    .map(([name]) => name)
+    .sort();
+
+  const categories = Array.from(
+    new Set(jobs.map(j => j.job_category).filter(Boolean) as string[])
   ).sort();
 
   return (
@@ -139,13 +175,42 @@ const Employment = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-4 mb-8 flex-wrap">
           <Input
             placeholder="Search by title, employer, or location..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="sm:max-w-sm"
           />
+          {categories.length > 0 && (
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="sm:w-[200px]">
+                <SelectValue placeholder="Job Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {employers.length > 0 && (
+            <Select value={employerFilter} onValueChange={setEmployerFilter}>
+              <SelectTrigger className="sm:w-[200px]">
+                <SelectValue placeholder="Employer" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Employers</SelectItem>
+                {employers.map(emp => (
+                  <SelectItem key={emp} value={emp}>
+                    {emp}
+                    <span className="text-muted-foreground ml-1">({employerCounts[emp]})</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           {employmentTypes.length > 0 && (
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="sm:w-[200px]">
@@ -191,7 +256,18 @@ const Employment = () => {
                 <Card key={job.id} className="hover:shadow-lg transition-all duration-300">
                   <CardHeader>
                     <div className="flex items-start justify-between flex-wrap gap-2">
-                      <Badge variant="default" className="mb-2">Employment</Badge>
+                      {job.job_category && (
+                        <Badge
+                          variant="outline"
+                          className={`flex items-center gap-1 ${CATEGORY_COLORS[job.job_category] || CATEGORY_COLORS.Other}`}
+                        >
+                          <Tag className="h-3 w-3" aria-hidden="true" />
+                          {job.job_category}
+                        </Badge>
+                      )}
+                      {!job.job_category && (
+                        <Badge variant="default" className="mb-2">Employment</Badge>
+                      )}
                       {formatEmploymentType(job.employment_type) && (
                         <Badge variant="outline" className="flex items-center gap-1">
                           <Clock className="h-3 w-3" aria-hidden="true" />
@@ -215,7 +291,6 @@ const Employment = () => {
                         <span>{job.location}</span>
                       </div>
                     )}
-
 
                     <a
                       href={job.posting_url.startsWith("http") ? job.posting_url : `https://${job.posting_url}`}
