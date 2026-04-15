@@ -189,6 +189,7 @@ Deno.serve(async (req) => {
               employment_type: job.employment_type?.trim() || null,
               wage: job.wage?.trim() || null,
               location: job.location?.trim() || null,
+              special_requirements: job.special_requirements?.trim() || null,
               posting_url: postingUrl,
               source_site: source.name,
               source_id: job.source_id?.toString() || null,
@@ -218,6 +219,7 @@ Deno.serve(async (req) => {
                   employment_type: job.employment_type,
                   wage: job.wage,
                   location: job.location,
+                  special_requirements: job.special_requirements,
                   posting_url: job.posting_url,
                   active: true,
                 })
@@ -248,6 +250,7 @@ Deno.serve(async (req) => {
                   employment_type: job.employment_type,
                   wage: job.wage,
                   location: job.location,
+                  special_requirements: job.special_requirements,
                   active: true,
                 })
                 .eq("id", existing.id);
