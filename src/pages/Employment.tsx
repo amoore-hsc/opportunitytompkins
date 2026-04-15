@@ -26,6 +26,23 @@ export interface EmploymentOpportunity {
   updated_at: string;
 }
 
+const normalizeEmploymentType = (raw: string | null): string[] => {
+  if (!raw || raw.replace(/[,\s]/g, '') === '') return [];
+  const text = raw.toLowerCase();
+  const types: string[] = [];
+  if (text.includes('full')) types.push('Full-Time');
+  if (text.includes('part')) types.push('Part-Time');
+  if (text.includes('per diem')) types.push('Per Diem');
+  if (text.includes('seasonal')) types.push('Seasonal');
+  if (types.length === 0) types.push('Other');
+  return types;
+};
+
+const formatEmploymentType = (raw: string | null): string | null => {
+  const types = normalizeEmploymentType(raw);
+  return types.length > 0 ? types.join(', ') : null;
+};
+
 const Employment = () => {
   const [jobs, setJobs] = useState<EmploymentOpportunity[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<EmploymentOpportunity[]>([]);
@@ -42,7 +59,7 @@ const Employment = () => {
     let filtered = jobs;
 
     if (typeFilter !== "all") {
-      filtered = filtered.filter(j => j.employment_type?.toLowerCase() === typeFilter.toLowerCase());
+      filtered = filtered.filter(j => normalizeEmploymentType(j.employment_type).includes(typeFilter));
     }
 
     if (searchQuery.trim()) {
@@ -79,8 +96,8 @@ const Employment = () => {
   };
 
   const employmentTypes = Array.from(
-    new Set(jobs.map(j => j.employment_type).filter(Boolean))
-  ) as string[];
+    new Set(jobs.flatMap(j => normalizeEmploymentType(j.employment_type)))
+  ).sort();
 
   return (
     <div className="min-h-screen bg-background">
@@ -127,7 +144,7 @@ const Employment = () => {
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
                 {employmentTypes.map(type => (
-                  <SelectItem key={type} value={type.toLowerCase()}>{type}</SelectItem>
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -152,10 +169,10 @@ const Employment = () => {
                   <CardHeader>
                     <div className="flex items-start justify-between flex-wrap gap-2">
                       <Badge variant="default" className="mb-2">Employment</Badge>
-                      {job.employment_type && job.employment_type.replace(/[,\s]/g, '') !== "" && (
+                      {formatEmploymentType(job.employment_type) && (
                         <Badge variant="outline" className="flex items-center gap-1">
                           <Clock className="h-3 w-3" aria-hidden="true" />
-                          {job.employment_type}
+                          {formatEmploymentType(job.employment_type)}
                         </Badge>
                       )}
                     </div>
