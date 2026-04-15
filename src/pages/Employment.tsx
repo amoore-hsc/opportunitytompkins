@@ -26,6 +26,23 @@ export interface EmploymentOpportunity {
   updated_at: string;
 }
 
+const normalizeEmploymentType = (raw: string | null): string[] => {
+  if (!raw || raw.replace(/[,\s]/g, '') === '') return [];
+  const text = raw.toLowerCase();
+  const types: string[] = [];
+  if (text.includes('full')) types.push('Full-Time');
+  if (text.includes('part')) types.push('Part-Time');
+  if (text.includes('per diem')) types.push('Per Diem');
+  if (text.includes('seasonal')) types.push('Seasonal');
+  if (types.length === 0) types.push('Other');
+  return types;
+};
+
+const formatEmploymentType = (raw: string | null): string | null => {
+  const types = normalizeEmploymentType(raw);
+  return types.length > 0 ? types.join(', ') : null;
+};
+
 const Employment = () => {
   const [jobs, setJobs] = useState<EmploymentOpportunity[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<EmploymentOpportunity[]>([]);
