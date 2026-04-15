@@ -9,6 +9,7 @@ import ListOpportunity from "./pages/ListOpportunity";
 import EditOpportunity from "./pages/EditOpportunity";
 import ConfirmListing from "./pages/ConfirmListing";
 import Admin from "./pages/Admin";
+import Employment from "./pages/Employment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
