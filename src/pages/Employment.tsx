@@ -251,69 +251,76 @@ const Employment = () => {
               <p className="text-muted-foreground text-sm mt-2">Check back soon for new postings.</p>
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredJobs.map(job => (
-                <Card key={job.id} className="hover:shadow-lg transition-all duration-300">
-                  <CardHeader>
-                    <div className="flex items-start justify-between flex-wrap gap-2">
-                      {job.job_category && (
-                        <Badge
-                          variant="outline"
-                          className={`flex items-center gap-1 ${CATEGORY_COLORS[job.job_category] || CATEGORY_COLORS.Other}`}
-                        >
-                          <Tag className="h-3 w-3" aria-hidden="true" />
-                          {job.job_category}
-                        </Badge>
-                      )}
-                      {!job.job_category && (
-                        <Badge variant="default" className="mb-2">Employment</Badge>
-                      )}
-                      {formatEmploymentType(job.employment_type) && (
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" aria-hidden="true" />
-                          {formatEmploymentType(job.employment_type)}
-                        </Badge>
-                      )}
+            <div className="space-y-8">
+              {Object.entries(
+                filteredJobs.reduce((groups, job) => {
+                  const cat = job.job_category || "Other";
+                  if (!groups[cat]) groups[cat] = [];
+                  groups[cat].push(job);
+                  return groups;
+                }, {} as Record<string, EmploymentOpportunity[]>)
+              )
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([category, categoryJobs]) => (
+                  <div key={category}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge
+                        variant="outline"
+                        className={`text-sm px-3 py-1 ${CATEGORY_COLORS[category] || CATEGORY_COLORS.Other}`}
+                      >
+                        <Tag className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+                        {category}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">({categoryJobs.length})</span>
                     </div>
-                    <CardTitle className="text-xl">{job.employer}</CardTitle>
-                    <p className="text-base font-medium text-foreground">{job.job_title}</p>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {job.wage && job.wage.replace(/[,\s]/g, '') !== "" && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <DollarSign className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                        <span>{job.wage}</span>
-                      </div>
-                    )}
-                    {job.location && job.location.replace(/[,\s]/g, '') !== "" && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                        <span>{job.location}</span>
-                      </div>
-                    )}
-
-                    <a
-                      href={job.posting_url.startsWith("http") ? job.posting_url : `https://${job.posting_url}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button className="w-full mt-4 bg-success">
-                        <ExternalLink className="mr-2 h-4 w-4" aria-hidden="true" />
-                        View Full Posting
-                      </Button>
-                    </a>
-
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t border-border">
-                      <span>Updated {formatDistanceToNow(new Date(job.updated_at), { addSuffix: true })}</span>
-                      {job.source_site !== "manual" && (
-                        <Badge variant="outline" className="text-xs">
-                          {job.source_site}
-                        </Badge>
-                      )}
+                    <div className="border border-border rounded-lg divide-y divide-border bg-card">
+                      {categoryJobs.map(job => (
+                        <div key={job.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/50 transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-medium text-foreground truncate">{job.job_title}</span>
+                              {formatEmploymentType(job.employment_type) && (
+                                <Badge variant="outline" className="text-xs flex items-center gap-1 flex-shrink-0">
+                                  <Clock className="h-3 w-3" aria-hidden="true" />
+                                  {formatEmploymentType(job.employment_type)}
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground flex-wrap">
+                              <span className="font-medium">{job.employer}</span>
+                              {job.location && job.location.replace(/[,\s]/g, '') !== "" && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="h-3 w-3" aria-hidden="true" />
+                                  {job.location}
+                                </span>
+                              )}
+                              {job.wage && job.wage.replace(/[,\s]/g, '') !== "" && (
+                                <span className="flex items-center gap-1">
+                                  <DollarSign className="h-3 w-3" aria-hidden="true" />
+                                  {job.wage}
+                                </span>
+                              )}
+                              <span className="text-xs">
+                                Updated {formatDistanceToNow(new Date(job.updated_at), { addSuffix: true })}
+                              </span>
+                            </div>
+                          </div>
+                          <a
+                            href={job.posting_url.startsWith("http") ? job.posting_url : `https://${job.posting_url}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-shrink-0"
+                          >
+                            <Button size="sm" className="bg-success">
+                              <ExternalLink className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                              View
+                            </Button>
+                          </a>
+                        </div>
+                      ))}
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                  </div>
+                ))}
             </div>
           )}
         </div>
