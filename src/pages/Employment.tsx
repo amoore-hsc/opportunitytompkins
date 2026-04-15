@@ -152,7 +152,7 @@ const Employment = () => {
                   <CardHeader>
                     <div className="flex items-start justify-between flex-wrap gap-2">
                       <Badge variant="default" className="mb-2">Employment</Badge>
-                      {job.employment_type && (
+                      {job.employment_type && job.employment_type.replace(/[,\s]/g, '') !== "" && (
                         <Badge variant="outline" className="flex items-center gap-1">
                           <Clock className="h-3 w-3" aria-hidden="true" />
                           {job.employment_type}
