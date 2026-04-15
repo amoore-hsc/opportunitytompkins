@@ -46,6 +46,54 @@ export type Database = {
           },
         ]
       }
+      employment_opportunities: {
+        Row: {
+          active: boolean
+          created_at: string
+          employer: string
+          employment_type: string | null
+          id: string
+          is_manual: boolean
+          job_title: string
+          location: string | null
+          posting_url: string
+          source_id: string | null
+          source_site: string
+          updated_at: string
+          wage: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          employer: string
+          employment_type?: string | null
+          id?: string
+          is_manual?: boolean
+          job_title: string
+          location?: string | null
+          posting_url: string
+          source_id?: string | null
+          source_site?: string
+          updated_at?: string
+          wage?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          employer?: string
+          employment_type?: string | null
+          id?: string
+          is_manual?: boolean
+          job_title?: string
+          location?: string | null
+          posting_url?: string
+          source_id?: string | null
+          source_site?: string
+          updated_at?: string
+          wage?: string | null
+        }
+        Relationships: []
+      }
       opportunities: {
         Row: {
           active: boolean
@@ -136,6 +184,36 @@ export type Database = {
           type?: string
           updated_at?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      scrape_sources: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          last_scraped_at: string | null
+          name: string
+          scrape_config: Json | null
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          last_scraped_at?: string | null
+          name: string
+          scrape_config?: Json | null
+          url: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          last_scraped_at?: string | null
+          name?: string
+          scrape_config?: Json | null
+          url?: string
         }
         Relationships: []
       }
