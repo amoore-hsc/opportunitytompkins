@@ -59,6 +59,7 @@ export type Database = {
           posting_url: string
           source_id: string | null
           source_site: string
+          special_requirements: string | null
           updated_at: string
           wage: string | null
         }
@@ -74,6 +75,7 @@ export type Database = {
           posting_url: string
           source_id?: string | null
           source_site?: string
+          special_requirements?: string | null
           updated_at?: string
           wage?: string | null
         }
@@ -89,6 +91,7 @@ export type Database = {
           posting_url?: string
           source_id?: string | null
           source_site?: string
+          special_requirements?: string | null
           updated_at?: string
           wage?: string | null
         }
