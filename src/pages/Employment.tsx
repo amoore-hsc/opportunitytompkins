@@ -163,13 +163,13 @@ const Employment = () => {
                     <p className="text-base font-medium text-foreground">{job.job_title}</p>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {job.wage && job.wage.trim() !== "" && (
+                    {job.wage && job.wage.replace(/[,\s]/g, '') !== "" && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <DollarSign className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                         <span>{job.wage}</span>
                       </div>
                     )}
-                    {job.location && job.location.trim() !== "" && (
+                    {job.location && job.location.replace(/[,\s]/g, '') !== "" && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <MapPin className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                         <span>{job.location}</span>
