@@ -40,11 +40,17 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Support scraping a single source by ID (for staggered cron)
+    let body: Record<string, unknown> = {};
+    try { body = await req.json(); } catch { /* no body */ }
+    const sourceId = body?.source_id as string | undefined;
+
     // Get active scrape sources
-    const { data: sources, error: sourcesError } = await supabase
-      .from("scrape_sources")
-      .select("*")
-      .eq("active", true);
+    let query = supabase.from("scrape_sources").select("*").eq("active", true);
+    if (sourceId) {
+      query = query.eq("id", sourceId);
+    }
+    const { data: sources, error: sourcesError } = await query;
 
     if (sourcesError) throw sourcesError;
     if (!sources || sources.length === 0) {
