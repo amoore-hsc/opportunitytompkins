@@ -1,0 +1,1 @@
+ALTER TABLE public.employment_opportunities ADD COLUMN job_category text;
