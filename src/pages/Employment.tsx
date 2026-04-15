@@ -193,8 +193,14 @@ const Employment = () => {
                         <span>{job.location}</span>
                       </div>
                     )}
+                    {job.special_requirements && job.special_requirements.replace(/[,\s]/g, '') !== "" && (
+                      <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <ShieldCheck className="h-4 w-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                        <span>{job.special_requirements}</span>
+                      </div>
+                    )}
 
-                    <a
+                    <
                       href={job.posting_url.startsWith("http") ? job.posting_url : `https://${job.posting_url}`}
                       target="_blank"
                       rel="noopener noreferrer"
