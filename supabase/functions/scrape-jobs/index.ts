@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
                     required: ["jobs"],
                   },
                   prompt:
-                    "Extract all job listings from this page. For each job, get the title, employer/organization, employment type (full-time/part-time if shown), wage/salary (if shown), location, any special requirements (licenses, certifications, clearances), a direct link to the full posting, and any unique ID. If the employer is the same for all jobs (like a single organization's career page), use that organization name for all.",
+                    "Extract all job listings from this page. For each job, get the title, employer/organization, employment type (full-time/part-time if shown), wage/salary (if shown), location, a direct link to the full posting, and any unique ID. If the employer is the same for all jobs (like a single organization's career page), use that organization name for all.",
                 },
               ],
               onlyMainContent: true,
