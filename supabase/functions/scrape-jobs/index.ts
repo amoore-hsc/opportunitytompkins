@@ -20,10 +20,115 @@ interface JobListing {
   employment_type: string | null;
   wage: string | null;
   location: string | null;
-  
   posting_url: string;
   source_site: string;
   source_id: string | null;
+  job_category?: string | null;
+}
+
+const JOB_CATEGORIES = [
+  "Education",
+  "Healthcare",
+  "Hospitality",
+  "Government",
+  "Technology",
+  "Trades/Labor",
+  "Administrative",
+  "Social Services",
+  "Other",
+];
+
+async function classifyJobs(
+  jobs: { job_title: string; employer: string }[]
+): Promise<Record<number, string>> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY || jobs.length === 0) return {};
+
+  const jobList = jobs
+    .map((j, i) => `${i}: "${j.job_title}" at "${j.employer}"`)
+    .join("\n");
+
+  try {
+    const response = await fetch(
+      "https://ai.gateway.lovable.dev/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [
+            {
+              role: "system",
+              content: `You classify job listings into exactly one category. Categories: ${JOB_CATEGORIES.join(", ")}. Respond using the provided tool.`,
+            },
+            {
+              role: "user",
+              content: `Classify each job:\n${jobList}`,
+            },
+          ],
+          tools: [
+            {
+              type: "function",
+              function: {
+                name: "classify_jobs",
+                description: "Return category for each job by index",
+                parameters: {
+                  type: "object",
+                  properties: {
+                    classifications: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          index: { type: "number" },
+                          category: {
+                            type: "string",
+                            enum: JOB_CATEGORIES,
+                          },
+                        },
+                        required: ["index", "category"],
+                        additionalProperties: false,
+                      },
+                    },
+                  },
+                  required: ["classifications"],
+                  additionalProperties: false,
+                },
+              },
+            },
+          ],
+          tool_choice: {
+            type: "function",
+            function: { name: "classify_jobs" },
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      console.error("AI classification error:", response.status, await response.text());
+      return {};
+    }
+
+    const data = await response.json();
+    const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+    if (!toolCall) return {};
+
+    const parsed = JSON.parse(toolCall.function.arguments);
+    const result: Record<number, string> = {};
+    for (const c of parsed.classifications || []) {
+      if (JOB_CATEGORIES.includes(c.category)) {
+        result[c.index] = c.category;
+      }
+    }
+    return result;
+  } catch (err) {
+    console.error("AI classification failed:", err);
+    return {};
+  }
 }
 
 Deno.serve(async (req) => {
@@ -41,12 +146,10 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Support scraping a single source by ID (for staggered cron)
     let body: Record<string, unknown> = {};
     try { body = await req.json(); } catch { /* no body */ }
     const sourceId = body?.source_id as string | undefined;
 
-    // Get active scrape sources
     let query = supabase.from("scrape_sources").select("*").eq("active", true);
     if (sourceId) {
       query = query.eq("id", sourceId);
@@ -70,7 +173,6 @@ Deno.serve(async (req) => {
       try {
         console.log(`Scraping: ${source.name} (${source.url})`);
 
-        // Use Firecrawl to scrape the page
         const scrapeResponse = await fetch(
           "https://api.firecrawl.dev/v2/scrape",
           {
@@ -152,7 +254,6 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        // Extract jobs from the response
         const jobs: JobListing[] = [];
         const jsonData = scrapeData?.data?.json || scrapeData?.json;
 
@@ -160,7 +261,6 @@ Deno.serve(async (req) => {
           for (const job of jsonData.jobs) {
             if (!job.job_title || !job.employer) continue;
 
-            // Skip lateral transfer / reinstatement-only postings
             const titleLower = job.job_title.toLowerCase();
             if (
               titleLower.includes("lateral transfer") ||
@@ -168,7 +268,6 @@ Deno.serve(async (req) => {
               titleLower.includes("reinstatement opportunity")
             ) continue;
 
-            // Resolve relative URLs
             let postingUrl = job.posting_url || source.url;
             if (postingUrl && !postingUrl.startsWith("http")) {
               try {
@@ -184,7 +283,6 @@ Deno.serve(async (req) => {
               employment_type: job.employment_type?.trim() || null,
               wage: job.wage?.trim() || null,
               location: job.location?.trim() || null,
-              
               posting_url: postingUrl,
               source_site: source.name,
               source_id: job.source_id?.toString() || null,
@@ -194,10 +292,17 @@ Deno.serve(async (req) => {
 
         console.log(`Found ${jobs.length} jobs from ${source.name}`);
 
-        // Upsert jobs - dedup by source_site + source_id where possible
+        // AI classify all jobs from this source in one batch
+        const classifications = await classifyJobs(
+          jobs.map((j) => ({ job_title: j.job_title, employer: j.employer }))
+        );
+        for (let i = 0; i < jobs.length; i++) {
+          jobs[i].job_category = classifications[i] || null;
+        }
+
+        // Upsert jobs
         for (const job of jobs) {
           if (job.source_id) {
-            // Try to find existing by source_site + source_id
             const { data: existing } = await supabase
               .from("employment_opportunities")
               .select("id")
@@ -216,6 +321,7 @@ Deno.serve(async (req) => {
                   location: job.location,
                   posting_url: job.posting_url,
                   active: true,
+                  job_category: job.job_category,
                 })
                 .eq("id", existing.id);
             } else {
@@ -224,7 +330,6 @@ Deno.serve(async (req) => {
                 .insert({ ...job, active: true, is_manual: false });
             }
           } else {
-            // No source_id — check by posting_url to avoid duplicates
             const { data: existing } = await supabase
               .from("employment_opportunities")
               .select("id")
@@ -244,8 +349,8 @@ Deno.serve(async (req) => {
                   employment_type: job.employment_type,
                   wage: job.wage,
                   location: job.location,
-                  
                   active: true,
+                  job_category: job.job_category,
                 })
                 .eq("id", existing.id);
             }
@@ -253,7 +358,6 @@ Deno.serve(async (req) => {
           sourceResult.scraped++;
         }
 
-        // Update last_scraped_at
         await supabase
           .from("scrape_sources")
           .update({ last_scraped_at: new Date().toISOString() })

@@ -54,6 +54,7 @@ export type Database = {
           employment_type: string | null
           id: string
           is_manual: boolean
+          job_category: string | null
           job_title: string
           location: string | null
           posting_url: string
@@ -70,6 +71,7 @@ export type Database = {
           employment_type?: string | null
           id?: string
           is_manual?: boolean
+          job_category?: string | null
           job_title: string
           location?: string | null
           posting_url: string
@@ -86,6 +88,7 @@ export type Database = {
           employment_type?: string | null
           id?: string
           is_manual?: boolean
+          job_category?: string | null
           job_title?: string
           location?: string | null
           posting_url?: string
