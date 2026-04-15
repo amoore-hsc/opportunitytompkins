@@ -144,7 +144,7 @@ const Employment = () => {
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
                 {employmentTypes.map(type => (
-                  <SelectItem key={type} value={type.toLowerCase()}>{type}</SelectItem>
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
