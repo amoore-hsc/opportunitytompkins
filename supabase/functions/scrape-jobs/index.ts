@@ -159,6 +159,14 @@ Deno.serve(async (req) => {
           for (const job of jsonData.jobs) {
             if (!job.job_title || !job.employer) continue;
 
+            // Skip lateral transfer / reinstatement-only postings
+            const titleLower = job.job_title.toLowerCase();
+            if (
+              titleLower.includes("lateral transfer") ||
+              titleLower.includes("transfer/reinstatement") ||
+              titleLower.includes("reinstatement opportunity")
+            ) continue;
+
             // Resolve relative URLs
             let postingUrl = job.posting_url || source.url;
             if (postingUrl && !postingUrl.startsWith("http")) {
