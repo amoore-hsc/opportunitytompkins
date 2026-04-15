@@ -200,7 +200,7 @@ const Employment = () => {
                       </div>
                     )}
 
-                    <
+                    <a
                       href={job.posting_url.startsWith("http") ? job.posting_url : `https://${job.posting_url}`}
                       target="_blank"
                       rel="noopener noreferrer"
