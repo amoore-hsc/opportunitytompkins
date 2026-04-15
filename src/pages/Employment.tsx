@@ -152,7 +152,7 @@ const Employment = () => {
                   <CardHeader>
                     <div className="flex items-start justify-between flex-wrap gap-2">
                       <Badge variant="default" className="mb-2">Employment</Badge>
-                      {job.employment_type && (
+                      {job.employment_type && job.employment_type.replace(/[,\s]/g, '') !== "" && (
                         <Badge variant="outline" className="flex items-center gap-1">
                           <Clock className="h-3 w-3" aria-hidden="true" />
                           {job.employment_type}
@@ -163,13 +163,13 @@ const Employment = () => {
                     <p className="text-base font-medium text-foreground">{job.job_title}</p>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {job.wage && (
+                    {job.wage && job.wage.replace(/[,\s]/g, '') !== "" && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <DollarSign className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                         <span>{job.wage}</span>
                       </div>
                     )}
-                    {job.location && (
+                    {job.location && job.location.replace(/[,\s]/g, '') !== "" && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <MapPin className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                         <span>{job.location}</span>
