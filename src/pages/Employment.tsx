@@ -18,6 +18,7 @@ export interface EmploymentOpportunity {
   employment_type: string | null;
   wage: string | null;
   location: string | null;
+  special_requirements: string | null;
   posting_url: string;
   source_site: string;
   is_manual: boolean;

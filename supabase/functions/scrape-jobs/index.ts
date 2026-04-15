@@ -20,6 +20,7 @@ interface JobListing {
   employment_type: string | null;
   wage: string | null;
   location: string | null;
+  special_requirements: string | null;
   posting_url: string;
   source_site: string;
   source_id: string | null;
