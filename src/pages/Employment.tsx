@@ -96,8 +96,8 @@ const Employment = () => {
   };
 
   const employmentTypes = Array.from(
-    new Set(jobs.map(j => j.employment_type).filter(Boolean))
-  ) as string[];
+    new Set(jobs.flatMap(j => normalizeEmploymentType(j.employment_type)))
+  ).sort();
 
   return (
     <div className="min-h-screen bg-background">
