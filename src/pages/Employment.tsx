@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Handshake, ArrowLeft, Briefcase, MapPin, DollarSign, Clock, ExternalLink } from "lucide-react";
+import { Handshake, ArrowLeft, Briefcase, MapPin, DollarSign, Clock, ExternalLink, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,7 @@ export interface EmploymentOpportunity {
   employment_type: string | null;
   wage: string | null;
   location: string | null;
+  special_requirements: string | null;
   posting_url: string;
   source_site: string;
   is_manual: boolean;
@@ -190,6 +191,12 @@ const Employment = () => {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <MapPin className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                         <span>{job.location}</span>
+                      </div>
+                    )}
+                    {job.special_requirements && job.special_requirements.replace(/[,\s]/g, '') !== "" && (
+                      <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <ShieldCheck className="h-4 w-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                        <span>{job.special_requirements}</span>
                       </div>
                     )}
 
