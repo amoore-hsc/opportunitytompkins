@@ -59,7 +59,7 @@ const Employment = () => {
     let filtered = jobs;
 
     if (typeFilter !== "all") {
-      filtered = filtered.filter(j => j.employment_type?.toLowerCase() === typeFilter.toLowerCase());
+      filtered = filtered.filter(j => normalizeEmploymentType(j.employment_type).includes(typeFilter));
     }
 
     if (searchQuery.trim()) {
