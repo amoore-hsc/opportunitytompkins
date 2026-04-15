@@ -49,6 +49,7 @@ const Employment = () => {
   const [filteredJobs, setFilteredJobs] = useState<EmploymentOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
@@ -63,6 +64,10 @@ const Employment = () => {
       filtered = filtered.filter(j => normalizeEmploymentType(j.employment_type).includes(typeFilter));
     }
 
+    if (sourceFilter !== "all") {
+      filtered = filtered.filter(j => j.source_site === sourceFilter);
+    }
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(j =>
@@ -73,7 +78,7 @@ const Employment = () => {
     }
 
     setFilteredJobs(filtered);
-  }, [jobs, typeFilter, searchQuery]);
+  }, [jobs, typeFilter, sourceFilter, searchQuery]);
 
   const fetchJobs = async () => {
     try {
@@ -98,6 +103,10 @@ const Employment = () => {
 
   const employmentTypes = Array.from(
     new Set(jobs.flatMap(j => normalizeEmploymentType(j.employment_type)))
+  ).sort();
+
+  const sources = Array.from(
+    new Set(jobs.map(j => j.source_site).filter(Boolean))
   ).sort();
 
   return (
@@ -146,6 +155,19 @@ const Employment = () => {
                 <SelectItem value="all">All Types</SelectItem>
                 {employmentTypes.map(type => (
                   <SelectItem key={type} value={type}>{type}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {sources.length > 1 && (
+            <Select value={sourceFilter} onValueChange={setSourceFilter}>
+              <SelectTrigger className="sm:w-[200px]">
+                <SelectValue placeholder="Source" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sources</SelectItem>
+                {sources.map(source => (
+                  <SelectItem key={source} value={source}>{source}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
