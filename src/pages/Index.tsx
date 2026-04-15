@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Search, ListPlus, Handshake } from "lucide-react";
+import { Search, ListPlus, Handshake, Briefcase } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
