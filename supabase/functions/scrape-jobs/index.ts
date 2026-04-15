@@ -20,7 +20,7 @@ interface JobListing {
   employment_type: string | null;
   wage: string | null;
   location: string | null;
-  special_requirements: string | null;
+  
   posting_url: string;
   source_site: string;
   source_id: string | null;
@@ -116,11 +116,6 @@ Deno.serve(async (req) => {
                               description:
                                 "Job location or city. Null if not specified.",
                             },
-                            special_requirements: {
-                              type: "string",
-                              description:
-                                "Special requirements such as driver's license, certifications, clearances, or specific qualifications. Null if none mentioned.",
-                            },
                             posting_url: {
                               type: "string",
                               description:
@@ -139,7 +134,7 @@ Deno.serve(async (req) => {
                     required: ["jobs"],
                   },
                   prompt:
-                    "Extract all job listings from this page. For each job, get the title, employer/organization, employment type (full-time/part-time if shown), wage/salary (if shown), location, any special requirements (licenses, certifications, clearances), a direct link to the full posting, and any unique ID. If the employer is the same for all jobs (like a single organization's career page), use that organization name for all.",
+                    "Extract all job listings from this page. For each job, get the title, employer/organization, employment type (full-time/part-time if shown), wage/salary (if shown), location, a direct link to the full posting, and any unique ID. If the employer is the same for all jobs (like a single organization's career page), use that organization name for all.",
                 },
               ],
               onlyMainContent: true,
@@ -189,7 +184,7 @@ Deno.serve(async (req) => {
               employment_type: job.employment_type?.trim() || null,
               wage: job.wage?.trim() || null,
               location: job.location?.trim() || null,
-              special_requirements: job.special_requirements?.trim() || null,
+              
               posting_url: postingUrl,
               source_site: source.name,
               source_id: job.source_id?.toString() || null,
@@ -219,7 +214,6 @@ Deno.serve(async (req) => {
                   employment_type: job.employment_type,
                   wage: job.wage,
                   location: job.location,
-                  special_requirements: job.special_requirements,
                   posting_url: job.posting_url,
                   active: true,
                 })
@@ -250,7 +244,7 @@ Deno.serve(async (req) => {
                   employment_type: job.employment_type,
                   wage: job.wage,
                   location: job.location,
-                  special_requirements: job.special_requirements,
+                  
                   active: true,
                 })
                 .eq("id", existing.id);
