@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Search, ListPlus, Handshake } from "lucide-react";
+import { Search, ListPlus, Handshake, Briefcase } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
@@ -81,6 +81,20 @@ Opportunity Finder</h1>
                 <p className="text-muted-foreground">Organizations: Post volunteer training and educational positions</p>
                 <Button variant="default" size="lg" className="mt-6 w-full bg-success">
                   Post Opportunity
+                </Button>
+              </div>
+            </Link>
+          </div>
+
+          {/* Employment CTA */}
+          <div className="mt-6">
+            <Link to="/employment" className="group">
+              <div className="rounded-xl border-2 border-secondary bg-card p-8 transition-all hover:scale-105 hover:shadow-lg">
+                <Briefcase className="mx-auto mb-4 h-12 w-12 text-secondary" aria-hidden="true" />
+                <h3 className="mb-2 text-xl font-semibold text-foreground">Find Employment</h3>
+                <p className="text-muted-foreground">Browse job openings from local employers in Tompkins County</p>
+                <Button variant="secondary" size="lg" className="mt-6 w-full">
+                  Browse Jobs
                 </Button>
               </div>
             </Link>
