@@ -249,6 +249,59 @@ const Employment = () => {
           </div>
         </div>
 
+        {/* Category pills (multi-select) */}
+        {categories.length > 0 && (() => {
+          const categoryCounts = jobs.reduce((acc, j) => {
+            if (j.job_category) acc[j.job_category] = (acc[j.job_category] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>);
+          const sortedCats = [...categories].sort(
+            (a, b) => (categoryCounts[b] || 0) - (categoryCounts[a] || 0)
+          );
+          const toggleCategory = (cat: string) => {
+            setSelectedCategories(prev =>
+              prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+            );
+          };
+          return (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-2">
+                <p className="text-sm font-medium text-foreground">Filter by category</p>
+                {selectedCategories.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCategories([])}
+                    className="text-xs text-primary underline hover:no-underline"
+                  >
+                    Clear ({selectedCategories.length})
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Filter jobs by category">
+                {sortedCats.map(cat => {
+                  const isSelected = selectedCategories.includes(cat);
+                  const colorClass = CATEGORY_COLORS[cat] || CATEGORY_COLORS.Other;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => toggleCategory(cat)}
+                      aria-pressed={isSelected}
+                      className={
+                        isSelected
+                          ? `text-sm px-3 py-1.5 rounded-full border-2 border-primary font-semibold shadow-sm transition-all ${colorClass}`
+                          : `text-sm px-3 py-1.5 rounded-full border border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground transition-all`
+                      }
+                    >
+                      {cat} ({categoryCounts[cat] || 0})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8 flex-wrap">
           <Input
