@@ -84,16 +84,8 @@ const parseWageToHourly = (raw: string | null): number | null => {
   return max; // assume hourly
 };
 
-const PAY_FILTER_OPTIONS: { value: string; label: string; min?: number; special?: 'has' | 'none' }[] = [
-  { value: 'all', label: 'All pay levels' },
-  { value: '15', label: '$15+/hr (~$31k+/yr)', min: 15 },
-  { value: '18', label: '$18+/hr (~$37k+/yr)', min: 18 },
-  { value: '20', label: '$20+/hr (~$42k+/yr)', min: 20 },
-  { value: '25', label: '$25+/hr (~$52k+/yr)', min: 25 },
-  { value: '30', label: '$30+/hr (~$62k+/yr)', min: 30 },
-  { value: 'has', label: 'Has any pay listed', special: 'has' },
-  { value: 'none', label: 'Pay not listed', special: 'none' },
-];
+const MIN_PAY_MAX = 50; // slider max ($/hr)
+const MIN_PAY_STEP = 1;
 
 const CATEGORY_COLORS: Record<string, string> = {
   Education: "bg-blue-100 text-blue-800 border-blue-200",
