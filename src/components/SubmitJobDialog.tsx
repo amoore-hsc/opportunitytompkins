@@ -135,18 +135,7 @@ export const SubmitJobDialog = ({ trigger, onSuccess }: Props) => {
               maxLength={2048}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="job-url">Job posting URL *</Label>
-            <Input
-              id="job-url"
-              type="url"
-              placeholder="https://example.com/jobs/12345"
-              value={postingUrl}
-              onChange={(e) => setPostingUrl(e.target.value)}
-              required
-              maxLength={2048}
-            />
-          </div>
+
 
           {/* Honeypot field — hidden from real users, bots tend to fill it. */}
           <div
