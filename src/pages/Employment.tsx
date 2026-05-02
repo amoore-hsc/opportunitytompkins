@@ -143,6 +143,21 @@ const Employment = () => {
       filtered = filtered.filter(j => j.job_category === categoryFilter);
     }
 
+    if (payFilter !== "all") {
+      const opt = PAY_FILTER_OPTIONS.find(o => o.value === payFilter);
+      if (opt?.special === 'has') {
+        filtered = filtered.filter(j => parseWageToHourly(j.wage) !== null);
+      } else if (opt?.special === 'none') {
+        filtered = filtered.filter(j => parseWageToHourly(j.wage) === null);
+      } else if (opt?.min !== undefined) {
+        const min = opt.min;
+        filtered = filtered.filter(j => {
+          const hourly = parseWageToHourly(j.wage);
+          return hourly !== null && hourly >= min;
+        });
+      }
+    }
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(j =>
@@ -154,7 +169,7 @@ const Employment = () => {
 
     setFilteredJobs(filtered);
     setCurrentPage(1);
-  }, [jobs, typeFilter, sourceFilter, employerFilter, categoryFilter, searchQuery]);
+  }, [jobs, typeFilter, sourceFilter, employerFilter, categoryFilter, payFilter, searchQuery]);
 
   const fetchJobs = async () => {
     try {
