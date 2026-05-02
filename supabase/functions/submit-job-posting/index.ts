@@ -22,7 +22,7 @@ const JOB_CATEGORIES = [
 const BodySchema = z.object({
   posting_url: z.string().url().max(2048),
   employer: z.string().trim().min(1).max(200).optional().nullable(),
-  submitter_email: z.string().email().max(255).optional().nullable(),
+  submitter_email: z.string().email().max(255),
 });
 
 async function classifyJob(
