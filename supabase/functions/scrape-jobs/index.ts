@@ -131,6 +131,62 @@ async function classifyJobs(
   }
 }
 
+const MAX_WAGE_ENRICHMENTS_PER_RUN = 25;
+const WAGE_ENRICH_CONCURRENCY = 3;
+
+async function enrichWageFromPostingUrl(
+  url: string,
+  firecrawlKey: string
+): Promise<string | null> {
+  try {
+    const res = await fetch("https://api.firecrawl.dev/v2/scrape", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${firecrawlKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        url,
+        formats: [
+          {
+            type: "json",
+            schema: {
+              type: "object",
+              properties: {
+                wage: {
+                  type: ["string", "null"],
+                  description:
+                    "The salary, wage, hourly rate, or pay range exactly as shown on the page (e.g. '$18.99/hr', '$50,000 - $60,000/year', '$25 per hour'). Return null if no pay information is listed.",
+                },
+              },
+              required: ["wage"],
+            },
+            prompt:
+              "Extract the salary, wage, hourly rate, or pay range from this job posting exactly as shown on the page. Examples: '$18.99/hr', '$50,000 - $60,000/year', '$25 per hour'. If no pay information is listed anywhere on the page, return null for wage.",
+          },
+        ],
+        onlyMainContent: true,
+        waitFor: 3000,
+      }),
+    });
+
+    if (!res.ok) {
+      console.warn(`Wage enrichment failed for ${url}: ${res.status}`);
+      return null;
+    }
+    const data = await res.json();
+    const json = data?.data?.json || data?.json;
+    const wage = json?.wage;
+    if (typeof wage === "string" && wage.trim().length > 0) {
+      return wage.trim();
+    }
+    return null;
+  } catch (err) {
+    console.warn(`Wage enrichment error for ${url}:`, err);
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
