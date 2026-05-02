@@ -49,7 +49,7 @@ export const SubmitJobDialog = ({ trigger, onSuccess }: Props) => {
     const parsed = schema.safeParse({
       posting_url: postingUrl,
       employer: employer || undefined,
-      submitter_email: email || undefined,
+      submitter_email: email,
     });
     if (!parsed.success) {
       const first = parsed.error.errors[0]?.message || "Please check your input.";
@@ -137,16 +137,17 @@ export const SubmitJobDialog = ({ trigger, onSuccess }: Props) => {
             <p className="text-xs text-muted-foreground">Helps us label the listing if we can't detect it automatically.</p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="job-email">Your email (optional)</Label>
+            <Label htmlFor="job-email">Your email *</Label>
             <Input
               id="job-email"
               type="email"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
               maxLength={255}
             />
-            <p className="text-xs text-muted-foreground">Only used if we need to follow up about your submission.</p>
+            <p className="text-xs text-muted-foreground">Used if we need to follow up about your submission.</p>
           </div>
 
           {error && (
