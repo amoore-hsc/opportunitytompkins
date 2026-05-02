@@ -77,7 +77,6 @@ const handler = async (req: Request): Promise<Response> => {
   ${job.wage && job.wage.trim() && job.wage.trim() !== "/" ? `<p style="margin:0 0 6px 0; color:#555;">💵 <strong>Pay:</strong> ${escapeHtml(job.wage)}</p>` : ""}
   ${job.employment_type && job.employment_type.trim() ? `<p style="margin:0 0 6px 0; color:#555;">🕐 <strong>Type:</strong> ${escapeHtml(job.employment_type)}</p>` : ""}
   <p style="margin:0 0 10px 0; font-size:12px; color:#999;">Updated ${new Date(job.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
-  <p style="margin:0 0 10px 0; font-size:13px; word-break:break-all;"><strong>Job Posting URL:</strong><br><a href="${safeUrl}" style="color:#1e3a5f;">${safeUrl}</a></p>
   <div style="text-align:center; margin-top:8px;">
     <a href="${safeUrl}" style="display:inline-block; background-color:#1e3a5f; color:white; text-decoration:none; padding:10px 24px; border-radius:6px; font-weight:bold; font-size:14px;">View Job Posting</a>
   </div>
