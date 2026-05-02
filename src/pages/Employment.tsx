@@ -280,7 +280,16 @@ const Employment = () => {
               </SelectContent>
             </Select>
           )}
-          {employmentTypes.length > 0 && (
+          <Select value={payFilter} onValueChange={setPayFilter}>
+            <SelectTrigger className="sm:w-[220px]">
+              <SelectValue placeholder="Minimum Pay" />
+            </SelectTrigger>
+            <SelectContent>
+              {PAY_FILTER_OPTIONS.map(opt => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="sm:w-[200px]">
                 <SelectValue placeholder="Employment Type" />
