@@ -257,19 +257,6 @@ const Employment = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="sm:max-w-sm"
           />
-          {categories.length > 0 && (
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="sm:w-[200px]">
-                <SelectValue placeholder="Job Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map(cat => (
-                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
           {employers.length > 0 && (
             <Select value={employerFilter} onValueChange={setEmployerFilter}>
               <SelectTrigger className="sm:w-[200px]">
