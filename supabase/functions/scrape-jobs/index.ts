@@ -238,7 +238,7 @@ Deno.serve(async (req) => {
                     required: ["jobs"],
                   },
                   prompt:
-                    "Extract all job listings from this page. For each job, get the title, employer/organization, employment type (full-time/part-time if shown), wage/salary (if shown), location, a direct link to the full posting, and any unique ID. If the employer is the same for all jobs (like a single organization's career page), use that organization name for all.",
+                    "Extract all job listings from this page. For each job, get the title, employer/organization, employment type (full-time/part-time if shown), wage/salary (if shown), location, a direct link to the full posting, and any unique ID. The unique ID (source_id) is critical — look for a requisition number, job ID, or alphanumeric identifier shown on the listing card (e.g. 'REQ-12345', 'Job ID: 56789', or embedded in the posting link). If the employer is the same for all jobs (like a single organization's career page), use that organization name for all.",
                 },
               ],
               onlyMainContent: true,
