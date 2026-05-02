@@ -114,7 +114,7 @@ const Employment = () => {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [employerFilter, setEmployerFilter] = useState<string>("all");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [payFilter, setPayFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -140,8 +140,8 @@ const Employment = () => {
       filtered = filtered.filter(j => j.employer === employerFilter);
     }
 
-    if (categoryFilter !== "all") {
-      filtered = filtered.filter(j => j.job_category === categoryFilter);
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(j => j.job_category && selectedCategories.includes(j.job_category));
     }
 
     if (payFilter !== "all") {
@@ -170,7 +170,7 @@ const Employment = () => {
 
     setFilteredJobs(filtered);
     setCurrentPage(1);
-  }, [jobs, typeFilter, sourceFilter, employerFilter, categoryFilter, payFilter, searchQuery]);
+  }, [jobs, typeFilter, sourceFilter, employerFilter, selectedCategories, payFilter, searchQuery]);
 
   const fetchJobs = async () => {
     try {
@@ -249,6 +249,59 @@ const Employment = () => {
           </div>
         </div>
 
+        {/* Category pills (multi-select) */}
+        {categories.length > 0 && (() => {
+          const categoryCounts = jobs.reduce((acc, j) => {
+            if (j.job_category) acc[j.job_category] = (acc[j.job_category] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>);
+          const sortedCats = [...categories].sort(
+            (a, b) => (categoryCounts[b] || 0) - (categoryCounts[a] || 0)
+          );
+          const toggleCategory = (cat: string) => {
+            setSelectedCategories(prev =>
+              prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+            );
+          };
+          return (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-2">
+                <p className="text-sm font-medium text-foreground">Filter by category</p>
+                {selectedCategories.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCategories([])}
+                    className="text-xs text-primary underline hover:no-underline"
+                  >
+                    Clear ({selectedCategories.length})
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Filter jobs by category">
+                {sortedCats.map(cat => {
+                  const isSelected = selectedCategories.includes(cat);
+                  const colorClass = CATEGORY_COLORS[cat] || CATEGORY_COLORS.Other;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => toggleCategory(cat)}
+                      aria-pressed={isSelected}
+                      className={
+                        isSelected
+                          ? `text-sm px-3 py-1.5 rounded-full border-2 border-primary font-semibold shadow-sm transition-all ${colorClass}`
+                          : `text-sm px-3 py-1.5 rounded-full border border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground transition-all`
+                      }
+                    >
+                      {cat} ({categoryCounts[cat] || 0})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8 flex-wrap">
           <Input
@@ -257,19 +310,6 @@ const Employment = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="sm:max-w-sm"
           />
-          {categories.length > 0 && (
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="sm:w-[200px]">
-                <SelectValue placeholder="Job Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map(cat => (
-                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
           {employers.length > 0 && (
             <Select value={employerFilter} onValueChange={setEmployerFilter}>
               <SelectTrigger className="sm:w-[200px]">
@@ -355,7 +395,7 @@ const Employment = () => {
               const slugify = (s: string) =>
                 `cat-${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
               const isFiltered =
-                categoryFilter !== "all" ||
+                selectedCategories.length > 0 ||
                 typeFilter !== "all" ||
                 sourceFilter !== "all" ||
                 employerFilter !== "all" ||
@@ -387,23 +427,6 @@ const Employment = () => {
                       )}
                       {isFiltered && " (filters active)"}
                     </p>
-                    {sortedGroups.length > 1 && (
-                      <div className="flex flex-wrap gap-2" aria-label="Jump to category">
-                        {sortedGroups.map(([category, categoryJobs]) => (
-                          <button
-                            key={category}
-                            type="button"
-                            onClick={() => {
-                              const el = document.getElementById(slugify(category));
-                              el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                            }}
-                            className={`text-xs px-2.5 py-1 rounded-full border border-border hover:border-primary hover:text-primary transition-colors ${CATEGORY_COLORS[category] || CATEGORY_COLORS.Other}`}
-                          >
-                            {category} ({categoryJobs.length})
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
                   <div className="space-y-8">
