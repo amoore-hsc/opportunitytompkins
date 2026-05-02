@@ -170,7 +170,7 @@ const Employment = () => {
 
     setFilteredJobs(filtered);
     setCurrentPage(1);
-  }, [jobs, typeFilter, sourceFilter, employerFilter, categoryFilter, payFilter, searchQuery]);
+  }, [jobs, typeFilter, sourceFilter, employerFilter, selectedCategories, payFilter, searchQuery]);
 
   const fetchJobs = async () => {
     try {
