@@ -236,8 +236,8 @@ const Employment = () => {
 
       <main id="main-content" className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex-1 min-w-0">
               <h2 className="mb-2 text-3xl font-bold text-foreground">Find Employment</h2>
               <p className="text-muted-foreground">
                 Browse job openings from employers in Tompkins County
