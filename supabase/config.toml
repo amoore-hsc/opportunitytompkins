@@ -35,3 +35,9 @@ verify_jwt = false
 
 [functions.scrape-jobs]
 verify_jwt = false
+
+[functions.submit-job-posting]
+verify_jwt = false
+
+[functions.recheck-manual-jobs]
+verify_jwt = false
