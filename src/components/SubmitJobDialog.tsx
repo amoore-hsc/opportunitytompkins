@@ -18,7 +18,7 @@ import {
 const schema = z.object({
   posting_url: z.string().trim().url({ message: "Enter a valid URL (https://...)" }).max(2048),
   employer: z.string().trim().max(200).optional(),
-  submitter_email: z.string().trim().email({ message: "Enter a valid email" }).max(255).optional().or(z.literal("")),
+  submitter_email: z.string().trim().email({ message: "Enter a valid email" }).max(255),
 });
 
 interface Props {
