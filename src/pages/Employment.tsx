@@ -136,19 +136,11 @@ const Employment = () => {
       filtered = filtered.filter(j => j.job_category && selectedCategories.includes(j.job_category));
     }
 
-    if (payFilter !== "all") {
-      const opt = PAY_FILTER_OPTIONS.find(o => o.value === payFilter);
-      if (opt?.special === 'has') {
-        filtered = filtered.filter(j => parseWageToHourly(j.wage) !== null);
-      } else if (opt?.special === 'none') {
-        filtered = filtered.filter(j => parseWageToHourly(j.wage) === null);
-      } else if (opt?.min !== undefined) {
-        const min = opt.min;
-        filtered = filtered.filter(j => {
-          const hourly = parseWageToHourly(j.wage);
-          return hourly !== null && hourly >= min;
-        });
-      }
+    if (minPay > 0) {
+      filtered = filtered.filter(j => {
+        const hourly = parseWageToHourly(j.wage);
+        return hourly !== null && hourly >= minPay;
+      });
     }
 
     if (searchQuery.trim()) {
