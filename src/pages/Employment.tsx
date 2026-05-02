@@ -450,6 +450,9 @@ const Employment = () => {
                                 Updated {formatDistanceToNow(new Date(job.updated_at), { addSuffix: true })}
                               </span>
                             </div>
+                            <div className="hidden print:block mt-1 text-xs break-all">
+                              <strong>URL:</strong> {job.posting_url.startsWith("http") ? job.posting_url : `https://${job.posting_url}`}
+                            </div>
                           </div>
                           <a
                             href={job.posting_url.startsWith("http") ? job.posting_url : `https://${job.posting_url}`}
