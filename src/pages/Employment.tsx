@@ -427,23 +427,6 @@ const Employment = () => {
                       )}
                       {isFiltered && " (filters active)"}
                     </p>
-                    {sortedGroups.length > 1 && (
-                      <div className="flex flex-wrap gap-2" aria-label="Jump to category">
-                        {sortedGroups.map(([category, categoryJobs]) => (
-                          <button
-                            key={category}
-                            type="button"
-                            onClick={() => {
-                              const el = document.getElementById(slugify(category));
-                              el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                            }}
-                            className={`text-xs px-2.5 py-1 rounded-full border border-border hover:border-primary hover:text-primary transition-colors ${CATEGORY_COLORS[category] || CATEGORY_COLORS.Other}`}
-                          >
-                            {category} ({categoryJobs.length})
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
                   <div className="space-y-8">
