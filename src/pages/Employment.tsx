@@ -65,6 +65,8 @@ const Employment = () => {
   const [employerFilter, setEmployerFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 50;
   const { toast } = useToast();
 
   useEffect(() => {
