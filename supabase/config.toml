@@ -3,6 +3,9 @@ project_id = "oosxopnxaivfdtksrvam"
 [functions.send-opportunities-email]
 verify_jwt = false
 
+[functions.send-jobs-email]
+verify_jwt = false
+
 [functions.get-opportunity-by-token]
 verify_jwt = false
 
