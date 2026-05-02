@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Handshake, ArrowLeft, Briefcase, MapPin, DollarSign, Clock, ExternalLink, Tag } from "lucide-react";
+import { Handshake, ArrowLeft, Briefcase, MapPin, DollarSign, Clock, ExternalLink, Tag, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -370,6 +370,28 @@ const Employment = () => {
                 ))}
               </SelectContent>
             </Select>
+          )}
+          {(typeFilter !== "all" ||
+            sourceFilter !== "all" ||
+            employerFilter !== "all" ||
+            selectedCategories.length > 0 ||
+            searchQuery.trim() !== "" ||
+            minPay > 0) && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setTypeFilter("all");
+                setSourceFilter("all");
+                setEmployerFilter("all");
+                setSelectedCategories([]);
+                setSearchQuery("");
+                setMinPay(0);
+              }}
+              className="sm:w-auto"
+            >
+              <X className="mr-2 h-4 w-4" aria-hidden="true" />
+              Clear filters
+            </Button>
           )}
         </div>
 
