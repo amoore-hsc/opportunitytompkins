@@ -108,7 +108,7 @@ const Employment = () => {
   const [employerFilter, setEmployerFilter] = useState<string>("all");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [payFilter, setPayFilter] = useState<string>("all");
+  const [minPay, setMinPay] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 50;
   const { toast } = useToast();
