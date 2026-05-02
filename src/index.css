@@ -48,6 +48,8 @@ Tompkins County Government Color Scheme
     --success: 142 76% 36%;
     --warning: 45 93% 47%;
     --info: 213 55% 45%;
+    --highlight: 25 90% 50%;
+    --highlight-foreground: 0 0% 100%;
 
     --sidebar-background: 213 55% 20%;
     --sidebar-foreground: 0 0% 98%;
