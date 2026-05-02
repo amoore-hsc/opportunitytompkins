@@ -279,6 +279,18 @@ Deno.serve(async (req) => {
               }
             }
 
+            // If the extractor fell back to the source listings URL (common on
+            // SPA careers sites like Oracle HCM), reconstruct the canonical
+            // posting URL from a per-source template + source_id.
+            const cfg = (source.scrape_config ?? {}) as Record<string, unknown>;
+            const tpl = typeof cfg.posting_url_template === "string"
+              ? cfg.posting_url_template
+              : null;
+            const sid = job.source_id ? String(job.source_id).trim() : "";
+            if (tpl && sid && (postingUrl === source.url || !job.posting_url)) {
+              postingUrl = tpl.replace("{source_id}", encodeURIComponent(sid));
+            }
+
             jobs.push({
               job_title: job.job_title.trim(),
               employer: job.employer.trim(),
