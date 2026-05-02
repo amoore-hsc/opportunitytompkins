@@ -255,7 +255,13 @@ const Employment = () => {
             </div>
           ) : (
             (() => {
-              const grouped = filteredJobs.reduce((groups, job) => {
+              const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
+              const safePage = Math.min(currentPage, totalPages);
+              const startIdx = (safePage - 1) * PAGE_SIZE;
+              const endIdx = startIdx + PAGE_SIZE;
+              const pageJobs = filteredJobs.slice(startIdx, endIdx);
+
+              const grouped = pageJobs.reduce((groups, job) => {
                 const cat = job.job_category || "Other";
                 if (!groups[cat]) groups[cat] = [];
                 groups[cat].push(job);
@@ -273,6 +279,11 @@ const Employment = () => {
                 employerFilter !== "all" ||
                 searchQuery.trim() !== "";
 
+              const goToPage = (page: number) => {
+                setCurrentPage(page);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              };
+
               return (
                 <div className="space-y-6">
                   <div className="flex flex-col gap-3">
@@ -281,11 +292,16 @@ const Employment = () => {
                       <span className="font-semibold text-foreground">
                         {filteredJobs.length}
                       </span>{" "}
-                      {filteredJobs.length === 1 ? "job" : "jobs"} across{" "}
-                      <span className="font-semibold text-foreground">
-                        {sortedGroups.length}
-                      </span>{" "}
-                      {sortedGroups.length === 1 ? "category" : "categories"}
+                      {filteredJobs.length === 1 ? "job" : "jobs"}
+                      {filteredJobs.length > PAGE_SIZE && (
+                        <>
+                          {" "}— page{" "}
+                          <span className="font-semibold text-foreground">{safePage}</span>{" "}
+                          of{" "}
+                          <span className="font-semibold text-foreground">{totalPages}</span>{" "}
+                          (showing {startIdx + 1}–{Math.min(endIdx, filteredJobs.length)})
+                        </>
+                      )}
                       {isFiltered && " (filters active)"}
                     </p>
                     {sortedGroups.length > 1 && (
@@ -369,6 +385,35 @@ const Employment = () => {
                   </div>
                     ))}
                   </div>
+
+                  {totalPages > 1 && (
+                    <nav
+                      className="flex items-center justify-between gap-4 pt-4 border-t border-border"
+                      aria-label="Pagination"
+                    >
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => goToPage(safePage - 1)}
+                        disabled={safePage <= 1}
+                      >
+                        <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                        Previous
+                      </Button>
+                      <span className="text-sm text-muted-foreground">
+                        Page {safePage} of {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => goToPage(safePage + 1)}
+                        disabled={safePage >= totalPages}
+                      >
+                        Next
+                        <ArrowLeft className="ml-1.5 h-4 w-4 rotate-180" aria-hidden="true" />
+                      </Button>
+                    </nav>
+                  )}
                 </div>
               );
             })()
