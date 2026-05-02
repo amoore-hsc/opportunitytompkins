@@ -175,6 +175,122 @@ Deno.serve(async (req) => {
       try {
         console.log(`Scraping: ${source.name} (${source.url})`);
 
+        const cfg0 = (source.scrape_config ?? {}) as Record<string, unknown>;
+        const apiType = typeof cfg0.api_type === "string" ? cfg0.api_type : null;
+
+        // Special path: Oracle HCM Cloud (e.g. Ithaca College).
+        // The candidate site is a SPA — Firecrawl can't reliably extract per-job
+        // links. Instead, hit the public REST API directly to get clean,
+        // canonical job records and posting URLs.
+        if (apiType === "oracle_hcm") {
+          const apiBase = typeof cfg0.api_base === "string" ? cfg0.api_base : "";
+          const siteNumber = typeof cfg0.site_number === "string" ? cfg0.site_number : "CX_1";
+          const employerName = typeof cfg0.employer === "string" ? cfg0.employer : source.name;
+          const urlBase = typeof cfg0.posting_url_base === "string" ? cfg0.posting_url_base : "";
+
+          if (!apiBase || !urlBase) {
+            sourceResult.errors.push("oracle_hcm config missing api_base or posting_url_base");
+            continue;
+          }
+
+          const oracleJobs: JobListing[] = [];
+          let offset = 0;
+          const pageLimit = 25;
+          let total = Infinity;
+          let safety = 0;
+
+          while (offset < total && safety++ < 20) {
+            const apiUrl = `${apiBase}?onlyData=true&expand=requisitionList&finder=findReqs;siteNumber=${siteNumber},facetsList=LOCATIONS,limit=${pageLimit},offset=${offset},sortBy=POSTING_DATES_DESC`;
+            const apiRes = await fetch(apiUrl, { headers: { Accept: "application/json" } });
+            if (!apiRes.ok) {
+              sourceResult.errors.push(`Oracle API error: ${apiRes.status}`);
+              break;
+            }
+            const apiData = await apiRes.json();
+            const item = apiData?.items?.[0];
+            if (!item) break;
+            total = typeof item.TotalJobsCount === "number" ? item.TotalJobsCount : 0;
+            const list = Array.isArray(item.requisitionList) ? item.requisitionList : [];
+            if (list.length === 0) break;
+
+            for (const req of list) {
+              const id = req?.Id ? String(req.Id) : null;
+              const title = req?.Title ? String(req.Title).trim() : null;
+              if (!id || !title) continue;
+              oracleJobs.push({
+                job_title: title,
+                employer: employerName,
+                employment_type: req?.WorkerType?.trim?.() || null,
+                wage: null,
+                location: req?.PrimaryLocation?.trim?.() || null,
+                posting_url: `${urlBase}${id}`,
+                source_site: source.name,
+                source_id: id,
+              });
+            }
+            offset += list.length;
+          }
+
+          console.log(`Found ${oracleJobs.length} jobs from ${source.name} via Oracle API`);
+
+          // Classify
+          const classifications = await classifyJobs(
+            oracleJobs.map((j) => ({ job_title: j.job_title, employer: j.employer }))
+          );
+          for (let i = 0; i < oracleJobs.length; i++) {
+            oracleJobs[i].job_category = classifications[i] || null;
+          }
+
+          // Upsert (mirrors the generic path below)
+          for (const job of oracleJobs) {
+            const { data: existing } = await supabase
+              .from("employment_opportunities")
+              .select("id")
+              .eq("source_site", job.source_site)
+              .eq("source_id", job.source_id)
+              .maybeSingle();
+
+            if (existing) {
+              await supabase
+                .from("employment_opportunities")
+                .update({
+                  job_title: job.job_title,
+                  employer: job.employer,
+                  employment_type: job.employment_type,
+                  wage: job.wage,
+                  location: job.location,
+                  posting_url: job.posting_url,
+                  active: true,
+                  job_category: job.job_category,
+                })
+                .eq("id", existing.id);
+            } else {
+              await supabase
+                .from("employment_opportunities")
+                .insert({ ...job, active: true, is_manual: false });
+            }
+            sourceResult.scraped++;
+          }
+
+          // Deactivate any rows for this source that weren't seen this run
+          const seenIds = oracleJobs.map((j) => j.source_id).filter(Boolean) as string[];
+          if (seenIds.length > 0) {
+            await supabase
+              .from("employment_opportunities")
+              .update({ active: false })
+              .eq("source_site", source.name)
+              .eq("is_manual", false)
+              .not("source_id", "in", `(${seenIds.map((s) => `"${s}"`).join(",")})`);
+          }
+
+          await supabase
+            .from("scrape_sources")
+            .update({ last_scraped_at: new Date().toISOString() })
+            .eq("id", source.id);
+
+          continue;
+        }
+
         const scrapeResponse = await fetch(
           "https://api.firecrawl.dev/v2/scrape",
           {
