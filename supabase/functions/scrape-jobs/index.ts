@@ -131,6 +131,8 @@ async function classifyJobs(
   }
 }
 
+const MAX_WAGE_ENRICHMENTS_PER_RUN = 25;
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -356,6 +358,30 @@ Deno.serve(async (req) => {
             }
           }
           sourceResult.scraped++;
+        }
+
+        // Wage enrichment runs as a separate, fire-and-forget edge function
+        // call so the long-running detail-page scrapes don't block this
+        // function's wall-clock budget. It will pick up any active jobs from
+        // this source that still have wage = null.
+        try {
+          const enrichUrl = `${supabaseUrl}/functions/v1/enrich-job-wages`;
+          // Don't await — let it run independently.
+          fetch(enrichUrl, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${supabaseServiceKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              source_site: source.name,
+              limit: MAX_WAGE_ENRICHMENTS_PER_RUN,
+            }),
+          }).catch((e) =>
+            console.warn(`enrich-job-wages trigger failed: ${e}`)
+          );
+        } catch (enrichErr) {
+          console.warn("enrich-job-wages trigger error:", enrichErr);
         }
 
         await supabase
