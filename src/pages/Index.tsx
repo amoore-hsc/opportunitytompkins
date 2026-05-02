@@ -89,11 +89,11 @@ Opportunity Finder</h1>
           {/* Employment CTA */}
           <div className="mt-6">
             <Link to="/employment" className="group">
-              <div className="rounded-xl border-2 border-secondary bg-card p-8 transition-all hover:scale-105 hover:shadow-lg">
-                <Briefcase className="mx-auto mb-4 h-12 w-12 text-secondary" aria-hidden="true" />
+              <div className="rounded-xl border-2 border-highlight bg-card p-8 transition-all hover:scale-105 hover:shadow-lg">
+                <Briefcase className="mx-auto mb-4 h-12 w-12 text-highlight" aria-hidden="true" />
                 <h3 className="mb-2 text-xl font-semibold text-foreground">Find Employment</h3>
                 <p className="text-muted-foreground">Browse job openings from local employers in Tompkins County</p>
-                <Button variant="secondary" size="lg" className="mt-6 w-full">
+                <Button size="lg" className="mt-6 w-full bg-highlight text-highlight-foreground hover:bg-highlight/90">
                   Browse Jobs
                 </Button>
               </div>
