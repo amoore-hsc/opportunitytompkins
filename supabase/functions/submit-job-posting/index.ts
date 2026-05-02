@@ -23,6 +23,8 @@ const BodySchema = z.object({
   posting_url: z.string().url().max(2048),
   employer: z.string().trim().min(1).max(200).optional().nullable(),
   submitter_email: z.string().email().max(255),
+  // Honeypot: must be empty/absent. Bots typically fill every field.
+  website: z.string().max(0).optional().nullable(),
 });
 
 async function classifyJob(
@@ -93,6 +95,16 @@ Deno.serve(async (req) => {
     if (!FIRECRAWL_API_KEY) throw new Error("FIRECRAWL_API_KEY is not configured");
 
     const body = await req.json().catch(() => ({}));
+
+    // Honeypot backstop: if the hidden field has any value, fake success.
+    if (typeof body?.website === "string" && body.website.trim() !== "") {
+      console.log("Honeypot triggered — silently dropping submission");
+      return new Response(
+        JSON.stringify({ ok: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const parsed = BodySchema.safeParse(body);
     if (!parsed.success) {
       return new Response(

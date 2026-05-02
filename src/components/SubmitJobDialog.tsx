@@ -33,18 +33,29 @@ export const SubmitJobDialog = ({ trigger, onSuccess }: Props) => {
   const [postingUrl, setPostingUrl] = useState("");
   const [employer, setEmployer] = useState("");
   const [email, setEmail] = useState("");
+  // Honeypot: real users never see or fill this; bots auto-fill all fields.
+  const [website, setWebsite] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const reset = () => {
     setPostingUrl("");
     setEmployer("");
     setEmail("");
+    setWebsite("");
     setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Honeypot: silently fake success so bots can't detect the trap.
+    if (website.trim() !== "") {
+      toast({ title: "Job submitted", description: "Thanks — we'll review it shortly." });
+      reset();
+      setOpen(false);
+      return;
+    }
 
     const parsed = schema.safeParse({
       posting_url: postingUrl,
@@ -124,6 +135,44 @@ export const SubmitJobDialog = ({ trigger, onSuccess }: Props) => {
               maxLength={2048}
             />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="job-url">Job posting URL *</Label>
+            <Input
+              id="job-url"
+              type="url"
+              placeholder="https://example.com/jobs/12345"
+              value={postingUrl}
+              onChange={(e) => setPostingUrl(e.target.value)}
+              required
+              maxLength={2048}
+            />
+          </div>
+
+          {/* Honeypot field — hidden from real users, bots tend to fill it. */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              left: "-9999px",
+              top: "auto",
+              width: 1,
+              height: 1,
+              overflow: "hidden",
+              opacity: 0,
+            }}
+          >
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              name="website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="job-employer">Employer (optional)</Label>
             <Input
