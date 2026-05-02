@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import { SkipNavigation } from "@/components/SkipNavigation";
 import { ShareJobsDialog } from "@/components/ShareJobsDialog";
 import { useToast } from "@/hooks/use-toast";
@@ -84,16 +85,8 @@ const parseWageToHourly = (raw: string | null): number | null => {
   return max; // assume hourly
 };
 
-const PAY_FILTER_OPTIONS: { value: string; label: string; min?: number; special?: 'has' | 'none' }[] = [
-  { value: 'all', label: 'All pay levels' },
-  { value: '15', label: '$15+/hr (~$31k+/yr)', min: 15 },
-  { value: '18', label: '$18+/hr (~$37k+/yr)', min: 18 },
-  { value: '20', label: '$20+/hr (~$42k+/yr)', min: 20 },
-  { value: '25', label: '$25+/hr (~$52k+/yr)', min: 25 },
-  { value: '30', label: '$30+/hr (~$62k+/yr)', min: 30 },
-  { value: 'has', label: 'Has any pay listed', special: 'has' },
-  { value: 'none', label: 'Pay not listed', special: 'none' },
-];
+const MIN_PAY_MAX = 50; // slider max ($/hr)
+const MIN_PAY_STEP = 1;
 
 const CATEGORY_COLORS: Record<string, string> = {
   Education: "bg-blue-100 text-blue-800 border-blue-200",
@@ -116,7 +109,7 @@ const Employment = () => {
   const [employerFilter, setEmployerFilter] = useState<string>("all");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [payFilter, setPayFilter] = useState<string>("all");
+  const [minPay, setMinPay] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 50;
   const { toast } = useToast();
@@ -144,19 +137,11 @@ const Employment = () => {
       filtered = filtered.filter(j => j.job_category && selectedCategories.includes(j.job_category));
     }
 
-    if (payFilter !== "all") {
-      const opt = PAY_FILTER_OPTIONS.find(o => o.value === payFilter);
-      if (opt?.special === 'has') {
-        filtered = filtered.filter(j => parseWageToHourly(j.wage) !== null);
-      } else if (opt?.special === 'none') {
-        filtered = filtered.filter(j => parseWageToHourly(j.wage) === null);
-      } else if (opt?.min !== undefined) {
-        const min = opt.min;
-        filtered = filtered.filter(j => {
-          const hourly = parseWageToHourly(j.wage);
-          return hourly !== null && hourly >= min;
-        });
-      }
+    if (minPay > 0) {
+      filtered = filtered.filter(j => {
+        const hourly = parseWageToHourly(j.wage);
+        return hourly !== null && hourly >= minPay;
+      });
     }
 
     if (searchQuery.trim()) {
@@ -170,7 +155,7 @@ const Employment = () => {
 
     setFilteredJobs(filtered);
     setCurrentPage(1);
-  }, [jobs, typeFilter, sourceFilter, employerFilter, selectedCategories, payFilter, searchQuery]);
+  }, [jobs, typeFilter, sourceFilter, employerFilter, selectedCategories, minPay, searchQuery]);
 
   const fetchJobs = async () => {
     try {
@@ -326,16 +311,27 @@ const Employment = () => {
               </SelectContent>
             </Select>
           )}
-          <Select value={payFilter} onValueChange={setPayFilter}>
-            <SelectTrigger className="sm:w-[220px]">
-              <SelectValue placeholder="Minimum Pay" />
-            </SelectTrigger>
-            <SelectContent>
-              {PAY_FILTER_OPTIONS.map(opt => (
-                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="sm:w-[260px] flex flex-col gap-1.5 px-1 py-1">
+            <div className="flex items-center justify-between text-xs">
+              <label htmlFor="pay-slider" className="font-medium text-foreground">
+                Minimum pay
+              </label>
+              <span className="text-muted-foreground tabular-nums">
+                {minPay === 0
+                  ? "Any"
+                  : `$${minPay}+/hr (~$${Math.round((minPay * 2080) / 1000)}k+/yr)`}
+              </span>
+            </div>
+            <Slider
+              id="pay-slider"
+              min={0}
+              max={MIN_PAY_MAX}
+              step={MIN_PAY_STEP}
+              value={[minPay]}
+              onValueChange={(v) => setMinPay(v[0] ?? 0)}
+              aria-label="Minimum hourly pay"
+            />
+          </div>
           {employmentTypes.length > 0 && (
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="sm:w-[200px]">
@@ -399,7 +395,7 @@ const Employment = () => {
                 typeFilter !== "all" ||
                 sourceFilter !== "all" ||
                 employerFilter !== "all" ||
-                payFilter !== "all" ||
+                minPay > 0 ||
                 searchQuery.trim() !== "";
 
               const goToPage = (page: number) => {
