@@ -395,7 +395,7 @@ const Employment = () => {
                 typeFilter !== "all" ||
                 sourceFilter !== "all" ||
                 employerFilter !== "all" ||
-                payFilter !== "all" ||
+                minPay > 0 ||
                 searchQuery.trim() !== "";
 
               const goToPage = (page: number) => {
