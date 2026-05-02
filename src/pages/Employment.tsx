@@ -438,7 +438,16 @@ const Employment = () => {
                   </div>
 
                   <div className="space-y-8">
-                    {sortedGroups.map(([category, categoryJobs]) => (
+                    {sortedGroups.map(([category, categoryJobs]) => {
+                      const shouldCollapse =
+                        selectedCategories.length !== 1 &&
+                        categoryJobs.length > CATEGORY_PREVIEW_SIZE;
+                      const isExpanded = expandedCategories.has(category);
+                      const visibleJobs = shouldCollapse && !isExpanded
+                        ? categoryJobs.slice(0, CATEGORY_PREVIEW_SIZE)
+                        : categoryJobs;
+                      const hiddenCount = categoryJobs.length - CATEGORY_PREVIEW_SIZE;
+                      return (
                       <div key={category} id={slugify(category)} className="scroll-mt-20">
                     <div className="flex items-center gap-2 mb-3">
                       <Badge
@@ -451,7 +460,7 @@ const Employment = () => {
                       <span className="text-sm text-muted-foreground">({categoryJobs.length})</span>
                     </div>
                     <div className="border border-border rounded-lg divide-y divide-border bg-card">
-                      {categoryJobs.map(job => (
+                      {visibleJobs.map(job => (
                         <div key={job.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/50 transition-colors">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
@@ -499,8 +508,23 @@ const Employment = () => {
                         </div>
                       ))}
                     </div>
+                    {shouldCollapse && (
+                      <div className="mt-2 flex justify-center print:hidden">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleCategoryExpanded(category)}
+                          aria-expanded={isExpanded}
+                        >
+                          {isExpanded
+                            ? `Show less`
+                            : `See more (${hiddenCount} more ${category} ${hiddenCount === 1 ? "job" : "jobs"})`}
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   {totalPages > 1 && (
