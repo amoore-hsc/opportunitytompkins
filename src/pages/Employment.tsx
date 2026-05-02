@@ -290,6 +290,7 @@ const Employment = () => {
               ))}
             </SelectContent>
           </Select>
+          {employmentTypes.length > 0 && (
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="sm:w-[200px]">
                 <SelectValue placeholder="Employment Type" />
