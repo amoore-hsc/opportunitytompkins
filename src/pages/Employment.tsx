@@ -251,18 +251,62 @@ const Employment = () => {
               <p className="text-muted-foreground text-sm mt-2">Check back soon for new postings.</p>
             </div>
           ) : (
-            <div className="space-y-8">
-              {Object.entries(
-                filteredJobs.reduce((groups, job) => {
-                  const cat = job.job_category || "Other";
-                  if (!groups[cat]) groups[cat] = [];
-                  groups[cat].push(job);
-                  return groups;
-                }, {} as Record<string, EmploymentOpportunity[]>)
-              )
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([category, categoryJobs]) => (
-                  <div key={category}>
+            (() => {
+              const grouped = filteredJobs.reduce((groups, job) => {
+                const cat = job.job_category || "Other";
+                if (!groups[cat]) groups[cat] = [];
+                groups[cat].push(job);
+                return groups;
+              }, {} as Record<string, EmploymentOpportunity[]>);
+              const sortedGroups = Object.entries(grouped).sort(
+                ([, a], [, b]) => b.length - a.length
+              );
+              const slugify = (s: string) =>
+                `cat-${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+              const isFiltered =
+                categoryFilter !== "all" ||
+                typeFilter !== "all" ||
+                sourceFilter !== "all" ||
+                employerFilter !== "all" ||
+                searchQuery.trim() !== "";
+
+              return (
+                <div className="space-y-6">
+                  <div className="flex flex-col gap-3">
+                    <p className="text-sm text-muted-foreground">
+                      {isFiltered ? "Showing " : "Browsing "}
+                      <span className="font-semibold text-foreground">
+                        {filteredJobs.length}
+                      </span>{" "}
+                      {filteredJobs.length === 1 ? "job" : "jobs"} across{" "}
+                      <span className="font-semibold text-foreground">
+                        {sortedGroups.length}
+                      </span>{" "}
+                      {sortedGroups.length === 1 ? "category" : "categories"}
+                      {isFiltered && " (filters active)"}
+                    </p>
+                    {sortedGroups.length > 1 && (
+                      <div className="flex flex-wrap gap-2" aria-label="Jump to category">
+                        {sortedGroups.map(([category, categoryJobs]) => (
+                          <button
+                            key={category}
+                            type="button"
+                            onClick={() => {
+                              const el = document.getElementById(slugify(category));
+                              el?.scrollIntoView({ behavior: "smooth", block: "start" });
+                            }}
+                            className={`text-xs px-2.5 py-1 rounded-full border border-border hover:border-primary hover:text-primary transition-colors ${CATEGORY_COLORS[category] || CATEGORY_COLORS.Other}`}
+                          >
+                            {category} ({categoryJobs.length})
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-8">
+                    {sortedGroups.map(([category, categoryJobs]) => (
+                      <div key={category} id={slugify(category)} className="scroll-mt-20">
                     <div className="flex items-center gap-2 mb-3">
                       <Badge
                         variant="outline"
