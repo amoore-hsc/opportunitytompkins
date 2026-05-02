@@ -342,7 +342,7 @@ const Employment = () => {
               const slugify = (s: string) =>
                 `cat-${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
               const isFiltered =
-                categoryFilter !== "all" ||
+                selectedCategories.length > 0 ||
                 typeFilter !== "all" ||
                 sourceFilter !== "all" ||
                 employerFilter !== "all" ||
