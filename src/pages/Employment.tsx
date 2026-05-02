@@ -353,6 +353,7 @@ const Employment = () => {
                 typeFilter !== "all" ||
                 sourceFilter !== "all" ||
                 employerFilter !== "all" ||
+                payFilter !== "all" ||
                 searchQuery.trim() !== "";
 
               const goToPage = (page: number) => {
