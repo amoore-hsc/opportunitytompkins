@@ -371,6 +371,28 @@ const Employment = () => {
               </SelectContent>
             </Select>
           )}
+          {(typeFilter !== "all" ||
+            sourceFilter !== "all" ||
+            employerFilter !== "all" ||
+            selectedCategories.length > 0 ||
+            searchQuery.trim() !== "" ||
+            minPay > 0) && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setTypeFilter("all");
+                setSourceFilter("all");
+                setEmployerFilter("all");
+                setSelectedCategories([]);
+                setSearchQuery("");
+                setMinPay(0);
+              }}
+              className="sm:w-auto"
+            >
+              <X className="mr-2 h-4 w-4" aria-hidden="true" />
+              Clear filters
+            </Button>
+          )}
         </div>
 
         <div aria-live="polite" aria-atomic="true">
