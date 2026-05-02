@@ -1,59 +1,78 @@
-## Add a Unified Pay Filter (Hourly + Salary in One Control)
+## Goal
 
-### The challenge
-Wages in the database are messy free text. Examples from the live data:
-- Hourly: `$17.45/hr`, `$23.18 per hour`, `$20.00/Hour`
-- Hourly range: `$17 - $19 an hour`, `$25.09 - $27.73`
-- Annual salary: `$98,548.00 - $114,529.00`, `$30,630/year`, `$76,500 - $90,000/year`
-- Weekly: `From $1,199.10 a week`
-- Junk/missing: `/`, `Null`, `Not specified`, `20 hours a week`
+Replace the "Contact us" mailto link at the bottom of the Employment page with a self-service flow that lets anyone submit a job posting URL. Submitted jobs flow into the existing `employment_opportunities` table, get scraped/classified by Firecrawl + Lovable AI, are validated as real job postings, and become visible on the public site. Admins get a dedicated section to monitor and remove these user-submitted jobs.
 
-A single filter only works if we convert everything to a common unit. The standard approach is **hourly-equivalent**: normalize annual salaries (÷ 2080 hrs/yr) and weekly pay (÷ 40 hrs/wk) to an hourly rate, then filter on that single number.
+## User flow
 
-### What we'll build
+1. On `/employment`, footer link changes to "Submit a job posting" → opens a modal.
+2. Modal asks for: posting URL, employer name (optional), submitter email (required, for follow-up only — not stored on listing).
+3. On submit, a new public edge function `submit-job-posting` (verify_jwt = false):
+  - Validates URL with zod.
+  - Calls Firecrawl scrape (single URL, JSON format) to extract job_title, employer, location, wage, employment_type.
+  - Validates the page actually looks like a job posting (must have a job_title and either employer or wage; reject if extraction returns nothing usable).
+  - Classifies category via Lovable AI (`google/gemini-2.5-flash-lite`), reusing the same category list as `scrape-jobs`.
+  - Inserts into `employment_opportunities` with `is_manual = true`, `source_site = 'user-submitted'`, `source_id = <submission id>`, `active = true`.
+  - Returns success/failure to the modal.
+4. The job appears immediately on `/employment` like any other listing.
 
-A **"Minimum Pay"** dropdown filter on the Employment page with preset tiers:
+## Recurring re-check (auto-remove when posting comes down)
 
-- All pay levels (default)
-- $15+/hr (~$31k+/yr)
-- $18+/hr (~$37k+/yr)
-- $20+/hr (~$42k+/yr)
-- $25+/hr (~$52k+/yr)
-- $30+/hr (~$62k+/yr)
-- Has any pay listed
-- Pay not listed
+The existing `scrape-jobs` function only scrapes rows in `scrape_sources`. We extend the daily routine to also re-check user-submitted jobs:
 
-The dropdown shows both hourly and annual equivalents on each option so it's clear to users that both job types are included. Selecting "$20+/hr" matches:
-- An hourly job paying `$22/hr` ✓
-- A salaried job paying `$50,000/year` (≈ $24/hr) ✓
-- A range like `$18 - $22 an hour` (top of range qualifies) ✓
+- New edge function `recheck-manual-jobs` (verify_jwt = false), scheduled daily via `pg_cron`:
+  - Loads all `employment_opportunities` where `is_manual = true AND source_site = 'user-submitted' AND active = true`.
+  - For each, scrapes the `posting_url` with Firecrawl.
+  - If the page returns 404, redirects to a careers index, or no longer extracts a job_title → set `active = false` (treated as "posting taken down").
+  - If still valid → refresh job_title/wage/location/employment_type and bump `updated_at`.
 
-### How the parsing works
+This satisfies "scrape just that job until the posting comes down, in which case it removes it" without mixing user-submitted single-URL jobs into the `scrape_sources` table (which is designed for listing pages, not single postings).
 
-A small client-side helper extracts a numeric hourly-equivalent from each wage string:
+## Admin dashboard
 
-1. Strip commas, lowercase the text.
-2. Pull all dollar numbers (e.g. `[17.45]`, `[98548, 114529]`).
-3. Detect the period:
-   - Contains "hour", "/hr", "hr", "hourly" → hourly
-   - Contains "year", "/yr", "annual", "salary" with no hourly keyword, OR any number ≥ 10,000 → annual (÷ 2080)
-   - Contains "week" → weekly (÷ 40)
-   - Otherwise: if number < 200 assume hourly, if ≥ 10,000 assume annual
-4. For ranges, use the **maximum** of the parsed numbers (so a $50–60k job qualifies for "$25+/hr" because the top of its range exceeds the threshold). This is the user-friendly choice — filters surface jobs that *could* meet the bar.
-5. Junk strings like `/`, `Null`, `Not specified`, `20 hours a week` (no `$`) → no hourly value → only matches "All" or "Pay not listed".
+Add a new "User-Submitted Jobs" section to `/admin` (above or alongside existing sections):
 
-The filter then keeps jobs whose hourly-equivalent ≥ the selected threshold.
+- Table of all `employment_opportunities` where `is_manual = true AND source_site = 'user-submitted'`, newest first.
+- Columns: Job Title, Employer, Posting URL (external link icon), Submitted (relative date), Last Checked (`updated_at`), Status (Active / Removed), Actions.
+- Actions per row: "View on site" (opens posting URL), "Deactivate" (sets `active = false`), "Delete" (hard delete from table).
+- "Re-check now" button that calls `recheck-manual-jobs` on demand.
 
-### Where it goes
-Added as a new `<Select>` in the existing filter row on `src/pages/Employment.tsx`, between the Employer and Employment Type dropdowns. Resets pagination to page 1 like the other filters.
+## Database
 
-### Files to change
-- `src/pages/Employment.tsx` — add `parseWageToHourly()` helper, `payFilter` state, the Select control, and a filter step in the existing filter pipeline.
+No schema changes needed — `employment_opportunities` already has `is_manual`, `source_site`, `source_id`, `active`, `updated_at`. RLS already allows public SELECT on active rows and admin full access.
 
-### Out of scope
-- No DB migration. Parsing is purely client-side; the raw `wage` string is preserved for display.
-- No backfill or re-extraction of existing wages.
-- No free-text "min $/hr" input — presets keep it simple and avoid confusing edge cases.
+One small migration: add a public INSERT policy scoped to `is_manual = true AND source_site = 'user-submitted' AND active = true` so the edge function (called anonymously) can write via service role — actually the edge function uses the service role key, so no RLS change is required. Skip the migration.
 
-### Trade-off to flag
-Annual-vs-hourly normalization assumes 40 hrs/week × 52 weeks (2080 hrs). Part-time salaried roles will look higher per hour than they really are, but this matches how every major job board (Indeed, LinkedIn) does the conversion.
+## Cron schedule
+
+Use the user-data insert tool (per project rules) to register a daily `pg_cron` job that POSTs to `recheck-manual-jobs` once per day (e.g., 4:00 AM ET = 09:00 UTC), staggered away from the existing scrape-jobs schedule.
+
+## Files
+
+**New**
+
+- `supabase/functions/submit-job-posting/index.ts` — validate URL, Firecrawl scrape, AI classify, insert row.
+- `supabase/functions/recheck-manual-jobs/index.ts` — daily re-validation of user-submitted jobs.
+- `src/components/SubmitJobDialog.tsx` — modal with URL + optional employer + optional email, submit handler invoking `submit-job-posting`.
+
+**Edited**
+
+- `src/pages/Employment.tsx` — replace footer mailto with "Submit a job posting" button that opens `SubmitJobDialog`.
+- `src/pages/Admin.tsx` — add "User-Submitted Jobs" section with table, deactivate/delete actions, and "Re-check now" button.
+- `supabase/config.toml` — register `submit-job-posting` and `recheck-manual-jobs` with `verify_jwt = false`.
+
+**Cron (via insert tool, not migration)**
+
+- Schedule `recheck-manual-jobs` daily at 09:00 UTC.
+
+## Validation rules (anti-spam)
+
+- URL must be valid HTTPS, max 2048 chars.
+- Firecrawl extraction must return a non-empty `job_title`.
+- Reject if `posting_url` already exists in `employment_opportunities`.
+- Optional submitter email validated with zod `.email()` if provided; logged to function logs only (not stored).
+
+## Out of scope
+
+- No moderation queue (jobs go live immediately; admin can remove).
+- No email notification to submitter.
+- No edits to `scrape_sources` table — user-submitted jobs are handled by their own re-check function.

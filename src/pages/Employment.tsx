@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { SkipNavigation } from "@/components/SkipNavigation";
 import { ShareJobsDialog } from "@/components/ShareJobsDialog";
+import { SubmitJobDialog } from "@/components/SubmitJobDialog";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 
@@ -562,13 +563,15 @@ const Employment = () => {
         </div>
 
         <footer className="mt-8 text-center text-sm text-muted-foreground">
-          <p>
-            Want to list a job?{" "}
-            <a href="mailto:rhinton@uwtc.org" className="underline hover:text-foreground">
-              Contact us
-            </a>{" "}
-            to add your posting.
-          </p>
+          <p className="mb-3">Want to list a job? Submit your posting and we'll add it automatically.</p>
+          <SubmitJobDialog
+            trigger={
+              <Button variant="outline" size="sm">
+                Submit a job posting
+              </Button>
+            }
+            onSuccess={() => window.location.reload()}
+          />
         </footer>
       </main>
     </div>
