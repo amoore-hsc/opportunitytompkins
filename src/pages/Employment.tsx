@@ -505,7 +505,7 @@ const Employment = () => {
                               )}
                               {job.wage && job.wage.replace(/[,\s]/g, '') !== "" && (
                                 <span className="flex items-center gap-1">
-                                  <DollarSign className="h-3 w-3" aria-hidden="true" />
+                                  <span aria-hidden="true">💵</span>
                                   {job.wage}
                                 </span>
                               )}
