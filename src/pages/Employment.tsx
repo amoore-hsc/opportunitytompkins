@@ -140,8 +140,8 @@ const Employment = () => {
       filtered = filtered.filter(j => j.employer === employerFilter);
     }
 
-    if (categoryFilter !== "all") {
-      filtered = filtered.filter(j => j.job_category === categoryFilter);
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(j => j.job_category && selectedCategories.includes(j.job_category));
     }
 
     if (payFilter !== "all") {
