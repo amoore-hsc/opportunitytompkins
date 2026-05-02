@@ -114,7 +114,7 @@ const Employment = () => {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
   const [employerFilter, setEmployerFilter] = useState<string>("all");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [payFilter, setPayFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
