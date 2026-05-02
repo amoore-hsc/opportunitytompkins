@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Handshake, ArrowLeft, Briefcase, MapPin, DollarSign, Clock, ExternalLink, Tag } from "lucide-react";
+import { Handshake, ArrowLeft, Briefcase, MapPin, DollarSign, Clock, ExternalLink, Tag, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
