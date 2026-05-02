@@ -414,53 +414,28 @@ Deno.serve(async (req) => {
           sourceResult.scraped++;
         }
 
-        // Wage enrichment: for jobs from this source still missing wage,
-        // scrape each posting URL to extract pay info that lives on the
-        // detail page. Capped per run to control Firecrawl credit usage.
+        // Wage enrichment runs as a separate, fire-and-forget edge function
+        // call so the long-running detail-page scrapes don't block this
+        // function's wall-clock budget. It will pick up any active jobs from
+        // this source that still have wage = null.
         try {
-          const { data: needsWage } = await supabase
-            .from("employment_opportunities")
-            .select("id, posting_url")
-            .eq("source_site", source.name)
-            .eq("active", true)
-            .is("wage", null)
-            .not("posting_url", "is", null)
-            .neq("posting_url", source.url)
-            .limit(MAX_WAGE_ENRICHMENTS_PER_RUN);
-
-          const targets = (needsWage || []).filter(
-            (r) => typeof r.posting_url === "string" && r.posting_url.startsWith("http")
-          );
-
-          let enrichedCount = 0;
-          for (let i = 0; i < targets.length; i += WAGE_ENRICH_CONCURRENCY) {
-            const batch = targets.slice(i, i + WAGE_ENRICH_CONCURRENCY);
-            const results = await Promise.all(
-              batch.map(async (row) => {
-                const wage = await enrichWageFromPostingUrl(
-                  row.posting_url as string,
-                  FIRECRAWL_API_KEY
-                );
-                return { id: row.id as string, wage };
-              })
-            );
-            for (const r of results) {
-              if (r.wage) {
-                await supabase
-                  .from("employment_opportunities")
-                  .update({ wage: r.wage })
-                  .eq("id", r.id);
-                enrichedCount++;
-              }
-            }
-          }
-          console.log(
-            `Wage enrichment for ${source.name}: ${enrichedCount}/${targets.length} updated`
+          const enrichUrl = `${supabaseUrl}/functions/v1/enrich-job-wages`;
+          // Don't await — let it run independently.
+          fetch(enrichUrl, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${supabaseServiceKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              source_site: source.name,
+              limit: MAX_WAGE_ENRICHMENTS_PER_RUN,
+            }),
+          }).catch((e) =>
+            console.warn(`enrich-job-wages trigger failed: ${e}`)
           );
         } catch (enrichErr) {
-          const msg = enrichErr instanceof Error ? enrichErr.message : String(enrichErr);
-          console.error(`Wage enrichment error for ${source.name}:`, msg);
-          sourceResult.errors.push(`wage_enrichment: ${msg}`);
+          console.warn("enrich-job-wages trigger error:", enrichErr);
         }
 
         await supabase
