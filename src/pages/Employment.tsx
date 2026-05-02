@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { SkipNavigation } from "@/components/SkipNavigation";
+import { ShareJobsDialog } from "@/components/ShareJobsDialog";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 
@@ -237,10 +238,15 @@ const Employment = () => {
 
       <main id="main-content" className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h2 className="mb-2 text-3xl font-bold text-foreground">Find Employment</h2>
-          <p className="text-muted-foreground">
-            Browse job openings from employers in Tompkins County
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h2 className="mb-2 text-3xl font-bold text-foreground">Find Employment</h2>
+              <p className="text-muted-foreground">
+                Browse job openings from employers in Tompkins County
+              </p>
+            </div>
+            {filteredJobs.length > 0 && <ShareJobsDialog jobs={filteredJobs} />}
+          </div>
         </div>
 
         {/* Filters */}
@@ -443,6 +449,9 @@ const Employment = () => {
                               <span className="text-xs">
                                 Updated {formatDistanceToNow(new Date(job.updated_at), { addSuffix: true })}
                               </span>
+                            </div>
+                            <div className="hidden print:block mt-1 text-xs break-all">
+                              <strong>URL:</strong> {job.posting_url.startsWith("http") ? job.posting_url : `https://${job.posting_url}`}
                             </div>
                           </div>
                           <a
