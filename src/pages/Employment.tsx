@@ -310,16 +310,27 @@ const Employment = () => {
               </SelectContent>
             </Select>
           )}
-          <Select value={payFilter} onValueChange={setPayFilter}>
-            <SelectTrigger className="sm:w-[220px]">
-              <SelectValue placeholder="Minimum Pay" />
-            </SelectTrigger>
-            <SelectContent>
-              {PAY_FILTER_OPTIONS.map(opt => (
-                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="sm:w-[260px] flex flex-col gap-1.5 px-1 py-1">
+            <div className="flex items-center justify-between text-xs">
+              <label htmlFor="pay-slider" className="font-medium text-foreground">
+                Minimum pay
+              </label>
+              <span className="text-muted-foreground tabular-nums">
+                {minPay === 0
+                  ? "Any"
+                  : `$${minPay}+/hr (~$${Math.round((minPay * 2080) / 1000)}k+/yr)`}
+              </span>
+            </div>
+            <Slider
+              id="pay-slider"
+              min={0}
+              max={MIN_PAY_MAX}
+              step={MIN_PAY_STEP}
+              value={[minPay]}
+              onValueChange={(v) => setMinPay(v[0] ?? 0)}
+              aria-label="Minimum hourly pay"
+            />
+          </div>
           {employmentTypes.length > 0 && (
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="sm:w-[200px]">
