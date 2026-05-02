@@ -111,8 +111,19 @@ const Employment = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [minPay, setMinPay] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const PAGE_SIZE = 50;
+  const CATEGORY_PREVIEW_SIZE = 5;
   const { toast } = useToast();
+
+  const toggleCategoryExpanded = (cat: string) => {
+    setExpandedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat);
+      else next.add(cat);
+      return next;
+    });
+  };
 
   useEffect(() => {
     fetchJobs();
