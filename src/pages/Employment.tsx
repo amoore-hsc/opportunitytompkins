@@ -44,6 +44,56 @@ const formatEmploymentType = (raw: string | null): string | null => {
   return types.length > 0 ? types.join(', ') : null;
 };
 
+/**
+ * Parse a free-text wage string into an hourly-equivalent number.
+ * Returns null when no usable dollar amount can be extracted.
+ * - Annual salaries (>= $10k or "year"/"annual"/"salary"/"/yr") → ÷ 2080
+ * - Weekly pay ("week") → ÷ 40
+ * - Otherwise hourly
+ * For ranges, uses the maximum so jobs surface for any threshold their top end meets.
+ */
+const parseWageToHourly = (raw: string | null): number | null => {
+  if (!raw) return null;
+  const text = raw.toLowerCase().replace(/,/g, '');
+  // Extract dollar amounts (with optional $ prefix)
+  const matches = text.match(/\$?\s*(\d+(?:\.\d+)?)/g);
+  if (!matches) return null;
+  const numbers = matches
+    .map(m => parseFloat(m.replace(/[^\d.]/g, '')))
+    .filter(n => !isNaN(n) && n > 0);
+  if (numbers.length === 0) return null;
+
+  const hasHourly = /hour|hourly|\/hr\b|\bhr\b|per hr/.test(text);
+  const hasAnnual = /year|annual|salary|\/yr\b|\byr\b|annually/.test(text);
+  const hasWeekly = /\bweek\b|\/wk\b|weekly/.test(text);
+  const hasDollarSign = text.includes('$');
+
+  // If no dollar sign and no pay keyword, treat as junk (e.g. "20 hours a week")
+  if (!hasDollarSign && !hasHourly && !hasAnnual && !hasWeekly) return null;
+
+  const max = Math.max(...numbers);
+
+  // Determine period
+  if (hasHourly && !hasAnnual) return max;
+  if (hasWeekly && !hasHourly && !hasAnnual) return max / 40;
+  if (hasAnnual && !hasHourly) return max / 2080;
+  // No explicit period → infer from magnitude
+  if (max >= 10000) return max / 2080;
+  if (max >= 500 && max < 10000) return max / 40; // weekly-ish
+  return max; // assume hourly
+};
+
+const PAY_FILTER_OPTIONS: { value: string; label: string; min?: number; special?: 'has' | 'none' }[] = [
+  { value: 'all', label: 'All pay levels' },
+  { value: '15', label: '$15+/hr (~$31k+/yr)', min: 15 },
+  { value: '18', label: '$18+/hr (~$37k+/yr)', min: 18 },
+  { value: '20', label: '$20+/hr (~$42k+/yr)', min: 20 },
+  { value: '25', label: '$25+/hr (~$52k+/yr)', min: 25 },
+  { value: '30', label: '$30+/hr (~$62k+/yr)', min: 30 },
+  { value: 'has', label: 'Has any pay listed', special: 'has' },
+  { value: 'none', label: 'Pay not listed', special: 'none' },
+];
+
 const CATEGORY_COLORS: Record<string, string> = {
   Education: "bg-blue-100 text-blue-800 border-blue-200",
   Healthcare: "bg-red-100 text-red-800 border-red-200",
@@ -65,6 +115,7 @@ const Employment = () => {
   const [employerFilter, setEmployerFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [payFilter, setPayFilter] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 50;
   const { toast } = useToast();
@@ -92,6 +143,21 @@ const Employment = () => {
       filtered = filtered.filter(j => j.job_category === categoryFilter);
     }
 
+    if (payFilter !== "all") {
+      const opt = PAY_FILTER_OPTIONS.find(o => o.value === payFilter);
+      if (opt?.special === 'has') {
+        filtered = filtered.filter(j => parseWageToHourly(j.wage) !== null);
+      } else if (opt?.special === 'none') {
+        filtered = filtered.filter(j => parseWageToHourly(j.wage) === null);
+      } else if (opt?.min !== undefined) {
+        const min = opt.min;
+        filtered = filtered.filter(j => {
+          const hourly = parseWageToHourly(j.wage);
+          return hourly !== null && hourly >= min;
+        });
+      }
+    }
+
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(j =>
@@ -103,7 +169,7 @@ const Employment = () => {
 
     setFilteredJobs(filtered);
     setCurrentPage(1);
-  }, [jobs, typeFilter, sourceFilter, employerFilter, categoryFilter, searchQuery]);
+  }, [jobs, typeFilter, sourceFilter, employerFilter, categoryFilter, payFilter, searchQuery]);
 
   const fetchJobs = async () => {
     try {
@@ -214,6 +280,16 @@ const Employment = () => {
               </SelectContent>
             </Select>
           )}
+          <Select value={payFilter} onValueChange={setPayFilter}>
+            <SelectTrigger className="sm:w-[220px]">
+              <SelectValue placeholder="Minimum Pay" />
+            </SelectTrigger>
+            <SelectContent>
+              {PAY_FILTER_OPTIONS.map(opt => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {employmentTypes.length > 0 && (
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="sm:w-[200px]">
@@ -277,6 +353,7 @@ const Employment = () => {
                 typeFilter !== "all" ||
                 sourceFilter !== "all" ||
                 employerFilter !== "all" ||
+                payFilter !== "all" ||
                 searchQuery.trim() !== "";
 
               const goToPage = (page: number) => {

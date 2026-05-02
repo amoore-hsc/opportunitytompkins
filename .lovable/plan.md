@@ -1,30 +1,59 @@
-## Plan: Make the "All Categories" view obviously unfiltered
+## Add a Unified Pay Filter (Hourly + Salary in One Control)
 
-### What's actually happening
+### The challenge
+Wages in the database are messy free text. Examples from the live data:
+- Hourly: `$17.45/hr`, `$23.18 per hour`, `$20.00/Hour`
+- Hourly range: `$17 - $19 an hour`, `$25.09 - $27.73`
+- Annual salary: `$98,548.00 - $114,529.00`, `$30,630/year`, `$76,500 - $90,000/year`
+- Weekly: `From $1,199.10 a week`
+- Junk/missing: `/`, `Null`, `Not specified`, `20 hours a week`
 
-This isn't a bug in the filter logic — I traced through it carefully:
+A single filter only works if we convert everything to a common unit. The standard approach is **hourly-equivalent**: normalize annual salaries (÷ 2080 hrs/yr) and weekly pay (÷ 40 hrs/wk) to an hourly rate, then filter on that single number.
 
-- `categoryFilter` defaults to `"all"` and the filter at line 89 correctly skips filtering when the value is `"all"`
-- When you pick "All Categories" again, the same skip happens
-- All 751 active jobs are passed to the renderer, which groups them into 9 category sections sorted alphabetically: **Administrative (129), Education (271), Government (31), Healthcare (28), Hospitality (77), Other (91), Social Services (25), Technology (57), Trades/Labor (42)**
+### What we'll build
 
-What you're actually seeing: **"Administrative" is the first section because A comes first alphabetically**, and on the current viewport its header badge + 129 jobs fill the whole screen. It feels like the filter is stuck on Administrative, but if you scroll down past the Administrative list, all 8 other sections are there.
+A **"Minimum Pay"** dropdown filter on the Employment page with preset tiers:
 
-So the problem is **UX, not logic** — there's no visual cue that you're looking at a multi-section grouped view rather than a filtered one.
+- All pay levels (default)
+- $15+/hr (~$31k+/yr)
+- $18+/hr (~$37k+/yr)
+- $20+/hr (~$42k+/yr)
+- $25+/hr (~$52k+/yr)
+- $30+/hr (~$62k+/yr)
+- Has any pay listed
+- Pay not listed
 
-### Fix
+The dropdown shows both hourly and annual equivalents on each option so it's clear to users that both job types are included. Selecting "$20+/hr" matches:
+- An hourly job paying `$22/hr` ✓
+- A salaried job paying `$50,000/year` (≈ $24/hr) ✓
+- A range like `$18 - $22 an hour` (top of range qualifies) ✓
 
-Three small changes to `src/pages/Employment.tsx`:
+### How the parsing works
 
-1. **Add a results summary line** above the list, e.g. `Showing 751 jobs across 9 categories` (or `Showing 129 Administrative jobs` when filtered). Makes it instantly obvious whether a filter is active.
-2. **Add a "jump to category" chip row** at the top of the unfiltered view — small clickable badges (`Administrative · Education · Government · …`) that scroll to that section. Lets people see at a glance that other categories exist and skip the long Administrative list.
+A small client-side helper extracts a numeric hourly-equivalent from each wage string:
 
-### Files
+1. Strip commas, lowercase the text.
+2. Pull all dollar numbers (e.g. `[17.45]`, `[98548, 114529]`).
+3. Detect the period:
+   - Contains "hour", "/hr", "hr", "hourly" → hourly
+   - Contains "year", "/yr", "annual", "salary" with no hourly keyword, OR any number ≥ 10,000 → annual (÷ 2080)
+   - Contains "week" → weekly (÷ 40)
+   - Otherwise: if number < 200 assume hourly, if ≥ 10,000 assume annual
+4. For ranges, use the **maximum** of the parsed numbers (so a $50–60k job qualifies for "$25+/hr" because the top of its range exceeds the threshold). This is the user-friendly choice — filters surface jobs that *could* meet the bar.
+5. Junk strings like `/`, `Null`, `Not specified`, `20 hours a week` (no `$`) → no hourly value → only matches "All" or "Pay not listed".
 
-- `src/pages/Employment.tsx` only
+The filter then keeps jobs whose hourly-equivalent ≥ the selected threshold.
 
-### What we're NOT changing
+### Where it goes
+Added as a new `<Select>` in the existing filter row on `src/pages/Employment.tsx`, between the Employer and Employment Type dropdowns. Resets pagination to page 1 like the other filters.
 
-- No backend changes
-- No filter logic changes (it's already correct)
-- The category dropdown stays as-is
+### Files to change
+- `src/pages/Employment.tsx` — add `parseWageToHourly()` helper, `payFilter` state, the Select control, and a filter step in the existing filter pipeline.
+
+### Out of scope
+- No DB migration. Parsing is purely client-side; the raw `wage` string is preserved for display.
+- No backfill or re-extraction of existing wages.
+- No free-text "min $/hr" input — presets keep it simple and avoid confusing edge cases.
+
+### Trade-off to flag
+Annual-vs-hourly normalization assumes 40 hrs/week × 52 weeks (2080 hrs). Part-time salaried roles will look higher per hour than they really are, but this matches how every major job board (Indeed, LinkedIn) does the conversion.
