@@ -28,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { User, Session } from "@supabase/supabase-js";
+import { UserSubmittedJobsSection } from "@/components/UserSubmittedJobsSection";
 
 type DaySchedule = {
   [key: string]: {
@@ -1525,6 +1526,8 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
             </div>
           </DialogContent>
         </Dialog>
+
+        <UserSubmittedJobsSection />
       </main>
     </div>
   );
