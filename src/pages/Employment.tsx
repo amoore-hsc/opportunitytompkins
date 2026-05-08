@@ -443,11 +443,6 @@ const Employment = () => {
                       {filteredJobs.length === 1 ? "job" : "jobs"}
                       {isFiltered && " (filters active)"}
                     </p>
-                          (showing {startIdx + 1}–{Math.min(endIdx, filteredJobs.length)})
-                        </>
-                      )}
-                      {isFiltered && " (filters active)"}
-                    </p>
                   </div>
 
                   <div className="space-y-8">
