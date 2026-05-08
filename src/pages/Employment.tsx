@@ -534,35 +534,6 @@ const Employment = () => {
                       );
                     })}
                   </div>
-
-                  {totalPages > 1 && (
-                    <nav
-                      className="flex items-center justify-between gap-4 pt-4 border-t border-border"
-                      aria-label="Pagination"
-                    >
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => goToPage(safePage - 1)}
-                        disabled={safePage <= 1}
-                      >
-                        <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
-                        Previous
-                      </Button>
-                      <span className="text-sm text-muted-foreground">
-                        Page {safePage} of {totalPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => goToPage(safePage + 1)}
-                        disabled={safePage >= totalPages}
-                      >
-                        Next
-                        <ArrowLeft className="ml-1.5 h-4 w-4 rotate-180" aria-hidden="true" />
-                      </Button>
-                    </nav>
-                  )}
                 </div>
               );
             })()
