@@ -408,13 +408,7 @@ const Employment = () => {
             </div>
           ) : (
             (() => {
-              const totalPages = Math.max(1, Math.ceil(filteredJobs.length / PAGE_SIZE));
-              const safePage = Math.min(currentPage, totalPages);
-              const startIdx = (safePage - 1) * PAGE_SIZE;
-              const endIdx = startIdx + PAGE_SIZE;
-              const pageJobs = filteredJobs.slice(startIdx, endIdx);
-
-              const grouped = pageJobs.reduce((groups, job) => {
+              const grouped = filteredJobs.reduce((groups, job) => {
                 const cat = job.job_category || "Other";
                 if (!groups[cat]) groups[cat] = [];
                 groups[cat].push(job);
