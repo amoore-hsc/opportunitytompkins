@@ -441,12 +441,8 @@ const Employment = () => {
                         {filteredJobs.length}
                       </span>{" "}
                       {filteredJobs.length === 1 ? "job" : "jobs"}
-                      {filteredJobs.length > PAGE_SIZE && (
-                        <>
-                          {" "}— page{" "}
-                          <span className="font-semibold text-foreground">{safePage}</span>{" "}
-                          of{" "}
-                          <span className="font-semibold text-foreground">{totalPages}</span>{" "}
+                      {isFiltered && " (filters active)"}
+                    </p>
                           (showing {startIdx + 1}–{Math.min(endIdx, filteredJobs.length)})
                         </>
                       )}
