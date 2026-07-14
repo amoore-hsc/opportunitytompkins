@@ -488,6 +488,49 @@ Deno.serve(async (req) => {
           sourceResult.scraped++;
         }
 
+        // Deactivate rows for this source that weren't seen this run so stale
+        // (removed / expired) postings drop off the site. Require a safety
+        // threshold so a broken/empty scrape can't wipe the whole source.
+        const seenSourceIds = jobs
+          .map((j) => j.source_id)
+          .filter((s): s is string => !!s);
+        const seenUrls = jobs
+          .filter((j) => !j.source_id)
+          .map((j) => j.posting_url)
+          .filter(Boolean);
+        if (jobs.length >= 5) {
+          if (seenSourceIds.length > 0) {
+            await supabase
+              .from("employment_opportunities")
+              .update({ active: false })
+              .eq("source_site", source.name)
+              .eq("is_manual", false)
+              .eq("active", true)
+              .not("source_id", "is", null)
+              .not(
+                "source_id",
+                "in",
+                `(${seenSourceIds.map((s) => `"${s.replace(/"/g, '\\"')}"`).join(",")})`,
+              );
+          }
+          if (seenUrls.length > 0) {
+            await supabase
+              .from("employment_opportunities")
+              .update({ active: false })
+              .eq("source_site", source.name)
+              .eq("is_manual", false)
+              .eq("active", true)
+              .is("source_id", null)
+              .not(
+                "posting_url",
+                "in",
+                `(${seenUrls.map((s) => `"${s.replace(/"/g, '\\"')}"`).join(",")})`,
+              );
+          }
+        }
+
+
+
         // Wage enrichment runs as a separate, fire-and-forget edge function
         // call so the long-running detail-page scrapes don't block this
         // function's wall-clock budget. It will pick up any active jobs from
