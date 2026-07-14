@@ -73,12 +73,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Track application count (aggregated, no personal data stored)
     if (opportunityId) {
       try {
-
-        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-        const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-        const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
-        
         const today = new Date().toISOString().split('T')[0];
+
         
         // Try to increment existing count, or insert new row
         const { data: existing } = await supabaseClient
