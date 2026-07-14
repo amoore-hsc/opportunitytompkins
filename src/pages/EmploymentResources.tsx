@@ -85,7 +85,7 @@ const trainingAndEducation: ResourceLink[] = [
     name: "College Initiative Upstate",
     description:
       "Helps people overcome barriers to higher education—such as court involvement, past incarceration, underemployment, low income, or stability in recovery.",
-    url: "https://collegeinitiativeupstate.org",
+    url: "https://ciutompkins.org",
   },
   {
     name: "Youth Employment Service (YES) Ithaca",
