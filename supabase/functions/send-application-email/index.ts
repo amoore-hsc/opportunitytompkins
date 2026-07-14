@@ -214,40 +214,40 @@ const handler = async (req: Request): Promise<Response> => {
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">Hi ${clientName},</p>
+<p style="margin:0 0 25px 0;">Hi ${escapeHtml(clientName)},</p>
 
 <p style="margin:0 0 25px 0;">Thank you for submitting your application through Tompkins Opportunity. Here's a summary of your application:</p>
 
 <!-- Application Details Card -->
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Application Details</h2>
-<p style="margin:0 0 8px 0;"><strong>Position:</strong> ${positionTitle || 'Not specified'}</p>
-<p style="margin:0 0 8px 0;"><strong>Organization:</strong> ${orgName}</p>
-<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opportunityType}</p>
-<p style="margin:0 0 0 0;"><strong>Hours Requested:</strong> ${hoursRequested}</p>
+<p style="margin:0 0 8px 0;"><strong>Position:</strong> ${escapeHtml(positionTitle || 'Not specified')}</p>
+<p style="margin:0 0 8px 0;"><strong>Organization:</strong> ${escapeHtml(orgName)}</p>
+<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${escapeHtml(opportunityType)}</p>
+<p style="margin:0 0 0 0;"><strong>Hours Requested:</strong> ${escapeHtml(hoursRequested)}</p>
 </div>
 
 <!-- Your Information Card -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Your Contact Information</h2>
-<p style="margin:0 0 8px 0;"><strong>Name:</strong> ${clientName}</p>
-<p style="margin:0 0 8px 0;"><strong>Email:</strong> ${clientEmail}</p>
-<p style="margin:0 0 0 0;"><strong>Phone:</strong> ${clientPhone}</p>
+<p style="margin:0 0 8px 0;"><strong>Name:</strong> ${escapeHtml(clientName)}</p>
+<p style="margin:0 0 8px 0;"><strong>Email:</strong> ${escapeHtml(clientEmail)}</p>
+<p style="margin:0 0 0 0;"><strong>Phone:</strong> ${escapeHtml(clientPhone)}</p>
 </div>
 
 <!-- Next Steps Card -->
 <div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">What Happens Next?</h2>
-<p style="margin:0 0 8px 0;"><strong>${orgName}</strong> will review your application. A member of the organization may reach out to you to get more information or discuss next steps.</p>
+<p style="margin:0 0 8px 0;"><strong>${escapeHtml(orgName)}</strong> will review your application. A member of the organization may reach out to you to get more information or discuss next steps.</p>
 <p style="margin:0 0 0 0;">If you don't hear from the organization within 2 weeks, please reach out directly.</p>
 </div>
 
 <!-- Organization Contact Card -->
 <div style="background-color:#f5f0ff; border-left:4px solid #6b46c1; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#6b46c1;">Organization Contact Information</h2>
-<p style="margin:0 0 8px 0;"><strong>Name:</strong> ${contactName}</p>
-<p style="margin:0 0 8px 0;"><strong>Email:</strong> ${orgEmail}</p>
-<p style="margin:0 0 0 0;"><strong>Phone:</strong> ${orgPhone}</p>
+<p style="margin:0 0 8px 0;"><strong>Name:</strong> ${escapeHtml(contactName)}</p>
+<p style="margin:0 0 8px 0;"><strong>Email:</strong> ${escapeHtml(orgEmail)}</p>
+<p style="margin:0 0 0 0;"><strong>Phone:</strong> ${escapeHtml(orgPhone)}</p>
 </div>
 
 </td>
