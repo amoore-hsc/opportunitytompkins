@@ -44,6 +44,13 @@ export type Database = {
             referencedRelation: "opportunities"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "application_counts_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "public_opportunities"
+            referencedColumns: ["id"]
+          },
         ]
       }
       employment_opportunities: {
@@ -243,30 +250,65 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_opportunities: {
+        Row: {
+          additional_requirements: string | null
+          created_at: string | null
+          days_times_available: string | null
+          description: string | null
+          hours_available: string | null
+          id: string | null
+          location: string | null
+          on_bus_route: boolean | null
+          org_name: string | null
+          position_title: string | null
+          program_components: string | null
+          program_name: string | null
+          role_classification: string | null
+          type: string | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          additional_requirements?: string | null
+          created_at?: string | null
+          days_times_available?: string | null
+          description?: string | null
+          hours_available?: string | null
+          id?: string | null
+          location?: string | null
+          on_bus_route?: boolean | null
+          org_name?: string | null
+          position_title?: string | null
+          program_components?: string | null
+          program_name?: string | null
+          role_classification?: string | null
+          type?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          additional_requirements?: string | null
+          created_at?: string | null
+          days_times_available?: string | null
+          description?: string | null
+          hours_available?: string | null
+          id?: string | null
+          location?: string | null
+          on_bus_route?: boolean | null
+          org_name?: string | null
+          position_title?: string | null
+          program_components?: string | null
+          program_name?: string | null
+          role_classification?: string | null
+          type?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      get_public_opportunities: {
-        Args: never
-        Returns: {
-          additional_requirements: string
-          created_at: string
-          days_times_available: string
-          description: string
-          hours_available: string
-          id: string
-          location: string
-          on_bus_route: boolean
-          org_name: string
-          position_title: string
-          program_components: string
-          program_name: string
-          role_classification: string
-          type: string
-          updated_at: string
-          website: string
-        }[]
-      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
