@@ -23,16 +23,13 @@ export interface Opportunity {
   days_times_available: string;
   additional_requirements: string | null;
   org_name: string;
-  contact_name: string | null;
-  org_email: string;
-  org_phone: string;
   role_classification: string | null;
   updated_at: string;
-  admin_email: string | null;
   program_name: string | null;
   website: string | null;
   program_components: string | null;
 }
+
 
 const Opportunities = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
