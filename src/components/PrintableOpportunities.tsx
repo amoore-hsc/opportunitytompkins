@@ -110,14 +110,11 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
                 </div>
               )}
               {!isEducation && (
-                <div style={{ fontSize: '14px', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #f0f0f0' }}>
-                  <strong>Contact:</strong>
-                  <div style={{ marginLeft: '10px' }}>
-                    Phone: {opp.org_phone}<br />
-                    Email: {opp.org_email}
-                  </div>
+                <div style={{ fontSize: '14px', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #f0f0f0', color: '#666' }}>
+                  To apply, visit Tompkins Opportunity and submit an application through the online form.
                 </div>
               )}
+
               <div style={{ fontSize: '12px', color: '#999', marginTop: '5px' }}>
                 Updated {new Date(opp.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </div>

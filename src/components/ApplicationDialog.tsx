@@ -66,17 +66,14 @@ export const ApplicationDialog = ({
           clientEmail: formData.email,
           clientPhone: formData.phone,
           hoursRequested: formData.hoursRequested,
-          orgEmail: opportunity.org_email,
           orgName: opportunity.org_name,
-          orgPhone: opportunity.org_phone,
-          contactName: opportunity.contact_name || opportunity.org_name,
           opportunityDescription: opportunity.description,
           opportunityType: opportunity.type === "volunteer" ? "Volunteer" : "Education & Training",
           positionTitle: opportunity.position_title || "",
           opportunityId: opportunity.id,
-          adminEmail: opportunity.admin_email || undefined,
         },
       });
+
 
       if (error) throw error;
 

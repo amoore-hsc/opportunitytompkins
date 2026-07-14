@@ -23,16 +23,13 @@ export interface Opportunity {
   days_times_available: string;
   additional_requirements: string | null;
   org_name: string;
-  contact_name: string | null;
-  org_email: string;
-  org_phone: string;
   role_classification: string | null;
   updated_at: string;
-  admin_email: string | null;
   program_name: string | null;
   website: string | null;
   program_components: string | null;
 }
+
 
 const Opportunities = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
@@ -61,14 +58,11 @@ const Opportunities = () => {
 
   const fetchOpportunities = async () => {
     try {
-      const { data, error } = await supabase
-        .from("opportunities")
-        .select("id, type, role_classification, position_title, description, location, on_bus_route, hours_available, days_times_available, additional_requirements, org_name, org_email, org_phone, contact_name, admin_email, created_at, updated_at, program_name, website, program_components")
-        .eq("active", true)
-        .order("updated_at", { ascending: false });
+      const { data, error } = await supabase.rpc("get_public_opportunities");
       if (error) throw error;
-      setOpportunities(data || []);
-      setFilteredOpportunities(data || []);
+      setOpportunities((data as Opportunity[]) || []);
+      setFilteredOpportunities((data as Opportunity[]) || []);
+
     } catch (error: any) {
       toast({
         title: "Error loading opportunities",

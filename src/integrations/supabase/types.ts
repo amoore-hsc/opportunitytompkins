@@ -246,6 +246,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_public_opportunities: {
+        Args: never
+        Returns: {
+          additional_requirements: string
+          created_at: string
+          days_times_available: string
+          description: string
+          hours_available: string
+          id: string
+          location: string
+          on_bus_route: boolean
+          org_name: string
+          position_title: string
+          program_components: string
+          program_name: string
+          role_classification: string
+          type: string
+          updated_at: string
+          website: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
