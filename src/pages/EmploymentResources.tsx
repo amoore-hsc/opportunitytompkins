@@ -61,7 +61,7 @@ const trainingAndEducation: ResourceLink[] = [
   {
     name: "CCE Tompkins Energy Warriors",
     description: "Clean energy workforce training.",
-    url: "https://energywarriors.org",
+    url: "https://ccetompkins.org/energy/energy-warriors",
   },
   {
     name: "GIAC-HETP",
