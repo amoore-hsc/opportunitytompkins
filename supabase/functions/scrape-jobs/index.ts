@@ -492,15 +492,15 @@ Deno.serve(async (req) => {
         }
 
         // Deactivate stale rows: any active non-manual row for this source
-        // that hasn't been touched by a scrape in 14+ days is treated as
+        // that hasn't been touched by a scrape in 7+ days is treated as
         // removed. This is safer than "deactivate anything not seen this
         // run" because many sources (Cornell Workday, Chamber, etc.) only
         // return a partial page per scrape. Each successful scrape refreshes
-        // updated_at on the rows it saw, so anything left behind for 2 weeks
+        // updated_at on the rows it saw, so anything left behind for 1 week
         // is genuinely gone.
         if (jobs.length >= 5) {
           const staleCutoff = new Date(
-            Date.now() - 14 * 24 * 60 * 60 * 1000,
+            Date.now() - 7 * 24 * 60 * 60 * 1000,
           ).toISOString();
           await supabase
             .from("employment_opportunities")
