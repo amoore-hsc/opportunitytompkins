@@ -452,6 +452,7 @@ Deno.serve(async (req) => {
                   posting_url: job.posting_url,
                   active: true,
                   job_category: job.job_category,
+                  updated_at: new Date().toISOString(),
                 })
                 .eq("id", existing.id);
             } else {
@@ -481,10 +482,12 @@ Deno.serve(async (req) => {
                   location: job.location,
                   active: true,
                   job_category: job.job_category,
+                  updated_at: new Date().toISOString(),
                 })
                 .eq("id", existing.id);
             }
           }
+
           sourceResult.scraped++;
         }
 
