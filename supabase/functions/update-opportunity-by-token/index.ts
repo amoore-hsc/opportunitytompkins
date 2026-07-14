@@ -132,10 +132,31 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Allow-list of columns that may be updated via the public edit-token endpoint
+    const ALLOWED_FIELDS = new Set([
+      "type","role_classification","position_title","description","location",
+      "on_bus_route","hours_available","days_times_available","additional_requirements",
+      "org_name","contact_name","org_email","org_phone",
+      "admin_contact_name","admin_email",
+      "program_name","website","program_components",
+    ]);
+
+    const sanitizedUpdates: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (ALLOWED_FIELDS.has(key)) sanitizedUpdates[key] = value;
+    }
+
+    if (Object.keys(sanitizedUpdates).length === 0) {
+      return new Response(
+        JSON.stringify({ error: "No valid fields to update" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     const { data: updatedOpportunity, error: updateError } = await supabase
       .from("opportunities")
       .update({
-        ...updates,
+        ...sanitizedUpdates,
         updated_at: new Date().toISOString()
       })
       .eq("edit_token", token)
