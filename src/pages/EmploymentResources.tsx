@@ -219,38 +219,66 @@ const EmploymentResources = () => {
               Tompkins Workforce New York Career Center
             </h3>
           </div>
-          <Card>
-            <CardContent className="space-y-6 pt-6">
-              <p className="text-muted-foreground">
-                Located in downtown Ithaca at Center Ithaca on the Commons, the Tompkins Workforce New
-                York Career Center offers services for every job seeker, empowering individuals and
-                families to find better employment and build better lives.
-              </p>
 
-              <div>
-                <h4 className="mb-3 font-semibold text-foreground">Services Include</h4>
-                <ul className="space-y-3">
-                  {careerCenterServices.map((s) => (
-                    <li key={s.title} className="text-sm text-muted-foreground">
-                      <span className="font-semibold text-foreground">{s.title}</span> — {s.description}
-                    </li>
-                  ))}
-                </ul>
+          <Card className="overflow-hidden border-primary/20">
+            {/* Hero band */}
+            <div className="bg-primary/5 px-6 py-6 sm:px-8 sm:py-8">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="max-w-2xl">
+                  <p className="text-base leading-relaxed text-foreground">
+                    Services for every job seeker — empowering individuals and families to find
+                    better employment and build better lives.
+                  </p>
+                  <div className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
+                    Center Ithaca on the Commons, downtown Ithaca
+                  </div>
+                </div>
+                <a
+                  href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0"
+                >
+                  <Button>
+                    Visit Career Center
+                    <ExternalLink className="ml-2 h-4 w-4" aria-hidden="true" />
+                  </Button>
+                </a>
               </div>
+            </div>
 
-              <a
-                href="https://www.tompkinscountyny.gov/All-Departments/Workforce-Development"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button>
-                  Visit Workforce Development
-                  <ExternalLink className="ml-2 h-4 w-4" aria-hidden="true" />
-                </Button>
-              </a>
+            {/* Services grid */}
+            <CardContent className="pt-6">
+              <div className="mb-4 flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" aria-hidden="true" />
+                <h4 className="font-semibold text-foreground">Services Offered</h4>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {careerCenterServices.map((s) => {
+                  const Icon = s.icon;
+                  return (
+                    <div
+                      key={s.title}
+                      className="flex gap-3 rounded-lg border border-border bg-card p-4"
+                    >
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                        <Icon className="h-5 w-5" aria-hidden="true" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold text-foreground">{s.title}</div>
+                        <p className="mt-1 text-sm leading-snug text-muted-foreground">
+                          {s.description}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </CardContent>
           </Card>
         </section>
+
 
         {/* Training & Education */}
         <section className="mb-12">
