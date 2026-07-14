@@ -235,6 +235,16 @@ const Employment = () => {
       </header>
 
       <main id="main-content" className="container mx-auto px-4 py-8">
+        <Link to="/employment-resources" className="block mb-6">
+          <div className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 flex items-center gap-3 hover:bg-primary/10 transition-colors">
+            <Lightbulb className="h-5 w-5 text-primary shrink-0" aria-hidden="true" />
+            <span className="text-sm font-medium text-foreground">
+              Need Help? Check out the Employment Resources Page
+            </span>
+            <ArrowRight className="h-4 w-4 text-primary ml-auto shrink-0" aria-hidden="true" />
+          </div>
+        </Link>
+
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="flex-1 min-w-0">
