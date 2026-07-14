@@ -8,6 +8,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const escapeHtml = (s: unknown): string => {
+  if (s === null || s === undefined) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+};
+
 interface ConfirmationEmailRequest {
   orgName: string;
   contactName: string;
