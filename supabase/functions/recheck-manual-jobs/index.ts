@@ -18,6 +18,16 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  // Restrict to trusted internal callers (cron / admin)
+  const internalSecret = Deno.env.get("INTERNAL_TASK_SECRET");
+  const providedSecret = req.headers.get("x-internal-task-secret");
+  if (!internalSecret || providedSecret !== internalSecret) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
+  }
+
   try {
     const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
     if (!FIRECRAWL_API_KEY) throw new Error("FIRECRAWL_API_KEY is not configured");
