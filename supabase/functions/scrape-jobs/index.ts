@@ -491,46 +491,27 @@ Deno.serve(async (req) => {
           sourceResult.scraped++;
         }
 
-        // Deactivate rows for this source that weren't seen this run so stale
-        // (removed / expired) postings drop off the site. Require a safety
-        // threshold so a broken/empty scrape can't wipe the whole source.
-        const seenSourceIds = jobs
-          .map((j) => j.source_id)
-          .filter((s): s is string => !!s);
-        const seenUrls = jobs
-          .filter((j) => !j.source_id)
-          .map((j) => j.posting_url)
-          .filter(Boolean);
+        // Deactivate stale rows: any active non-manual row for this source
+        // that hasn't been touched by a scrape in 14+ days is treated as
+        // removed. This is safer than "deactivate anything not seen this
+        // run" because many sources (Cornell Workday, Chamber, etc.) only
+        // return a partial page per scrape. Each successful scrape refreshes
+        // updated_at on the rows it saw, so anything left behind for 2 weeks
+        // is genuinely gone.
         if (jobs.length >= 5) {
-          if (seenSourceIds.length > 0) {
-            await supabase
-              .from("employment_opportunities")
-              .update({ active: false })
-              .eq("source_site", source.name)
-              .eq("is_manual", false)
-              .eq("active", true)
-              .not("source_id", "is", null)
-              .not(
-                "source_id",
-                "in",
-                `(${seenSourceIds.map((s) => `"${s.replace(/"/g, '\\"')}"`).join(",")})`,
-              );
-          }
-          if (seenUrls.length > 0) {
-            await supabase
-              .from("employment_opportunities")
-              .update({ active: false })
-              .eq("source_site", source.name)
-              .eq("is_manual", false)
-              .eq("active", true)
-              .is("source_id", null)
-              .not(
-                "posting_url",
-                "in",
-                `(${seenUrls.map((s) => `"${s.replace(/"/g, '\\"')}"`).join(",")})`,
-              );
-          }
+          const staleCutoff = new Date(
+            Date.now() - 14 * 24 * 60 * 60 * 1000,
+          ).toISOString();
+          await supabase
+            .from("employment_opportunities")
+            .update({ active: false })
+            .eq("source_site", source.name)
+            .eq("is_manual", false)
+            .eq("active", true)
+            .lt("updated_at", staleCutoff);
         }
+
+
 
 
 
