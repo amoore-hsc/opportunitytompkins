@@ -24,31 +24,36 @@ interface ResourceLink {
   url: string;
 }
 
-const careerCenterServices: { title: string; description: string }[] = [
+const careerCenterServices: { title: string; description: string; icon: LucideIcon }[] = [
   {
     title: "Job Search Training",
     description:
-      "Learn the most effective job search strategies and develop the tools you need to succeed, including resume writing, interview skills, and more.",
+      "Effective job search strategies, resume writing, interview skills, and more.",
+    icon: BookOpen,
   },
   {
     title: "Job Search Assistance",
     description:
-      "Get pointed in the right direction with connections and resources to help you find and land a job.",
+      "Personalized connections and resources to help you find and land a job.",
+    icon: Briefcase,
   },
   {
     title: "Basic Education",
     description:
-      "Build the reading, writing, and foundational skills needed to prepare for today's job market.",
+      "Build reading, writing, and foundational skills for today's job market.",
+    icon: GraduationCap,
   },
   {
     title: "Vocational Career Education",
     description:
-      "Short-term training in high-demand skills to earn credentials and get ready for in-demand occupations.",
+      "Short-term training in high-demand skills and credentials.",
+    icon: Wrench,
   },
   {
     title: "Job Retention Support",
     description:
-      "Receive assistance for up to 90 days after starting a new job to help ensure your long-term success.",
+      "Up to 90 days of support after starting a new job to set you up for success.",
+    icon: LifeBuoy,
   },
 ];
 
