@@ -88,17 +88,25 @@ Opportunity Finder</h1>
 
           {/* Employment CTA */}
           <div className="mt-6">
-            <Link to="/employment" className="group">
-              <div className="rounded-xl border-2 border-highlight bg-card p-8 transition-all hover:scale-105 hover:shadow-lg">
-                <Briefcase className="mx-auto mb-4 h-12 w-12 text-highlight" aria-hidden="true" />
-                <h3 className="mb-2 text-xl font-semibold text-foreground">Find Employment</h3>
-                <p className="text-muted-foreground">Browse job openings from local employers in Tompkins County</p>
-                <Button size="lg" className="mt-6 w-full bg-highlight text-highlight-foreground hover:bg-highlight/90">
-                  Browse Jobs
-                </Button>
+            <div className="rounded-xl border-2 border-highlight bg-card p-8 transition-all hover:shadow-lg">
+              <Briefcase className="mx-auto mb-4 h-12 w-12 text-highlight" aria-hidden="true" />
+              <h3 className="mb-2 text-xl font-semibold text-foreground">Find Employment</h3>
+              <p className="text-muted-foreground">Browse job openings from local employers in Tompkins County</p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <Link to="/employment">
+                  <Button size="lg" className="w-full bg-highlight text-highlight-foreground hover:bg-highlight/90">
+                    Browse Jobs
+                  </Button>
+                </Link>
+                <Link to="/employment-resources">
+                  <Button size="lg" variant="outline" className="w-full border-highlight text-highlight hover:bg-highlight/10">
+                    Employment Resources
+                  </Button>
+                </Link>
               </div>
-            </Link>
+            </div>
           </div>
+
 
           {/* Info Section */}
           <div className="mt-16 rounded-xl bg-muted p-8">
