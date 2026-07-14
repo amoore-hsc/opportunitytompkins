@@ -141,16 +141,16 @@ const handler = async (req: Request): Promise<Response> => {
 <!-- Opportunity Details Card -->
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#1e3a5f;">Opportunity Details</h2>
-<p style="margin:0 0 0 0;"><strong>Position Title:</strong> ${positionTitle || 'Not specified'}</p>
+<p style="margin:0 0 0 0;"><strong>Position Title:</strong> ${escapeHtml(positionTitle || 'Not specified')}</p>
 </div>
 
 <!-- Client Information Card -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Client Information</h2>
-<p style="margin:0 0 8px 0;"><strong>Name:</strong> ${clientName}</p>
-<p style="margin:0 0 8px 0;"><strong>Email:</strong> ${clientEmail}</p>
-<p style="margin:0 0 8px 0;"><strong>Phone:</strong> ${clientPhone}</p>
-<p style="margin:0 0 0 0;"><strong>Hours Requested:</strong> ${hoursRequested}</p>
+<p style="margin:0 0 8px 0;"><strong>Name:</strong> ${escapeHtml(clientName)}</p>
+<p style="margin:0 0 8px 0;"><strong>Email:</strong> ${escapeHtml(clientEmail)}</p>
+<p style="margin:0 0 8px 0;"><strong>Phone:</strong> ${escapeHtml(clientPhone)}</p>
+<p style="margin:0 0 0 0;"><strong>Hours Requested:</strong> ${escapeHtml(hoursRequested)}</p>
 </div>
 
 <!-- Next Steps Card -->
