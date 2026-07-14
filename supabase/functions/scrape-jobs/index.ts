@@ -452,6 +452,7 @@ Deno.serve(async (req) => {
                   posting_url: job.posting_url,
                   active: true,
                   job_category: job.job_category,
+                  updated_at: new Date().toISOString(),
                 })
                 .eq("id", existing.id);
             } else {
@@ -481,12 +482,38 @@ Deno.serve(async (req) => {
                   location: job.location,
                   active: true,
                   job_category: job.job_category,
+                  updated_at: new Date().toISOString(),
                 })
                 .eq("id", existing.id);
             }
           }
+
           sourceResult.scraped++;
         }
+
+        // Deactivate stale rows: any active non-manual row for this source
+        // that hasn't been touched by a scrape in 14+ days is treated as
+        // removed. This is safer than "deactivate anything not seen this
+        // run" because many sources (Cornell Workday, Chamber, etc.) only
+        // return a partial page per scrape. Each successful scrape refreshes
+        // updated_at on the rows it saw, so anything left behind for 2 weeks
+        // is genuinely gone.
+        if (jobs.length >= 5) {
+          const staleCutoff = new Date(
+            Date.now() - 14 * 24 * 60 * 60 * 1000,
+          ).toISOString();
+          await supabase
+            .from("employment_opportunities")
+            .update({ active: false })
+            .eq("source_site", source.name)
+            .eq("is_manual", false)
+            .eq("active", true)
+            .lt("updated_at", staleCutoff);
+        }
+
+
+
+
 
         // Wage enrichment runs as a separate, fire-and-forget edge function
         // call so the long-running detail-page scrapes don't block this
