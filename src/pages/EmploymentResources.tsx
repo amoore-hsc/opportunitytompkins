@@ -240,7 +240,7 @@ const EmploymentResources = () => {
                   rel="noopener noreferrer"
                   className="shrink-0"
                 >
-                  <Button>
+                  <Button variant="success">
                     Visit Career Center
                     <ExternalLink className="ml-2 h-4 w-4" aria-hidden="true" />
                   </Button>
