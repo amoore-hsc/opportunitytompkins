@@ -231,7 +231,7 @@ const EmploymentResources = () => {
                   </p>
                   <div className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
-                    Center Ithaca on the Commons, downtown Ithaca
+                    Center Ithaca on the Commons, Downtown Ithaca
                   </div>
                 </div>
                 <a
