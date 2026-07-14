@@ -161,15 +161,25 @@ const handler = async (req: Request): Promise<Response> => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check for test mode
+    // Check for test mode - gated behind admin task secret
     let testMode = false;
     let testEmail = "";
-    
+
     if (req.method === "POST") {
       try {
         const body = await req.json();
-        testMode = body.testMode === true;
-        testEmail = body.testEmail || "";
+        if (body.testMode === true) {
+          const adminSecret = Deno.env.get("ADMIN_TASK_SECRET");
+          const providedSecret = req.headers.get("x-admin-task-secret");
+          if (!adminSecret || providedSecret !== adminSecret) {
+            return new Response(
+              JSON.stringify({ error: "Unauthorized" }),
+              { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          testMode = true;
+          testEmail = body.testEmail || "";
+        }
       } catch {
         // Not JSON or empty body, continue with normal mode
       }

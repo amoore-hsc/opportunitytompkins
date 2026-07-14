@@ -8,6 +8,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const escapeHtml = (s: unknown): string => {
+  if (s === null || s === undefined) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+};
+
 interface ConfirmationEmailRequest {
   orgName: string;
   contactName: string;
@@ -64,22 +74,22 @@ const handler = async (req: Request): Promise<Response> => {
     const isEducation = opportunityType === "Education & Training";
 
     const listingDetailsHtml = isEducation
-      ? `<p style="margin:0 0 8px 0;"><strong>Organization:</strong> ${orgName}</p>
-<p style="margin:0 0 8px 0;"><strong>Program Name:</strong> ${programName || "Not specified"}</p>
-<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${description}</p>
-<p style="margin:0 0 8px 0;"><strong>Website:</strong> <a href="${website}" style="color:#1e3a5f;">${website}</a></p>
-<p style="margin:0 0 8px 0;"><strong>Program Components:</strong> ${programComponents || "Not specified"}</p>
-<p style="margin:0 0 8px 0;"><strong>Hours Available per Week:</strong> ${hoursAvailable}</p>
-${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Minimum Requirements:</strong> ${additionalRequirements}</p>` : ""}`
-      : `<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${opportunityType}</p>
-<p style="margin:0 0 8px 0;"><strong>Role Classification:</strong> ${roleClassification || "Not specified"}</p>
-${positionTitle ? `<p style="margin:0 0 8px 0;"><strong>Position Title:</strong> ${positionTitle}</p>` : ""}
-<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${description}</p>
-<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${location}</p>
+      ? `<p style="margin:0 0 8px 0;"><strong>Organization:</strong> ${escapeHtml(orgName)}</p>
+<p style="margin:0 0 8px 0;"><strong>Program Name:</strong> ${escapeHtml(programName || "Not specified")}</p>
+<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${escapeHtml(description)}</p>
+<p style="margin:0 0 8px 0;"><strong>Website:</strong> <a href="${escapeHtml(website)}" style="color:#1e3a5f;">${escapeHtml(website)}</a></p>
+<p style="margin:0 0 8px 0;"><strong>Program Components:</strong> ${escapeHtml(programComponents || "Not specified")}</p>
+<p style="margin:0 0 8px 0;"><strong>Hours Available per Week:</strong> ${escapeHtml(hoursAvailable)}</p>
+${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Minimum Requirements:</strong> ${escapeHtml(additionalRequirements)}</p>` : ""}`
+      : `<p style="margin:0 0 8px 0;"><strong>Type:</strong> ${escapeHtml(opportunityType)}</p>
+<p style="margin:0 0 8px 0;"><strong>Role Classification:</strong> ${escapeHtml(roleClassification || "Not specified")}</p>
+${positionTitle ? `<p style="margin:0 0 8px 0;"><strong>Position Title:</strong> ${escapeHtml(positionTitle)}</p>` : ""}
+<p style="margin:0 0 8px 0;"><strong>Description:</strong> ${escapeHtml(description)}</p>
+<p style="margin:0 0 8px 0;"><strong>Location:</strong> ${escapeHtml(location)}</p>
 <p style="margin:0 0 8px 0;"><strong>On Bus Route:</strong> ${onBusRoute ? "Yes" : "No"}</p>
-<p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${hoursAvailable}</p>
-<p style="margin:0 0 8px 0;"><strong>Days/Times Available:</strong> ${daysTimesAvailable}</p>
-${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirements:</strong> ${additionalRequirements}</p>` : ""}`;
+<p style="margin:0 0 8px 0;"><strong>Hours Available:</strong> ${escapeHtml(hoursAvailable)}</p>
+<p style="margin:0 0 8px 0;"><strong>Days/Times Available:</strong> ${escapeHtml(daysTimesAvailable)}</p>
+${additionalRequirements ? `<p style="margin:0 0 0 0;"><strong>Standard Requirements:</strong> ${escapeHtml(additionalRequirements)}</p>` : ""}`;
 
     const whatHappensNextHtml = isEducation
       ? ""

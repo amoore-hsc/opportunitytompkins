@@ -171,6 +171,15 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    const adminSecret = Deno.env.get("ADMIN_TASK_SECRET");
+    const providedSecret = req.headers.get("x-admin-task-secret");
+    if (!adminSecret || providedSecret !== adminSecret) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     const { email, contactName }: TestEmailRequest = await req.json();
 
     if (!email) {

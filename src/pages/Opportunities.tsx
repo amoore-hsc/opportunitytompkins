@@ -58,10 +58,13 @@ const Opportunities = () => {
 
   const fetchOpportunities = async () => {
     try {
-      const { data, error } = await supabase.rpc("get_public_opportunities");
+      const { data, error } = await supabase
+        .from("public_opportunities" as any)
+        .select("*")
+        .order("updated_at", { ascending: false });
       if (error) throw error;
-      setOpportunities((data as Opportunity[]) || []);
-      setFilteredOpportunities((data as Opportunity[]) || []);
+      setOpportunities(((data as unknown) as Opportunity[]) || []);
+      setFilteredOpportunities(((data as unknown) as Opportunity[]) || []);
 
     } catch (error: any) {
       toast({
