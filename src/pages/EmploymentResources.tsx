@@ -172,7 +172,7 @@ const ResourceCard = ({ resource }: { resource: ResourceLink }) => (
     <CardContent className="flex flex-1 flex-col justify-between gap-4">
       <p className="text-sm text-muted-foreground">{resource.description}</p>
       <a href={resource.url} target="_blank" rel="noopener noreferrer">
-        <Button variant="outline" size="sm" className="w-full">
+        <Button variant="success" size="sm" className="w-full">
           Visit Site
           <ExternalLink className="ml-2 h-4 w-4" aria-hidden="true" />
         </Button>
