@@ -61,7 +61,7 @@ const trainingAndEducation: ResourceLink[] = [
   {
     name: "CCE Tompkins Energy Warriors",
     description: "Clean energy workforce training.",
-    url: "https://energywarriors.org",
+    url: "https://ccetompkins.org/energy/energy-warriors",
   },
   {
     name: "GIAC-HETP",
@@ -85,7 +85,7 @@ const trainingAndEducation: ResourceLink[] = [
     name: "College Initiative Upstate",
     description:
       "Helps people overcome barriers to higher education—such as court involvement, past incarceration, underemployment, low income, or stability in recovery.",
-    url: "https://collegeinitiativeupstate.org",
+    url: "https://ciutompkins.org",
   },
   {
     name: "Youth Employment Service (YES) Ithaca",
@@ -172,7 +172,7 @@ const ResourceCard = ({ resource }: { resource: ResourceLink }) => (
     <CardContent className="flex flex-1 flex-col justify-between gap-4">
       <p className="text-sm text-muted-foreground">{resource.description}</p>
       <a href={resource.url} target="_blank" rel="noopener noreferrer">
-        <Button variant="outline" size="sm" className="w-full">
+        <Button variant="success" size="sm" className="w-full">
           Visit Site
           <ExternalLink className="ml-2 h-4 w-4" aria-hidden="true" />
         </Button>
@@ -240,7 +240,7 @@ const EmploymentResources = () => {
                   rel="noopener noreferrer"
                   className="shrink-0"
                 >
-                  <Button>
+                  <Button variant="success">
                     Visit Career Center
                     <ExternalLink className="ml-2 h-4 w-4" aria-hidden="true" />
                   </Button>
