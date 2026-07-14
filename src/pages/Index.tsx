@@ -99,7 +99,7 @@ Opportunity Finder</h1>
                   </Button>
                 </Link>
                 <Link to="/employment-resources">
-                  <Button size="lg" variant="outline" className="w-full border-highlight text-highlight hover:bg-highlight/10">
+                  <Button size="lg" className="w-full bg-highlight text-highlight-foreground hover:bg-highlight/90">
                     Employment Resources
                   </Button>
                 </Link>
