@@ -537,6 +537,7 @@ Deno.serve(async (req) => {
             headers: {
               Authorization: `Bearer ${supabaseServiceKey}`,
               "Content-Type": "application/json",
+              "x-internal-task-secret": Deno.env.get("INTERNAL_TASK_SECRET") ?? "",
             },
             body: JSON.stringify({
               source_site: source.name,
