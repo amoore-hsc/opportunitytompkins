@@ -10,7 +10,9 @@ import EditOpportunity from "./pages/EditOpportunity";
 import ConfirmListing from "./pages/ConfirmListing";
 import Admin from "./pages/Admin";
 import Employment from "./pages/Employment";
+import EmploymentResources from "./pages/EmploymentResources";
 import NotFound from "./pages/NotFound";
+
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,8 @@ const App = () => (
           <Route path="/edit-opportunity/:token" element={<EditOpportunity />} />
           <Route path="/confirm-listing/:token" element={<ConfirmListing />} />
           <Route path="/employment" element={<Employment />} />
+          <Route path="/employment-resources" element={<EmploymentResources />} />
+
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
