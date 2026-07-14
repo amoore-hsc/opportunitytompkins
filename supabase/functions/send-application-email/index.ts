@@ -14,15 +14,11 @@ interface ApplicationEmailRequest {
   clientEmail: string;
   clientPhone: string;
   hoursRequested: string;
-  orgEmail: string;
   orgName: string;
-  orgPhone: string;
-  contactName: string;
   opportunityDescription: string;
   opportunityType: string;
   positionTitle: string;
   opportunityId: string;
-  adminEmail?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -33,21 +29,41 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { 
-      clientName, 
-      clientEmail, 
-      clientPhone, 
-      hoursRequested, 
-      orgEmail, 
+    const {
+      clientName,
+      clientEmail,
+      clientPhone,
+      hoursRequested,
       orgName,
-      orgPhone,
-      contactName,
       opportunityDescription,
       opportunityType,
       positionTitle,
       opportunityId,
-      adminEmail
     }: ApplicationEmailRequest = await req.json();
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Fetch contact info server-side (never trust client input for org contact details)
+    const { data: opp, error: oppError } = await supabaseClient
+      .from("opportunities")
+      .select("org_email, org_phone, contact_name, admin_email, org_name")
+      .eq("id", opportunityId)
+      .maybeSingle();
+
+    if (oppError || !opp) {
+      console.error("Opportunity lookup failed:", oppError);
+      return new Response(
+        JSON.stringify({ error: "Opportunity not found" }),
+        { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const orgEmail = opp.org_email;
+    const orgPhone = opp.org_phone;
+    const contactName = opp.contact_name || opp.org_name;
+    const adminEmail = opp.admin_email || undefined;
 
     // Send the application notification to the admin email if available, otherwise to the public org email
     const notificationEmail = adminEmail || orgEmail;
@@ -57,6 +73,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Track application count (aggregated, no personal data stored)
     if (opportunityId) {
       try {
+
         const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
         const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
         const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
