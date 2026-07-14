@@ -1,5 +1,19 @@
 import { Link } from "react-router-dom";
-import { Handshake, ArrowLeft, ExternalLink, GraduationCap, Compass, Search } from "lucide-react";
+import {
+  Handshake,
+  ArrowLeft,
+  ExternalLink,
+  GraduationCap,
+  Compass,
+  Search,
+  MapPin,
+  BookOpen,
+  Briefcase,
+  Wrench,
+  LifeBuoy,
+  Users,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SkipNavigation } from "@/components/SkipNavigation";
