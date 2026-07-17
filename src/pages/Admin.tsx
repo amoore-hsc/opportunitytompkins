@@ -169,7 +169,7 @@ const StaleListingsAlert = ({
   const staleListings = useMemo(() => {
     const now = new Date();
     return opportunities.filter(opp =>
-      opp.active && differenceInDays(now, new Date(opp.updated_at)) >= 90
+      opp.active && opp.type === 'volunteer' && differenceInDays(now, new Date(opp.updated_at)) >= 90
     );
   }, [opportunities]);
 
