@@ -302,6 +302,60 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Manual admin-triggered resend for a specific opportunity
+    if (isAdminManualSend && manualOpportunityId) {
+      const { data: opp, error: oppErr } = await supabase
+        .from("opportunities")
+        .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, manual_reminder_count")
+        .eq("id", manualOpportunityId)
+        .maybeSingle();
+
+      if (oppErr || !opp) {
+        return new Response(
+          JSON.stringify({ error: "Opportunity not found" }),
+          { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      const recipient = (opp.admin_email || opp.org_email);
+      const emailHtml = generateConsolidatedEmail([opp as Opportunity], siteUrl);
+      const subject = `Reminder: Your "${opp.position_title || opp.type}" Listing Needs Attention`;
+
+      const emailResponse = await resend.emails.send({
+        from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+        to: [recipient],
+        subject,
+        html: emailHtml,
+      });
+
+      const nowIso = new Date().toISOString();
+      const { error: updateError } = await supabase
+        .from("opportunities")
+        .update({
+          manual_reminder_count: (opp.manual_reminder_count || 0) + 1,
+          last_manual_reminder_at: nowIso,
+        })
+        .eq("id", opp.id);
+
+      if (updateError) {
+        console.error("Failed to update manual reminder counters:", updateError);
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: `Reminder resent to ${recipient}`,
+          recipient,
+          manual_reminder_count: (opp.manual_reminder_count || 0) + 1,
+          last_manual_reminder_at: nowIso,
+          emailResponse,
+        }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+
+
     // Query opportunities that need reminders:
     // - Active listings
     // - Created 60+ days ago
