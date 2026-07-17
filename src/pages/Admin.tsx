@@ -1048,7 +1048,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       <main className="container mx-auto px-4 py-8">
         <h2 className="mb-6 text-2xl font-bold text-foreground">Manage Opportunities</h2>
 
-        <StaleListingsAlert opportunities={opportunities} />
+        <StaleListingsAlert opportunities={opportunities} onReminderSent={fetchAllOpportunities} />
 
         <div className="rounded-lg border border-border bg-card">
           <Table>
