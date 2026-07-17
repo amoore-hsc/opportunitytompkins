@@ -150,40 +150,99 @@ interface Opportunity {
   program_name: string | null;
   website: string | null;
   program_components: string | null;
+  manual_reminder_count?: number | null;
+  last_manual_reminder_at?: string | null;
+  reminder_sent_at?: string | null;
 }
 
-const StaleListingsAlert = ({ opportunities }: { opportunities: Opportunity[] }) => {
+
+const StaleListingsAlert = ({
+  opportunities,
+  onReminderSent,
+}: {
+  opportunities: Opportunity[];
+  onReminderSent: () => void;
+}) => {
+  const { toast } = useToast();
+  const [sendingId, setSendingId] = useState<string | null>(null);
+
   const staleListings = useMemo(() => {
     const now = new Date();
-    return opportunities.filter(opp => 
+    return opportunities.filter(opp =>
       opp.active && differenceInDays(now, new Date(opp.updated_at)) >= 90
     );
   }, [opportunities]);
 
   if (staleListings.length === 0) return null;
 
+  const handleResend = async (listing: Opportunity) => {
+    setSendingId(listing.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-listing-reminder", {
+        body: { opportunityId: listing.id },
+      });
+      if (error) throw error;
+      toast({
+        title: "Reminder sent",
+        description: `"Your Listing Needs Attention" email resent${data?.recipient ? ` to ${data.recipient}` : ""}.`,
+      });
+      onReminderSent();
+    } catch (err: any) {
+      toast({
+        title: "Failed to send reminder",
+        description: err?.message || "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingId(null);
+    }
+  };
+
   return (
     <div className="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 p-4">
       <div className="flex items-start gap-3">
         <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
-        <div>
+        <div className="flex-1">
           <h3 className="font-semibold text-destructive">
             {staleListings.length} {staleListings.length === 1 ? 'listing has' : 'listings have'} not been updated in 90+ days
           </h3>
-          <ul className="mt-2 space-y-1 text-sm text-destructive/80">
-            {staleListings.map(listing => (
-              <li key={listing.id}>
-                <span className="font-medium">{listing.position_title || listing.org_name}</span>
-                {listing.position_title && <span className="text-destructive/60"> — {listing.org_name}</span>}
-                <span className="text-destructive/60"> (updated {formatDistanceToNow(new Date(listing.updated_at), { addSuffix: true })})</span>
-              </li>
-            ))}
+          <ul className="mt-2 space-y-2 text-sm text-destructive/80">
+            {staleListings.map(listing => {
+              const count = listing.manual_reminder_count || 0;
+              return (
+                <li key={listing.id} className="flex flex-wrap items-center justify-between gap-2 rounded border border-destructive/20 bg-background/40 p-2">
+                  <div className="min-w-0">
+                    <span className="font-medium">{listing.position_title || listing.org_name}</span>
+                    {listing.position_title && <span className="text-destructive/60"> — {listing.org_name}</span>}
+                    <div className="text-xs text-destructive/60">
+                      Updated {formatDistanceToNow(new Date(listing.updated_at), { addSuffix: true })}
+                      {" · "}
+                      Reminder sent {count} {count === 1 ? 'time' : 'times'}
+                      {listing.last_manual_reminder_at && (
+                        <> · last {formatDistanceToNow(new Date(listing.last_manual_reminder_at), { addSuffix: true })}</>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleResend(listing)}
+                    disabled={sendingId === listing.id}
+                    className="shrink-0"
+                  >
+                    <Send className="h-3.5 w-3.5 mr-1.5" />
+                    {sendingId === listing.id ? "Sending…" : count > 0 ? "Resend reminder" : "Send reminder"}
+                  </Button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
     </div>
   );
 };
+
 
 const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -989,7 +1048,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       <main className="container mx-auto px-4 py-8">
         <h2 className="mb-6 text-2xl font-bold text-foreground">Manage Opportunities</h2>
 
-        <StaleListingsAlert opportunities={opportunities} />
+        <StaleListingsAlert opportunities={opportunities} onReminderSent={fetchAllOpportunities} />
 
         <div className="rounded-lg border border-border bg-card">
           <Table>

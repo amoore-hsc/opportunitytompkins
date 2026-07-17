@@ -170,6 +170,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Check for test mode - gated behind admin task secret
     let testMode = false;
     let testEmail = "";
+    let manualOpportunityId = "";
+    let isAdminManualSend = false;
 
     if (req.method === "POST") {
       try {
@@ -185,11 +187,44 @@ const handler = async (req: Request): Promise<Response> => {
           }
           testMode = true;
           testEmail = body.testEmail || body.email || "";
+        } else if (body.opportunityId) {
+          // Manual admin-triggered resend for a specific listing
+          const authHeader = req.headers.get("Authorization") || "";
+          const token = authHeader.replace(/^Bearer\s+/i, "");
+          if (!token) {
+            return new Response(
+              JSON.stringify({ error: "Unauthorized" }),
+              { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+          }
+          const supabaseUrlAuth = Deno.env.get("SUPABASE_URL")!;
+          const supabaseServiceKeyAuth = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+          const authClient = createClient(supabaseUrlAuth, supabaseServiceKeyAuth);
+          const { data: userData, error: userErr } = await authClient.auth.getUser(token);
+          if (userErr || !userData?.user) {
+            return new Response(
+              JSON.stringify({ error: "Unauthorized" }),
+              { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+          }
+          const { data: isAdminData } = await authClient.rpc("has_role", {
+            _user_id: userData.user.id,
+            _role: "admin",
+          });
+          if (!isAdminData) {
+            return new Response(
+              JSON.stringify({ error: "Forbidden" }),
+              { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+          }
+          isAdminManualSend = true;
+          manualOpportunityId = body.opportunityId;
         }
       } catch {
         // No body or invalid JSON, continue with normal mode
       }
     }
+
 
     const siteUrl = Deno.env.get("SITE_URL") || "https://oosxopnxaivfdtksrvam.lovableproject.com";
 
@@ -266,6 +301,60 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     }
+
+    // Manual admin-triggered resend for a specific opportunity
+    if (isAdminManualSend && manualOpportunityId) {
+      const { data: opp, error: oppErr } = await supabase
+        .from("opportunities")
+        .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, manual_reminder_count")
+        .eq("id", manualOpportunityId)
+        .maybeSingle();
+
+      if (oppErr || !opp) {
+        return new Response(
+          JSON.stringify({ error: "Opportunity not found" }),
+          { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      const recipient = (opp.admin_email || opp.org_email);
+      const emailHtml = generateConsolidatedEmail([opp as Opportunity], siteUrl);
+      const subject = `Reminder: Your "${opp.position_title || opp.type}" Listing Needs Attention`;
+
+      const emailResponse = await resend.emails.send({
+        from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+        to: [recipient],
+        subject,
+        html: emailHtml,
+      });
+
+      const nowIso = new Date().toISOString();
+      const { error: updateError } = await supabase
+        .from("opportunities")
+        .update({
+          manual_reminder_count: (opp.manual_reminder_count || 0) + 1,
+          last_manual_reminder_at: nowIso,
+        })
+        .eq("id", opp.id);
+
+      if (updateError) {
+        console.error("Failed to update manual reminder counters:", updateError);
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: `Reminder resent to ${recipient}`,
+          recipient,
+          manual_reminder_count: (opp.manual_reminder_count || 0) + 1,
+          last_manual_reminder_at: nowIso,
+          emailResponse,
+        }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+
 
     // Query opportunities that need reminders:
     // - Active listings
