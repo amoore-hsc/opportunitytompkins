@@ -189,6 +189,7 @@ const handler = async (req: Request): Promise<Response> => {
           }
           testMode = true;
           testEmail = body.testEmail || body.email || "";
+          manualOpportunityId = body.opportunityId || "";
         } else if (body.opportunityId) {
           // Manual admin-triggered resend for a specific listing
           const authHeader = req.headers.get("Authorization") || "";
@@ -241,12 +242,13 @@ const handler = async (req: Request): Promise<Response> => {
     if (testMode && testEmail) {
       console.log(`Test mode: fetching real listings to send reminder to ${testEmail}`);
       
-      // Fetch up to 3 real active listings to use for testing
-      const { data: realListings, error: fetchError } = await supabase
+      // Fetch a specific opportunity if provided, otherwise up to 3 real active listings
+      const baseQuery = supabase
         .from("opportunities")
-        .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token")
-        .eq("active", true)
-        .limit(3);
+        .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token");
+      const { data: realListings, error: fetchError } = manualOpportunityId
+        ? await baseQuery.eq("id", manualOpportunityId)
+        : await baseQuery.eq("active", true).limit(3);
 
       if (fetchError) {
         console.error("Error fetching real listings for test:", fetchError);
