@@ -122,7 +122,9 @@ export type Database = {
           hours_available: string
           id: string
           interest_notification_sent_at: string | null
+          last_manual_reminder_at: string | null
           location: string
+          manual_reminder_count: number
           on_bus_route: boolean
           org_email: string
           org_name: string
@@ -152,7 +154,9 @@ export type Database = {
           hours_available: string
           id?: string
           interest_notification_sent_at?: string | null
+          last_manual_reminder_at?: string | null
           location: string
+          manual_reminder_count?: number
           on_bus_route?: boolean
           org_email: string
           org_name: string
@@ -182,7 +186,9 @@ export type Database = {
           hours_available?: string
           id?: string
           interest_notification_sent_at?: string | null
+          last_manual_reminder_at?: string | null
           location?: string
+          manual_reminder_count?: number
           on_bus_route?: boolean
           org_email?: string
           org_name?: string
