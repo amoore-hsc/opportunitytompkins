@@ -175,23 +175,21 @@ const StaleListingsAlert = ({
 
   if (staleListings.length === 0) return null;
 
-  const handleResend = async (listing: Opportunity, testToSelf = false) => {
-    setSendingId(listing.id + (testToSelf ? ":test" : ""));
+  const handleResend = async (listing: Opportunity) => {
+    setSendingId(listing.id);
     try {
       const { data, error } = await supabase.functions.invoke("send-listing-reminder", {
-        body: { opportunityId: listing.id, sendToSelf: testToSelf },
+        body: { opportunityId: listing.id },
       });
       if (error) throw error;
       toast({
-        title: testToSelf ? "Test email sent" : "Reminder sent",
-        description: testToSelf
-          ? `Test copy sent to ${data?.recipient || "your email"}. No counters updated.`
-          : `"Your Listing Needs Attention" email resent${data?.recipient ? ` to ${data.recipient}` : ""}.`,
+        title: "Reminder sent",
+        description: `"Your Listing Needs Attention" email resent${data?.recipient ? ` to ${data.recipient}` : ""}.`,
       });
-      if (!testToSelf) onReminderSent();
+      onReminderSent();
     } catch (err: any) {
       toast({
-        title: testToSelf ? "Failed to send test email" : "Failed to send reminder",
+        title: "Failed to send reminder",
         description: err?.message || "Please try again.",
         variant: "destructive",
       });
