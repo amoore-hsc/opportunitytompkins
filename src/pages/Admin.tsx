@@ -169,7 +169,7 @@ const StaleListingsAlert = ({
   const staleListings = useMemo(() => {
     const now = new Date();
     return opportunities.filter(opp =>
-      opp.active && differenceInDays(now, new Date(opp.updated_at)) >= 90
+      opp.active && differenceInDays(now, new Date(opp.updated_at)) >= 60
     );
   }, [opportunities]);
 
@@ -204,7 +204,7 @@ const StaleListingsAlert = ({
         <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
         <div className="flex-1">
           <h3 className="font-semibold text-destructive">
-            {staleListings.length} {staleListings.length === 1 ? 'listing has' : 'listings have'} not been updated in 90+ days
+            {staleListings.length} {staleListings.length === 1 ? 'listing has' : 'listings have'} not been updated in 60+ days
           </h3>
           <ul className="mt-2 space-y-2 text-sm text-destructive/80">
             {staleListings.map(listing => {
