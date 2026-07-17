@@ -321,9 +321,11 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
 
-      const recipient = (opp.admin_email || opp.org_email);
+      const realRecipient = (opp.admin_email || opp.org_email);
+      const recipient = sendToSelf && adminSelfEmail ? adminSelfEmail : realRecipient;
       const emailHtml = generateConsolidatedEmail([opp as Opportunity], siteUrl);
-      const subject = `Reminder: Your "${opp.position_title || opp.type}" Listing Needs Attention`;
+      const subjectPrefix = sendToSelf ? "[TEST] " : "";
+      const subject = `${subjectPrefix}Reminder: Your "${opp.position_title || opp.type}" Listing Needs Attention`;
 
       const emailResponse = await resend.emails.send({
         from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
@@ -332,26 +334,33 @@ const handler = async (req: Request): Promise<Response> => {
         html: emailHtml,
       });
 
-      const nowIso = new Date().toISOString();
-      const { error: updateError } = await supabase
-        .from("opportunities")
-        .update({
-          manual_reminder_count: (opp.manual_reminder_count || 0) + 1,
-          last_manual_reminder_at: nowIso,
-        })
-        .eq("id", opp.id);
+      let newCount = opp.manual_reminder_count || 0;
+      let nowIso = new Date().toISOString();
+      if (!sendToSelf) {
+        newCount = newCount + 1;
+        const { error: updateError } = await supabase
+          .from("opportunities")
+          .update({
+            manual_reminder_count: newCount,
+            last_manual_reminder_at: nowIso,
+          })
+          .eq("id", opp.id);
 
-      if (updateError) {
-        console.error("Failed to update manual reminder counters:", updateError);
+        if (updateError) {
+          console.error("Failed to update manual reminder counters:", updateError);
+        }
       }
 
       return new Response(
         JSON.stringify({
           success: true,
-          message: `Reminder resent to ${recipient}`,
+          message: sendToSelf
+            ? `Test reminder sent to ${recipient} (would have gone to ${realRecipient})`
+            : `Reminder resent to ${recipient}`,
           recipient,
-          manual_reminder_count: (opp.manual_reminder_count || 0) + 1,
-          last_manual_reminder_at: nowIso,
+          test: sendToSelf,
+          manual_reminder_count: newCount,
+          last_manual_reminder_at: sendToSelf ? opp.last_manual_reminder_at : nowIso,
           emailResponse,
         }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
