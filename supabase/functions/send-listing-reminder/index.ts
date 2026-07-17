@@ -170,6 +170,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Check for test mode - gated behind admin task secret
     let testMode = false;
     let testEmail = "";
+    let manualOpportunityId = "";
+    let isAdminManualSend = false;
 
     if (req.method === "POST") {
       try {
@@ -185,11 +187,44 @@ const handler = async (req: Request): Promise<Response> => {
           }
           testMode = true;
           testEmail = body.testEmail || body.email || "";
+        } else if (body.opportunityId) {
+          // Manual admin-triggered resend for a specific listing
+          const authHeader = req.headers.get("Authorization") || "";
+          const token = authHeader.replace(/^Bearer\s+/i, "");
+          if (!token) {
+            return new Response(
+              JSON.stringify({ error: "Unauthorized" }),
+              { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+          }
+          const supabaseUrlAuth = Deno.env.get("SUPABASE_URL")!;
+          const supabaseServiceKeyAuth = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+          const authClient = createClient(supabaseUrlAuth, supabaseServiceKeyAuth);
+          const { data: userData, error: userErr } = await authClient.auth.getUser(token);
+          if (userErr || !userData?.user) {
+            return new Response(
+              JSON.stringify({ error: "Unauthorized" }),
+              { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+          }
+          const { data: isAdminData } = await authClient.rpc("has_role", {
+            _user_id: userData.user.id,
+            _role: "admin",
+          });
+          if (!isAdminData) {
+            return new Response(
+              JSON.stringify({ error: "Forbidden" }),
+              { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+          }
+          isAdminManualSend = true;
+          manualOpportunityId = body.opportunityId;
         }
       } catch {
         // No body or invalid JSON, continue with normal mode
       }
     }
+
 
     const siteUrl = Deno.env.get("SITE_URL") || "https://oosxopnxaivfdtksrvam.lovableproject.com";
 
