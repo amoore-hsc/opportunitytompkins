@@ -189,6 +189,7 @@ const handler = async (req: Request): Promise<Response> => {
           }
           testMode = true;
           testEmail = body.testEmail || body.email || "";
+          manualOpportunityId = body.opportunityId || "";
         } else if (body.opportunityId) {
           // Manual admin-triggered resend for a specific listing
           const authHeader = req.headers.get("Authorization") || "";
