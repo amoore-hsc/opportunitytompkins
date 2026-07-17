@@ -226,17 +226,8 @@ const StaleListingsAlert = ({
                   <div className="flex shrink-0 flex-wrap gap-2">
                     <Button
                       size="sm"
-                      variant="ghost"
-                      onClick={() => handleResend(listing, true)}
-                      disabled={sendingId !== null}
-                    >
-                      <Send className="h-3.5 w-3.5 mr-1.5" />
-                      {sendingId === listing.id + ":test" ? "Sending…" : "Test to me"}
-                    </Button>
-                    <Button
-                      size="sm"
                       variant="outline"
-                      onClick={() => handleResend(listing, false)}
+                      onClick={() => handleResend(listing)}
                       disabled={sendingId !== null}
                     >
                       <Send className="h-3.5 w-3.5 mr-1.5" />
