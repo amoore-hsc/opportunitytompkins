@@ -150,7 +150,11 @@ interface Opportunity {
   program_name: string | null;
   website: string | null;
   program_components: string | null;
+  manual_reminder_count?: number | null;
+  last_manual_reminder_at?: string | null;
+  reminder_sent_at?: string | null;
 }
+
 
 const StaleListingsAlert = ({ opportunities }: { opportunities: Opportunity[] }) => {
   const staleListings = useMemo(() => {
