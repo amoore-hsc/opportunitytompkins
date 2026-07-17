@@ -172,6 +172,8 @@ const handler = async (req: Request): Promise<Response> => {
     let testEmail = "";
     let manualOpportunityId = "";
     let isAdminManualSend = false;
+    let adminSelfEmail = "";
+    let sendToSelf = false;
 
     if (req.method === "POST") {
       try {
@@ -219,6 +221,8 @@ const handler = async (req: Request): Promise<Response> => {
           }
           isAdminManualSend = true;
           manualOpportunityId = body.opportunityId;
+          adminSelfEmail = userData.user.email || "";
+          sendToSelf = body.sendToSelf === true;
         }
       } catch {
         // No body or invalid JSON, continue with normal mode
