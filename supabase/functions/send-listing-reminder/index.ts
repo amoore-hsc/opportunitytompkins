@@ -121,7 +121,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">You have <strong>${listingCount} ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates.</p>
+<p style="margin:0 0 25px 0;">You have <strong>${listingCount} ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} not been updated in 60+ days.</p>
 
 <!-- Action Items Card -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
