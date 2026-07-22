@@ -423,7 +423,6 @@ const Admin = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        title: "Error",
         description: error.message,
         variant: "destructive",
       });
