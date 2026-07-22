@@ -121,7 +121,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">You have <strong>${listingCount} ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates.</p>
+<p style="margin:0 0 25px 0;">You have <strong>${listingCount} ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} not been updated in 60+ days.</p>
 
 <!-- Action Items Card -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
@@ -281,7 +281,7 @@ const handler = async (req: Request): Promise<Response> => {
       
       const listingCount = testOpportunities.length;
       const subject = listingCount === 1
-        ? `[TEST] Reminder: Your "${testOpportunities[0].position_title || testOpportunities[0].type}" Listing Has Been Active for 60+ Days`
+        ? `[TEST] Reminder: Your "${testOpportunities[0].position_title || testOpportunities[0].type}" Listing Has Not Been Updated in 60+ Days`
         : `[TEST] Reminder: Your ${listingCount} Listings Need Attention`;
 
       const emailResponse = await resend.emails.send({
@@ -373,33 +373,26 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Query opportunities that need reminders:
     // - Active listings
-    // - Created 60+ days ago
-    // - No updates since creation (updated_at equals created_at)
-    // - No reminder sent yet
+    // - Not updated in 60+ days
+    // - No reminder sent yet (one-shot; 90-day admin panel handles further follow-up)
     const sixtyDaysAgo = new Date();
     sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-    console.log(`Looking for opportunities created before: ${sixtyDaysAgo.toISOString()}`);
+    console.log(`Looking for opportunities not updated since: ${sixtyDaysAgo.toISOString()}`);
 
     const { data: opportunities, error: fetchError } = await supabase
       .from("opportunities")
       .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, updated_at")
       .eq("active", true)
       .is("reminder_sent_at", null)
-      .lte("created_at", sixtyDaysAgo.toISOString());
+      .lte("updated_at", sixtyDaysAgo.toISOString());
 
     if (fetchError) {
       console.error("Error fetching opportunities:", fetchError);
       throw new Error(`Failed to fetch opportunities: ${fetchError.message}`);
     }
 
-    // Filter to only include listings where updated_at equals created_at (no updates)
-    const eligibleOpportunities = (opportunities || []).filter((opp: any) => {
-      const createdAt = new Date(opp.created_at).getTime();
-      const updatedAt = new Date(opp.updated_at).getTime();
-      // Allow for small time differences (within 1 second)
-      return Math.abs(createdAt - updatedAt) < 1000;
-    }) as Opportunity[];
+    const eligibleOpportunities = (opportunities || []) as Opportunity[];
 
     console.log(`Found ${eligibleOpportunities.length} opportunities needing reminders`);
 
@@ -445,7 +438,7 @@ const handler = async (req: Request): Promise<Response> => {
         // Generate subject line
         const listingCount = opps.length;
         const subject = listingCount === 1
-          ? `Reminder: Your "${opps[0].position_title || opps[0].type}" Listing Has Been Active for 60+ Days`
+          ? `Reminder: Your "${opps[0].position_title || opps[0].type}" Listing Has Not Been Updated in 60+ Days`
           : `Reminder: Your ${listingCount} Listings Need Attention`;
 
         const emailResponse = await resend.emails.send({
