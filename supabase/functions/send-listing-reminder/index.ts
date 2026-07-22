@@ -281,7 +281,7 @@ const handler = async (req: Request): Promise<Response> => {
       
       const listingCount = testOpportunities.length;
       const subject = listingCount === 1
-        ? `[TEST] Reminder: Your "${testOpportunities[0].position_title || testOpportunities[0].type}" Listing Has Been Active for 60+ Days`
+        ? `[TEST] Reminder: Your "${testOpportunities[0].position_title || testOpportunities[0].type}" Listing Has Not Been Updated in 60+ Days`
         : `[TEST] Reminder: Your ${listingCount} Listings Need Attention`;
 
       const emailResponse = await resend.emails.send({
