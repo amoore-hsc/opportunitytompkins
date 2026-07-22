@@ -1175,7 +1175,32 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       <main className="container mx-auto px-4 py-8">
         <h2 className="mb-6 text-2xl font-bold text-foreground">Manage Opportunities</h2>
 
-        <StaleListingsAlert opportunities={opportunities} onReminderSent={fetchAllOpportunities} />
+        <div className="mb-6 inline-flex rounded-md border border-border bg-card p-1">
+          {(["dashboard", "listings"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setActiveTab(value)}
+              className={`px-4 py-1.5 text-sm rounded capitalize transition-colors ${
+                activeTab === value
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent/50"
+              }`}
+            >
+              {value === "dashboard" ? "Dashboard" : "Listings"}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "dashboard" && (
+          <div className="mb-8">
+            <AdminDashboard metrics={dashboardMetrics} />
+          </div>
+        )}
+
+        {activeTab === "listings" && (
+          <>
+            <StaleListingsAlert opportunities={opportunities} onReminderSent={fetchAllOpportunities} />
 
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2">
