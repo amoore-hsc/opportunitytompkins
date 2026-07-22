@@ -147,10 +147,14 @@ interface Opportunity {
   admin_email: string | null;
   active: boolean;
   updated_at: string;
+  created_at: string;
   edit_token: string;
   program_name: string | null;
   website: string | null;
   program_components: string | null;
+  positions_filled: number | null;
+  removal_reason: string | null;
+  deactivated_at: string | null;
   manual_reminder_count?: number | null;
   last_manual_reminder_at?: string | null;
   reminder_sent_at?: string | null;
