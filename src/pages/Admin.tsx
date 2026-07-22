@@ -764,13 +764,19 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
     }
   };
 
-  const sortedOpportunities = useMemo(() => {
-    return [...opportunities].sort((a, b) => {
-      const dateA = new Date(a.updated_at).getTime();
-      const dateB = new Date(b.updated_at).getTime();
-      return updatedAtSort === "desc" ? dateB - dateA : dateA - dateB;
-    });
-  }, [opportunities, updatedAtSort]);
+  const filteredAndSortedOpportunities = useMemo(() => {
+    return [...opportunities]
+      .filter((opp) => {
+        const typeMatch = typeFilter === "all" || opp.type === typeFilter;
+        const statusMatch = statusFilter === "all" || (statusFilter === "active" ? opp.active : !opp.active);
+        return typeMatch && statusMatch;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.updated_at).getTime();
+        const dateB = new Date(b.updated_at).getTime();
+        return updatedAtSort === "desc" ? dateB - dateA : dateA - dateB;
+      });
+  }, [opportunities, typeFilter, statusFilter, updatedAtSort]);
 
   if (loading && !isResetPassword) {
     return (
