@@ -1813,6 +1813,9 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
         </Dialog>
 
         <UserSubmittedJobsSection />
+          </>
+        )}
+
       </main>
     </div>
   );
