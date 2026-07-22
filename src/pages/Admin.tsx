@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
-import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send, Link2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send, Link2, ArrowUp, ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
