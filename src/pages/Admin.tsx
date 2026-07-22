@@ -1021,6 +1021,14 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
     );
   }
 
+  const sortedOpportunities = useMemo(() => {
+    return [...opportunities].sort((a, b) => {
+      const dateA = new Date(a.updated_at).getTime();
+      const dateB = new Date(b.updated_at).getTime();
+      return updatedAtSort === "desc" ? dateB - dateA : dateA - dateB;
+    });
+  }, [opportunities, updatedAtSort]);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-[#eeeeee]">
