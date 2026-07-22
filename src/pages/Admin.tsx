@@ -263,6 +263,13 @@ const Admin = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [applicationCounts, setApplicationCounts] = useState<Array<{
+    id: string;
+    opportunity_id: string;
+    application_date: string;
+    count: number;
+    created_at: string;
+  }>>([]);
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
   const [previewingEmailOpp, setPreviewingEmailOpp] = useState<Opportunity | null>(null);
@@ -271,6 +278,7 @@ const Admin = () => {
   const [updatedAtSort, setUpdatedAtSort] = useState<"desc" | "asc">("desc");
   const [typeFilter, setTypeFilter] = useState<"all" | "volunteer" | "education">("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "listings">("dashboard");
   const { toast } = useToast();
 
   useEffect(() => {
