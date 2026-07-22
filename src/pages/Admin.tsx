@@ -268,6 +268,8 @@ const Admin = () => {
   const [editFlexibleTime, setEditFlexibleTime] = useState(false);
   const [editLocationType, setEditLocationType] = useState("");
   const [updatedAtSort, setUpdatedAtSort] = useState<"desc" | "asc">("desc");
+  const [typeFilter, setTypeFilter] = useState<"all" | "volunteer" | "education">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -762,13 +764,19 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
     }
   };
 
-  const sortedOpportunities = useMemo(() => {
-    return [...opportunities].sort((a, b) => {
-      const dateA = new Date(a.updated_at).getTime();
-      const dateB = new Date(b.updated_at).getTime();
-      return updatedAtSort === "desc" ? dateB - dateA : dateA - dateB;
-    });
-  }, [opportunities, updatedAtSort]);
+  const filteredAndSortedOpportunities = useMemo(() => {
+    return [...opportunities]
+      .filter((opp) => {
+        const typeMatch = typeFilter === "all" || opp.type === typeFilter;
+        const statusMatch = statusFilter === "all" || (statusFilter === "active" ? opp.active : !opp.active);
+        return typeMatch && statusMatch;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.updated_at).getTime();
+        const dateB = new Date(b.updated_at).getTime();
+        return updatedAtSort === "desc" ? dateB - dateA : dateA - dateB;
+      });
+  }, [opportunities, typeFilter, statusFilter, updatedAtSort]);
 
   if (loading && !isResetPassword) {
     return (
@@ -1061,6 +1069,66 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
 
         <StaleListingsAlert opportunities={opportunities} onReminderSent={fetchAllOpportunities} />
 
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">Type:</span>
+            <div className="inline-flex rounded-md border border-border bg-card p-1">
+              {(["all", "volunteer", "education"] as const).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setTypeFilter(value)}
+                  className={`px-3 py-1 text-sm rounded capitalize transition-colors ${
+                    typeFilter === value
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-accent/50"
+                  }`}
+                >
+                  {value === "all" ? "All" : value}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">Status:</span>
+            <div className="inline-flex rounded-md border border-border bg-card p-1">
+              {(["all", "active", "inactive"] as const).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setStatusFilter(value)}
+                  className={`px-3 py-1 text-sm rounded capitalize transition-colors ${
+                    statusFilter === value
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-accent/50"
+                  }`}
+                >
+                  {value}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-3 sm:justify-end">
+            <span className="text-sm text-muted-foreground">
+              Showing {filteredAndSortedOpportunities.length} of {opportunities.length} listings
+            </span>
+            {(typeFilter !== "all" || statusFilter !== "all") && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setTypeFilter("all");
+                  setStatusFilter("all");
+                }}
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
+        </div>
+
         <div className="rounded-lg border border-border bg-card">
           <Table>
             <TableHeader>
@@ -1090,7 +1158,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedOpportunities.map((opp) => (
+              {filteredAndSortedOpportunities.map((opp) => (
                 <TableRow key={opp.id}>
                   <TableCell className="font-medium capitalize">{opp.type}</TableCell>
                   <TableCell>{opp.org_name}</TableCell>
