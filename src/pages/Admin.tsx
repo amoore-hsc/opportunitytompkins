@@ -268,6 +268,8 @@ const Admin = () => {
   const [editFlexibleTime, setEditFlexibleTime] = useState(false);
   const [editLocationType, setEditLocationType] = useState("");
   const [updatedAtSort, setUpdatedAtSort] = useState<"desc" | "asc">("desc");
+  const [typeFilter, setTypeFilter] = useState<"all" | "volunteer" | "education">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
   const { toast } = useToast();
 
   useEffect(() => {
