@@ -29,6 +29,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { User, Session } from "@supabase/supabase-js";
 import { UserSubmittedJobsSection } from "@/components/UserSubmittedJobsSection";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
 
 type DaySchedule = {
   [key: string]: {
@@ -146,10 +147,14 @@ interface Opportunity {
   admin_email: string | null;
   active: boolean;
   updated_at: string;
+  created_at: string;
   edit_token: string;
   program_name: string | null;
   website: string | null;
   program_components: string | null;
+  positions_filled: number | null;
+  removal_reason: string | null;
+  deactivated_at: string | null;
   manual_reminder_count?: number | null;
   last_manual_reminder_at?: string | null;
   reminder_sent_at?: string | null;
@@ -262,6 +267,13 @@ const Admin = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [applicationCounts, setApplicationCounts] = useState<Array<{
+    id: string;
+    opportunity_id: string;
+    application_date: string;
+    count: number;
+    created_at: string;
+  }>>([]);
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
   const [previewingEmailOpp, setPreviewingEmailOpp] = useState<Opportunity | null>(null);
@@ -270,6 +282,7 @@ const Admin = () => {
   const [updatedAtSort, setUpdatedAtSort] = useState<"desc" | "asc">("desc");
   const [typeFilter, setTypeFilter] = useState<"all" | "volunteer" | "education">("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "listings">("dashboard");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -394,14 +407,23 @@ const Admin = () => {
 
   const fetchAllOpportunities = async () => {
     try {
-      const { data, error } = await supabase
-        .from("opportunities")
-        .select("*")
-        .order("active", { ascending: false })
-        .order("created_at", { ascending: false });
+      const [oppsResult, countsResult] = await Promise.all([
+        supabase
+          .from("opportunities")
+          .select("*")
+          .order("active", { ascending: false })
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("application_counts")
+          .select("*")
+          .order("application_date", { ascending: false })
+      ]);
 
-      if (error) throw error;
-      setOpportunities(data || []);
+      if (oppsResult.error) throw oppsResult.error;
+      if (countsResult.error) throw countsResult.error;
+
+      setOpportunities(oppsResult.data || []);
+      setApplicationCounts(countsResult.data || []);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -778,6 +800,92 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       });
   }, [opportunities, typeFilter, statusFilter, updatedAtSort]);
 
+  const dashboardMetrics = useMemo(() => {
+    const totalApplications = applicationCounts.reduce((sum, record) => sum + (record.count || 0), 0);
+    const positionsFilled = opportunities.reduce(
+      (sum, opp) => sum + (opp.positions_filled || 0),
+      0
+    );
+    const listingsRemoved = opportunities.filter((opp) => opp.deactivated_at !== null).length;
+    const activeListings = opportunities.filter((opp) => opp.active).length;
+    const educationListings = opportunities.filter((opp) => opp.type === "education").length;
+    const volunteerListings = opportunities.filter((opp) => opp.type === "volunteer").length;
+
+    const opportunityMap = new Map(opportunities.map((opp) => [opp.id, opp]));
+
+    const orgTotals: Record<string, number> = {};
+    const roleTotals: Record<string, number> = {};
+    const opportunityTotals: Record<string, { title: string; orgName: string; count: number }> = {};
+
+    for (const record of applicationCounts) {
+      const opp = opportunityMap.get(record.opportunity_id);
+      if (!opp) continue;
+
+      const orgName = opp.org_name || "Unknown Organization";
+      const role = opp.role_classification || "Uncategorized";
+      const title = opp.position_title || opp.program_name || "Untitled";
+
+      orgTotals[orgName] = (orgTotals[orgName] || 0) + (record.count || 0);
+      roleTotals[role] = (roleTotals[role] || 0) + (record.count || 0);
+
+      if (!opportunityTotals[record.opportunity_id]) {
+        opportunityTotals[record.opportunity_id] = { title, orgName, count: 0 };
+      }
+      opportunityTotals[record.opportunity_id].count += record.count || 0;
+    }
+
+    const applicationsByOrg = Object.entries(orgTotals)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({ name, count }));
+
+    const applicationsByRole = Object.entries(roleTotals)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({ name, count }));
+
+    const applicationsByOpportunity = Object.values(opportunityTotals)
+      .sort((a, b) => b.count - a.count)
+      .map((opp) => ({ title: opp.title, orgName: opp.orgName, count: opp.count }));
+
+    const positionsFilledByOrg: Record<string, { positions: number; listings: number }> = {};
+    for (const opp of opportunities) {
+      if (opp.deactivated_at === null || opp.positions_filled === null) continue;
+      const orgName = opp.org_name || "Unknown Organization";
+      if (!positionsFilledByOrg[orgName]) {
+        positionsFilledByOrg[orgName] = { positions: 0, listings: 0 };
+      }
+      positionsFilledByOrg[orgName].positions += opp.positions_filled || 0;
+      positionsFilledByOrg[orgName].listings += 1;
+    }
+
+    const positionsFilledByOrgSorted = Object.entries(positionsFilledByOrg)
+      .sort((a, b) => b[1].positions - a[1].positions)
+      .map(([name, data]) => ({ name, positions: data.positions, listings: data.listings }));
+
+    const removalReasons: Record<string, number> = {};
+    for (const opp of opportunities) {
+      if (!opp.removal_reason) continue;
+      removalReasons[opp.removal_reason] = (removalReasons[opp.removal_reason] || 0) + 1;
+    }
+
+    const removalReasonsSorted = Object.entries(removalReasons)
+      .sort((a, b) => b[1] - a[1])
+      .map(([reason, count]) => ({ reason, count }));
+
+    return {
+      totalApplications,
+      positionsFilled,
+      listingsRemoved,
+      activeListings,
+      educationListings,
+      volunteerListings,
+      applicationsByOrg,
+      applicationsByRole,
+      applicationsByOpportunity,
+      positionsFilledByOrg: positionsFilledByOrgSorted,
+      removalReasons: removalReasonsSorted,
+    };
+  }, [opportunities, applicationCounts]);
+
   if (loading && !isResetPassword) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -1067,7 +1175,32 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       <main className="container mx-auto px-4 py-8">
         <h2 className="mb-6 text-2xl font-bold text-foreground">Manage Opportunities</h2>
 
-        <StaleListingsAlert opportunities={opportunities} onReminderSent={fetchAllOpportunities} />
+        <div className="mb-6 inline-flex rounded-md border border-border bg-card p-1">
+          {(["dashboard", "listings"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setActiveTab(value)}
+              className={`px-4 py-1.5 text-sm rounded capitalize transition-colors ${
+                activeTab === value
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent/50"
+              }`}
+            >
+              {value === "dashboard" ? "Dashboard" : "Listings"}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "dashboard" && (
+          <div className="mb-8">
+            <AdminDashboard metrics={dashboardMetrics} />
+          </div>
+        )}
+
+        {activeTab === "listings" && (
+          <>
+            <StaleListingsAlert opportunities={opportunities} onReminderSent={fetchAllOpportunities} />
 
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2">
@@ -1680,6 +1813,9 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
         </Dialog>
 
         <UserSubmittedJobsSection />
+          </>
+        )}
+
       </main>
     </div>
   );
