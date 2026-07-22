@@ -373,33 +373,26 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Query opportunities that need reminders:
     // - Active listings
-    // - Created 60+ days ago
-    // - No updates since creation (updated_at equals created_at)
-    // - No reminder sent yet
+    // - Not updated in 60+ days
+    // - No reminder sent yet (one-shot; 90-day admin panel handles further follow-up)
     const sixtyDaysAgo = new Date();
     sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-    console.log(`Looking for opportunities created before: ${sixtyDaysAgo.toISOString()}`);
+    console.log(`Looking for opportunities not updated since: ${sixtyDaysAgo.toISOString()}`);
 
     const { data: opportunities, error: fetchError } = await supabase
       .from("opportunities")
       .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, updated_at")
       .eq("active", true)
       .is("reminder_sent_at", null)
-      .lte("created_at", sixtyDaysAgo.toISOString());
+      .lte("updated_at", sixtyDaysAgo.toISOString());
 
     if (fetchError) {
       console.error("Error fetching opportunities:", fetchError);
       throw new Error(`Failed to fetch opportunities: ${fetchError.message}`);
     }
 
-    // Filter to only include listings where updated_at equals created_at (no updates)
-    const eligibleOpportunities = (opportunities || []).filter((opp: any) => {
-      const createdAt = new Date(opp.created_at).getTime();
-      const updatedAt = new Date(opp.updated_at).getTime();
-      // Allow for small time differences (within 1 second)
-      return Math.abs(createdAt - updatedAt) < 1000;
-    }) as Opportunity[];
+    const eligibleOpportunities = (opportunities || []) as Opportunity[];
 
     console.log(`Found ${eligibleOpportunities.length} opportunities needing reminders`);
 
