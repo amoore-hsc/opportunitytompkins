@@ -29,6 +29,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { User, Session } from "@supabase/supabase-js";
 import { UserSubmittedJobsSection } from "@/components/UserSubmittedJobsSection";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
 
 type DaySchedule = {
   [key: string]: {
