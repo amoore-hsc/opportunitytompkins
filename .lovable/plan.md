@@ -1,29 +1,44 @@
-Add filtering controls to the Admin Panel so you can isolate volunteer vs education listings and toggle between active vs inactive statuses.
+Move the admin panel to a tabbed layout with a new Dashboard tab and a Listings tab.
 
-## Changes
+## What we will build
 
-### Frontend: `src/pages/Admin.tsx`
+Two tabs in `src/pages/Admin.tsx`:
+1. **Dashboard** — new all-time aggregated metrics from the weekly report, plus removal-reason breakdowns.
+2. **Listings** — the existing admin table, filters, edit/delete actions, and stale-listings alert.
 
-1. Add local filter state:
-   - `typeFilter`: `"all" | "volunteer" | "education"`
-   - `statusFilter`: `"all" | "active" | "inactive"`
+Default tab: **Dashboard**.
 
-2. Derive the displayed list with `useMemo`:
-   - Apply `typeFilter` before `statusFilter` (or both together).
-   - Then apply the existing `updatedAtSort`.
+## Dashboard tab
 
-3. Add UI controls above the listings table:
-   - Two segmented toggle groups (or Select dropdowns) for Type and Status.
-   - A "Clear filters" link/button that resets both to `"all"`.
+Summary cards:
+- Total Applications (sum of all `application_counts.count`)
+- Positions Filled (sum of `positions_filled` across deactivated listings)
+- Listings Removed (count of listings with `deactivated_at` set)
+- Active Listings (count of `active = true` listings)
+- Education Listings (count of `type = 'education'`)
+- Volunteer Listings (count of `type = 'volunteer'`)
 
-4. Keep the existing `StaleListingsAlert` unchanged — it already filters to active volunteer listings internally.
+Breakdown tables:
+- Applications by Organization
+- Applications by Role Classification
+- Applications by Opportunity
+- Positions Filled by Organization
+- Removal Reasons (count of each `removal_reason`)
 
-5. Show a small results count next to the filters (e.g., "Showing 24 of 48 listings").
+## Listings tab
 
-## UI/UX notes
-- Default state: all types, all statuses (same as today).
-- Filter controls should be responsive and stack on mobile.
-- Use existing design tokens (Button, Select, or toggle components) and avoid hardcoded colors.
+Existing admin panel content:
+- Stale-listings alert
+- Type and Status filters
+- Results counter and clear filters
+- Opportunities table
+- Edit dialog
+- User-submitted jobs section
 
-## No backend changes needed
-The page already fetches all opportunity fields via `select("*")`; filtering will be client-side only.
+## Implementation steps
+
+1. Fetch `opportunities` and `application_counts` in parallel after admin role is confirmed.
+2. Add `activeTab` state (`"dashboard" | "listings"`) and a tab bar using the existing segmented-toggle button style.
+3. Create `src/components/admin/AdminDashboard.tsx` to render the summary cards and breakdown tables from precomputed aggregates.
+4. Keep all existing listings UI inside the Listings tab.
+5. No backend changes needed; all aggregation is client-side from existing tables.
