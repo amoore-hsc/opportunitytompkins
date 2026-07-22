@@ -1098,7 +1098,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedOpportunities.map((opp) => (
+              {filteredAndSortedOpportunities.map((opp) => (
                 <TableRow key={opp.id}>
                   <TableCell className="font-medium capitalize">{opp.type}</TableCell>
                   <TableCell>{opp.org_name}</TableCell>
