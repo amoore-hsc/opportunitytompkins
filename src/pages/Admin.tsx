@@ -267,6 +267,7 @@ const Admin = () => {
   const [previewingEmailOpp, setPreviewingEmailOpp] = useState<Opportunity | null>(null);
   const [editFlexibleTime, setEditFlexibleTime] = useState(false);
   const [editLocationType, setEditLocationType] = useState("");
+  const [updatedAtSort, setUpdatedAtSort] = useState<"desc" | "asc">("desc");
   const { toast } = useToast();
 
   useEffect(() => {
