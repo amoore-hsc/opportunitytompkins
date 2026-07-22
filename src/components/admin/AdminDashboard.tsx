@@ -15,7 +15,6 @@ import {
 import {
   ClipboardList,
   Users,
-  Briefcase,
   GraduationCap,
   XCircle,
   CheckCircle2,
