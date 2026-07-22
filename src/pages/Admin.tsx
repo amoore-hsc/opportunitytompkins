@@ -403,16 +403,26 @@ const Admin = () => {
 
   const fetchAllOpportunities = async () => {
     try {
-      const { data, error } = await supabase
-        .from("opportunities")
-        .select("*")
-        .order("active", { ascending: false })
-        .order("created_at", { ascending: false });
+      const [oppsResult, countsResult] = await Promise.all([
+        supabase
+          .from("opportunities")
+          .select("*")
+          .order("active", { ascending: false })
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("application_counts")
+          .select("*")
+          .order("application_date", { ascending: false })
+      ]);
 
-      if (error) throw error;
-      setOpportunities(data || []);
+      if (oppsResult.error) throw oppsResult.error;
+      if (countsResult.error) throw countsResult.error;
+
+      setOpportunities(oppsResult.data || []);
+      setApplicationCounts(countsResult.data || []);
     } catch (error: any) {
       toast({
+        title: "Error",
         title: "Error",
         description: error.message,
         variant: "destructive",
