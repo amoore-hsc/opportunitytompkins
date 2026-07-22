@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
-import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send, Link2 } from "lucide-react";
+import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send, Link2, ArrowUp, ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -267,6 +267,7 @@ const Admin = () => {
   const [previewingEmailOpp, setPreviewingEmailOpp] = useState<Opportunity | null>(null);
   const [editFlexibleTime, setEditFlexibleTime] = useState(false);
   const [editLocationType, setEditLocationType] = useState("");
+  const [updatedAtSort, setUpdatedAtSort] = useState<"desc" | "asc">("desc");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -1020,6 +1021,14 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
     );
   }
 
+  const sortedOpportunities = useMemo(() => {
+    return [...opportunities].sort((a, b) => {
+      const dateA = new Date(a.updated_at).getTime();
+      const dateB = new Date(b.updated_at).getTime();
+      return updatedAtSort === "desc" ? dateB - dateA : dateA - dateB;
+    });
+  }, [opportunities, updatedAtSort]);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-[#eeeeee]">
@@ -1060,13 +1069,27 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                 <TableHead>Position / Program</TableHead>
                 <TableHead>Admin Contact</TableHead>
                 
-                <TableHead>Last Updated</TableHead>
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={() => setUpdatedAtSort(prev => prev === "desc" ? "asc" : "desc")}
+                    className="flex items-center gap-1 -ml-2 px-2 py-1 rounded hover:bg-accent/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={`Sort last updated ${updatedAtSort === "desc" ? "ascending" : "descending"}`}
+                  >
+                    Last Updated
+                    {updatedAtSort === "desc" ? (
+                      <ArrowDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    ) : (
+                      <ArrowUp className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    )}
+                  </button>
+                </TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {opportunities.map((opp) => (
+              {sortedOpportunities.map((opp) => (
                 <TableRow key={opp.id}>
                   <TableCell className="font-medium capitalize">{opp.type}</TableCell>
                   <TableCell>{opp.org_name}</TableCell>
