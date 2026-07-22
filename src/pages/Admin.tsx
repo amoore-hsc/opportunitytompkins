@@ -796,6 +796,92 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       });
   }, [opportunities, typeFilter, statusFilter, updatedAtSort]);
 
+  const dashboardMetrics = useMemo(() => {
+    const totalApplications = applicationCounts.reduce((sum, record) => sum + (record.count || 0), 0);
+    const positionsFilled = opportunities.reduce(
+      (sum, opp) => sum + (opp.positions_filled || 0),
+      0
+    );
+    const listingsRemoved = opportunities.filter((opp) => opp.deactivated_at !== null).length;
+    const activeListings = opportunities.filter((opp) => opp.active).length;
+    const educationListings = opportunities.filter((opp) => opp.type === "education").length;
+    const volunteerListings = opportunities.filter((opp) => opp.type === "volunteer").length;
+
+    const opportunityMap = new Map(opportunities.map((opp) => [opp.id, opp]));
+
+    const orgTotals: Record<string, number> = {};
+    const roleTotals: Record<string, number> = {};
+    const opportunityTotals: Record<string, { title: string; orgName: string; count: number }> = {};
+
+    for (const record of applicationCounts) {
+      const opp = opportunityMap.get(record.opportunity_id);
+      if (!opp) continue;
+
+      const orgName = opp.org_name || "Unknown Organization";
+      const role = opp.role_classification || "Uncategorized";
+      const title = opp.position_title || opp.program_name || "Untitled";
+
+      orgTotals[orgName] = (orgTotals[orgName] || 0) + (record.count || 0);
+      roleTotals[role] = (roleTotals[role] || 0) + (record.count || 0);
+
+      if (!opportunityTotals[record.opportunity_id]) {
+        opportunityTotals[record.opportunity_id] = { title, orgName, count: 0 };
+      }
+      opportunityTotals[record.opportunity_id].count += record.count || 0;
+    }
+
+    const applicationsByOrg = Object.entries(orgTotals)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({ name, count }));
+
+    const applicationsByRole = Object.entries(roleTotals)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({ name, count }));
+
+    const applicationsByOpportunity = Object.values(opportunityTotals)
+      .sort((a, b) => b.count - a.count)
+      .map((opp) => ({ title: opp.title, orgName: opp.orgName, count: opp.count }));
+
+    const positionsFilledByOrg: Record<string, { positions: number; listings: number }> = {};
+    for (const opp of opportunities) {
+      if (opp.deactivated_at === null || opp.positions_filled === null) continue;
+      const orgName = opp.org_name || "Unknown Organization";
+      if (!positionsFilledByOrg[orgName]) {
+        positionsFilledByOrg[orgName] = { positions: 0, listings: 0 };
+      }
+      positionsFilledByOrg[orgName].positions += opp.positions_filled || 0;
+      positionsFilledByOrg[orgName].listings += 1;
+    }
+
+    const positionsFilledByOrgSorted = Object.entries(positionsFilledByOrg)
+      .sort((a, b) => b[1].positions - a[1].positions)
+      .map(([name, data]) => ({ name, positions: data.positions, listings: data.listings }));
+
+    const removalReasons: Record<string, number> = {};
+    for (const opp of opportunities) {
+      if (!opp.removal_reason) continue;
+      removalReasons[opp.removal_reason] = (removalReasons[opp.removal_reason] || 0) + 1;
+    }
+
+    const removalReasonsSorted = Object.entries(removalReasons)
+      .sort((a, b) => b[1] - a[1])
+      .map(([reason, count]) => ({ reason, count }));
+
+    return {
+      totalApplications,
+      positionsFilled,
+      listingsRemoved,
+      activeListings,
+      educationListings,
+      volunteerListings,
+      applicationsByOrg,
+      applicationsByRole,
+      applicationsByOpportunity,
+      positionsFilledByOrg: positionsFilledByOrgSorted,
+      removalReasons: removalReasonsSorted,
+    };
+  }, [opportunities, applicationCounts]);
+
   if (loading && !isResetPassword) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
