@@ -1069,13 +1069,27 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                 <TableHead>Position / Program</TableHead>
                 <TableHead>Admin Contact</TableHead>
                 
-                <TableHead>Last Updated</TableHead>
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={() => setUpdatedAtSort(prev => prev === "desc" ? "asc" : "desc")}
+                    className="flex items-center gap-1 -ml-2 px-2 py-1 rounded hover:bg-accent/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={`Sort last updated ${updatedAtSort === "desc" ? "ascending" : "descending"}`}
+                  >
+                    Last Updated
+                    {updatedAtSort === "desc" ? (
+                      <ArrowDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    ) : (
+                      <ArrowUp className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    )}
+                  </button>
+                </TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {opportunities.map((opp) => (
+              {sortedOpportunities.map((opp) => (
                 <TableRow key={opp.id}>
                   <TableCell className="font-medium capitalize">{opp.type}</TableCell>
                   <TableCell>{opp.org_name}</TableCell>
