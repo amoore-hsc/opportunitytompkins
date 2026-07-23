@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
-import { ExternalLink, RefreshCw, Trash2, EyeOff, Eye } from "lucide-react";
+import { ExternalLink, RefreshCw, Trash2, EyeOff, Eye, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -24,6 +24,9 @@ export const UserSubmittedJobsSection = () => {
   const [jobs, setJobs] = useState<UserJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [rechecking, setRechecking] = useState(false);
+  const [lastCheckedSort, setLastCheckedSort] = useState<"desc" | "asc">("desc");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "removed">("all");
+
 
   const fetchJobs = useCallback(async () => {
     setLoading(true);
@@ -100,6 +103,19 @@ export const UserSubmittedJobsSection = () => {
     }
   };
 
+  const filteredJobs = useMemo(() => {
+    let list = jobs;
+    if (statusFilter !== "all") {
+      const wantActive = statusFilter === "active";
+      list = list.filter((job) => job.active === wantActive);
+    }
+    return [...list].sort((a, b) => {
+      const dateA = new Date(a.updated_at).getTime();
+      const dateB = new Date(b.updated_at).getTime();
+      return lastCheckedSort === "desc" ? dateB - dateA : dateA - dateB;
+    });
+  }, [jobs, statusFilter, lastCheckedSort]);
+
   return (
     <section className="mt-10">
       <div className="mb-4 flex items-center justify-between">
@@ -115,6 +131,31 @@ export const UserSubmittedJobsSection = () => {
         </Button>
       </div>
 
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-muted-foreground">Status:</span>
+          <div className="inline-flex rounded-md border border-border bg-card p-1">
+            {(["all", "active", "removed"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setStatusFilter(value)}
+                className={`px-3 py-1 text-sm rounded capitalize transition-colors ${
+                  statusFilter === value
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent/50"
+                }`}
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+        </div>
+        <span className="text-sm text-muted-foreground">
+          {filteredJobs.length} of {jobs.length} jobs
+        </span>
+      </div>
+
       <div className="rounded-lg border border-border bg-card">
         <Table>
           <TableHeader>
@@ -123,7 +164,19 @@ export const UserSubmittedJobsSection = () => {
               <TableHead>Employer</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Submitted</TableHead>
-              <TableHead>Last Checked</TableHead>
+              <TableHead
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => setLastCheckedSort((prev) => (prev === "desc" ? "asc" : "desc"))}
+              >
+                <span className="inline-flex items-center gap-1">
+                  Last Checked
+                  {lastCheckedSort === "desc" ? (
+                    <ArrowDown className="h-3.5 w-3.5" />
+                  ) : (
+                    <ArrowUp className="h-3.5 w-3.5" />
+                  )}
+                </span>
+              </TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -133,7 +186,9 @@ export const UserSubmittedJobsSection = () => {
               <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">Loading...</TableCell></TableRow>
             ) : jobs.length === 0 ? (
               <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">No user-submitted jobs yet.</TableCell></TableRow>
-            ) : jobs.map((job) => (
+            ) : filteredJobs.length === 0 ? (
+              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">No jobs match the selected status.</TableCell></TableRow>
+            ) : filteredJobs.map((job) => (
               <TableRow key={job.id}>
                 <TableCell className="font-medium">
                   <a

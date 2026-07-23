@@ -1,44 +1,18 @@
-Move the admin panel to a tabbed layout with a new Dashboard tab and a Listings tab.
+Add sort controls to the User-Submitted Jobs table and a status filter for quick triage.
 
-## What we will build
+### Plan
+1. **Sortable "Last Checked" column**
+   - Add a `lastCheckedSort` state (`"desc" | "asc"`) to `UserSubmittedJobsSection`.
+   - Make the "Last Checked" table header clickable, showing the same `ArrowUp` / `ArrowDown` icons already used in the Admin listing table.
+   - Sort the displayed rows by `updated_at` based on the selected direction.
 
-Two tabs in `src/pages/Admin.tsx`:
-1. **Dashboard** — new all-time aggregated metrics from the weekly report, plus removal-reason breakdowns.
-2. **Listings** — the existing admin table, filters, edit/delete actions, and stale-listings alert.
+2. **Status filter**
+   - Add a `statusFilter` state (`"all" | "active" | "removed"`) to the section.
+   - Render a small inline segmented control (All / Active / Removed) above the table, matching the existing filter style in the Admin page.
+   - Filter the rows by `job.active` before sorting.
 
-Default tab: **Dashboard**.
+3. **Verify the table layout**
+   - Ensure the header still shows the other columns (Job Title, Employer, Category, Submitted, Last Checked, Status, Actions).
+   - Confirm the empty-state message still spans the correct column count.
 
-## Dashboard tab
-
-Summary cards:
-- Total Applications (sum of all `application_counts.count`)
-- Positions Filled (sum of `positions_filled` across deactivated listings)
-- Listings Removed (count of listings with `deactivated_at` set)
-- Active Listings (count of `active = true` listings)
-- Education Listings (count of `type = 'education'`)
-- Volunteer Listings (count of `type = 'volunteer'`)
-
-Breakdown tables:
-- Applications by Organization
-- Applications by Role Classification
-- Applications by Opportunity
-- Positions Filled by Organization
-- Removal Reasons (count of each `removal_reason`)
-
-## Listings tab
-
-Existing admin panel content:
-- Stale-listings alert
-- Type and Status filters
-- Results counter and clear filters
-- Opportunities table
-- Edit dialog
-- User-submitted jobs section
-
-## Implementation steps
-
-1. Fetch `opportunities` and `application_counts` in parallel after admin role is confirmed.
-2. Add `activeTab` state (`"dashboard" | "listings"`) and a tab bar using the existing segmented-toggle button style.
-3. Create `src/components/admin/AdminDashboard.tsx` to render the summary cards and breakdown tables from precomputed aggregates.
-4. Keep all existing listings UI inside the Listings tab.
-5. No backend changes needed; all aggregation is client-side from existing tables.
+No backend or database changes are required.
