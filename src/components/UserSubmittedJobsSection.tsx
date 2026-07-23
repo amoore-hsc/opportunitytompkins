@@ -131,6 +131,31 @@ export const UserSubmittedJobsSection = () => {
         </Button>
       </div>
 
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-muted-foreground">Status:</span>
+          <div className="inline-flex rounded-md border border-border bg-card p-1">
+            {(["all", "active", "removed"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setStatusFilter(value)}
+                className={`px-3 py-1 text-sm rounded capitalize transition-colors ${
+                  statusFilter === value
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent/50"
+                }`}
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+        </div>
+        <span className="text-sm text-muted-foreground">
+          {filteredJobs.length} of {jobs.length} jobs
+        </span>
+      </div>
+
       <div className="rounded-lg border border-border bg-card">
         <Table>
           <TableHeader>
