@@ -186,7 +186,9 @@ export const UserSubmittedJobsSection = () => {
               <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">Loading...</TableCell></TableRow>
             ) : jobs.length === 0 ? (
               <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">No user-submitted jobs yet.</TableCell></TableRow>
-            ) : jobs.map((job) => (
+            ) : filteredJobs.length === 0 ? (
+              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-6">No jobs match the selected status.</TableCell></TableRow>
+            ) : filteredJobs.map((job) => (
               <TableRow key={job.id}>
                 <TableCell className="font-medium">
                   <a
