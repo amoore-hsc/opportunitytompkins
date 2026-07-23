@@ -24,6 +24,9 @@ export const UserSubmittedJobsSection = () => {
   const [jobs, setJobs] = useState<UserJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [rechecking, setRechecking] = useState(false);
+  const [lastCheckedSort, setLastCheckedSort] = useState<"desc" | "asc">("desc");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "removed">("all");
+
 
   const fetchJobs = useCallback(async () => {
     setLoading(true);
