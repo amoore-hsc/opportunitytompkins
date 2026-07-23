@@ -103,6 +103,19 @@ export const UserSubmittedJobsSection = () => {
     }
   };
 
+  const filteredJobs = useMemo(() => {
+    let list = jobs;
+    if (statusFilter !== "all") {
+      const wantActive = statusFilter === "active";
+      list = list.filter((job) => job.active === wantActive);
+    }
+    return [...list].sort((a, b) => {
+      const dateA = new Date(a.updated_at).getTime();
+      const dateB = new Date(b.updated_at).getTime();
+      return lastCheckedSort === "desc" ? dateB - dateA : dateA - dateB;
+    });
+  }, [jobs, statusFilter, lastCheckedSort]);
+
   return (
     <section className="mt-10">
       <div className="mb-4 flex items-center justify-between">
