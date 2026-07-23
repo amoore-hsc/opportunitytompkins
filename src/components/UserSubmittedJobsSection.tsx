@@ -164,7 +164,19 @@ export const UserSubmittedJobsSection = () => {
               <TableHead>Employer</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Submitted</TableHead>
-              <TableHead>Last Checked</TableHead>
+              <TableHead
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => setLastCheckedSort((prev) => (prev === "desc" ? "asc" : "desc"))}
+              >
+                <span className="inline-flex items-center gap-1">
+                  Last Checked
+                  {lastCheckedSort === "desc" ? (
+                    <ArrowDown className="h-3.5 w-3.5" />
+                  ) : (
+                    <ArrowUp className="h-3.5 w-3.5" />
+                  )}
+                </span>
+              </TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
