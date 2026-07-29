@@ -214,7 +214,7 @@ const Employment = () => {
   ).sort();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <SkipNavigation />
 
       <header className="border-b border-border bg-[#eeeeee]">
@@ -320,7 +320,7 @@ const Employment = () => {
           />
           {employers.length > 0 && (
             <Select value={employerFilter} onValueChange={setEmployerFilter}>
-              <SelectTrigger className="sm:w-[200px]">
+              <SelectTrigger className="sm:w-[200px]" aria-label="Filter by employer">
                 <SelectValue placeholder="Employer" />
               </SelectTrigger>
               <SelectContent>
@@ -336,9 +336,9 @@ const Employment = () => {
           )}
           <div className="sm:w-[260px] flex flex-col gap-1.5 px-1 py-1">
             <div className="flex items-center justify-between text-xs">
-              <label htmlFor="pay-slider" className="font-medium text-foreground">
+              <span className="font-medium text-foreground">
                 Minimum pay
-              </label>
+              </span>
               <span className="text-muted-foreground tabular-nums">
                 {minPay === 0
                   ? "Any"
@@ -346,18 +346,19 @@ const Employment = () => {
               </span>
             </div>
             <Slider
-              id="pay-slider"
               min={0}
               max={MIN_PAY_MAX}
               step={MIN_PAY_STEP}
               value={[minPay]}
               onValueChange={(v) => setMinPay(v[0] ?? 0)}
               aria-label="Minimum hourly pay"
+              aria-valuetext={minPay === 0 ? "Any pay" : `$${minPay} per hour or more`}
             />
           </div>
+
           {employmentTypes.length > 0 && (
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="sm:w-[200px]">
+              <SelectTrigger className="sm:w-[200px]" aria-label="Filter by employment type">
                 <SelectValue placeholder="Employment Type" />
               </SelectTrigger>
               <SelectContent>
@@ -370,7 +371,7 @@ const Employment = () => {
           )}
           {sources.length > 1 && (
             <Select value={sourceFilter} onValueChange={setSourceFilter}>
-              <SelectTrigger className="sm:w-[200px]">
+              <SelectTrigger className="sm:w-[200px]" aria-label="Filter by job source">
                 <SelectValue placeholder="Source" />
               </SelectTrigger>
               <SelectContent>
@@ -381,6 +382,7 @@ const Employment = () => {
               </SelectContent>
             </Select>
           )}
+
           {(typeFilter !== "all" ||
             sourceFilter !== "all" ||
             employerFilter !== "all" ||

@@ -3,7 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Search, ListPlus, Handshake, Briefcase } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
+import { SkipNavigation } from "@/components/SkipNavigation";
+
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
 import chrnLogo from "@/assets/chrn-logo.jpg";
 import foodbankLogo from "@/assets/foodbank-logo.png";
@@ -16,12 +19,19 @@ const Index = () => {
     }, 500);
     return () => clearTimeout(timer);
   }, []);
-  return <div className="min-h-screen bg-background">
+  return <div className="min-h-dvh bg-background">
+      <SkipNavigation />
+
       {/* Exemption Status Popup */}
       <Dialog open={showPopup} onOpenChange={setShowPopup}>
-        <DialogContent className="sm:max-w-md" aria-describedby="exemption-description">
-          <DialogTitle className="sr-only">Exemption Status Information</DialogTitle>
-          <div className="text-center space-y-4 py-4">
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Exemption Status</DialogTitle>
+            <DialogDescription>
+              Some people are exempt from the new SNAP work requirements.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="text-center space-y-4 py-2">
             <p className="text-lg font-medium text-foreground">
               You may be exempt from new work requirements.
             </p>
@@ -44,6 +54,7 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
+
       {/* Header */}
       <header className="border-b border-border bg-[#eeeeee]">
         <div className="container mx-auto px-4 py-6 bg-primary-foreground">
@@ -56,7 +67,7 @@ Opportunity Finder</h1>
       </header>
 
       {/* Hero Section */}
-      <main className="container mx-auto px-4 py-16">
+      <main id="main-content" className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="mb-6 text-4xl font-bold text-foreground sm:text-5xl">Connect to Opportunities that Count</h2>
           <p className="mb-12 text-lg text-muted-foreground sm:text-xl">Find volunteer, training or educational opportunities that count toward the federally mandated SNAP ABAWD work requirement — or post one if you're a community organization.</p>

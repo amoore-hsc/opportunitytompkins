@@ -233,9 +233,8 @@ export const OpportunityFilters = ({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="hours">Hours Available per Week: {filters.minHours}</Label>
+            <span className="text-sm font-medium leading-none">Hours Available per Week: {filters.minHours}</span>
             <Slider 
-              id="hours" 
               min={0} 
               max={40} 
               step={1} 
@@ -245,8 +244,10 @@ export const OpportunityFilters = ({
                 minHours: value[0]
               })} 
               className="mt-3"
+              aria-label="Minimum hours available per week"
               aria-valuetext={`${filters.minHours} hours per week`}
             />
+
           </div>
         </div>
 

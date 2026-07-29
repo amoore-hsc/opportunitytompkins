@@ -890,7 +890,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
 
   if (loading && !isResetPassword) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           <p className="mt-2 text-muted-foreground">Loading...</p>
@@ -902,7 +902,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
   // Password reset (set new password) view
   if (isResetPassword) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
           <div className="mb-6 text-center">
             <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
@@ -983,7 +983,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
     // Forgot password view
     if (isForgotPassword) {
       return (
-        <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="min-h-dvh bg-background flex items-center justify-center">
           <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
             <div className="mb-6 text-center">
               <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
@@ -1044,7 +1044,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
 
     // Regular login/signup view
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
           <div className="mb-6 text-center">
             <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
@@ -1124,7 +1124,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
   // Show access denied if authenticated but not admin
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm text-center">
           <Handshake className="mx-auto h-12 w-12 text-destructive mb-4" />
           <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
@@ -1149,7 +1149,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
 
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <header className="border-b border-border bg-[#eeeeee]">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">

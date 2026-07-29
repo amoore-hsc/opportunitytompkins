@@ -183,7 +183,7 @@ const ResourceCard = ({ resource }: { resource: ResourceLink }) => (
 
 const EmploymentResources = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <SkipNavigation />
 
       <header className="border-b border-border bg-[#eeeeee]">
