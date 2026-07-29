@@ -284,6 +284,7 @@ const Admin = () => {
   const [typeFilter, setTypeFilter] = useState<"all" | "volunteer" | "education">("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
   const [activeTab, setActiveTab] = useState<"dashboard" | "listings">("dashboard");
+  const dashboardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
