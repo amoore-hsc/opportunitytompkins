@@ -233,7 +233,7 @@ export const OpportunityFilters = ({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="hours">Hours Available per Week: {filters.minHours}</Label>
+            <span className="text-sm font-medium leading-none">Hours Available per Week: {filters.minHours}</span>
             <Slider 
               min={0} 
               max={40} 
