@@ -1194,7 +1194,9 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
               </button>
             ))}
           </div>
-          <DashboardExport metrics={dashboardMetrics} dashboardRef={dashboardRef} />
+          {activeTab === "dashboard" && (
+            <DashboardExport metrics={dashboardMetrics} dashboardRef={dashboardRef} />
+          )}
         </div>
 
         {activeTab === "dashboard" && (
