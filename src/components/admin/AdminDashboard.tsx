@@ -22,7 +22,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-interface DashboardMetrics {
+export interface DashboardMetrics {
   totalApplications: number;
   positionsFilled: number;
   listingsRemoved: number;
@@ -36,7 +36,7 @@ interface DashboardMetrics {
   removalReasons: Array<{ reason: string; count: number }>;
 }
 
-interface AdminDashboardProps {
+export interface AdminDashboardProps {
   metrics: DashboardMetrics;
 }
 
