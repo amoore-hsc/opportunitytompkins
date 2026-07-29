@@ -985,7 +985,7 @@ const ListOpportunity = () => {
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground">
             Need help with your listing? Email{" "}
-            <a href="mailto:rhinton@uwtc.org" className="text-primary hover:underline">
+            <a href="mailto:rhinton@uwtc.org" className="text-primary underline hover:no-underline">
               rhinton@uwtc.org
             </a>
           </p>

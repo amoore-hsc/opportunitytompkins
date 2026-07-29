@@ -78,10 +78,11 @@ const Opportunities = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <SkipNavigation />
       
-      <div className="py-3 px-4 text-center font-medium transition-colors text-primary-foreground bg-primary">
+      <aside aria-label="Exemption status notice" className="py-3 px-4 text-center font-medium transition-colors text-primary-foreground bg-primary">
+
         You may be exempt from new work requirements.<br />
         <a 
           href="https://docs.google.com/forms/d/e/1FAIpQLSfXDths0eQwRcWRMrqVdjjhILjLpi5qz7lMyn27VyhdKTt6nw/viewform" 
