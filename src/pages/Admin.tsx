@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
 import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send, Link2, ArrowUp, ArrowDown } from "lucide-react";
@@ -30,6 +30,7 @@ import { Slider } from "@/components/ui/slider";
 import { User, Session } from "@supabase/supabase-js";
 import { UserSubmittedJobsSection } from "@/components/UserSubmittedJobsSection";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import { DashboardExport } from "@/components/admin/DashboardExport";
 
 type DaySchedule = {
   [key: string]: {
@@ -283,6 +284,7 @@ const Admin = () => {
   const [typeFilter, setTypeFilter] = useState<"all" | "volunteer" | "education">("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
   const [activeTab, setActiveTab] = useState<"dashboard" | "listings">("dashboard");
+  const dashboardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -1175,26 +1177,31 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       <main className="container mx-auto px-4 py-8">
         <h2 className="mb-6 text-2xl font-bold text-foreground">Manage Opportunities</h2>
 
-        <div className="mb-6 inline-flex rounded-md border border-border bg-card p-1">
-          {(["dashboard", "listings"] as const).map((value) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setActiveTab(value)}
-              className={`px-4 py-1.5 text-sm rounded capitalize transition-colors ${
-                activeTab === value
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent/50"
-              }`}
-            >
-              {value === "dashboard" ? "Dashboard" : "Listings"}
-            </button>
-          ))}
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="inline-flex rounded-md border border-border bg-card p-1">
+            {(["dashboard", "listings"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setActiveTab(value)}
+                className={`px-4 py-1.5 text-sm rounded capitalize transition-colors ${
+                  activeTab === value
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent/50"
+                }`}
+              >
+                {value === "dashboard" ? "Dashboard" : "Listings"}
+              </button>
+            ))}
+          </div>
+          {activeTab === "dashboard" && (
+            <DashboardExport metrics={dashboardMetrics} dashboardRef={dashboardRef} />
+          )}
         </div>
 
         {activeTab === "dashboard" && (
           <div className="mb-8">
-            <AdminDashboard metrics={dashboardMetrics} />
+            <AdminDashboard ref={dashboardRef} metrics={dashboardMetrics} />
           </div>
         )}
 

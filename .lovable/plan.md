@@ -1,18 +1,36 @@
-Add sort controls to the User-Submitted Jobs table and a status filter for quick triage.
+Add dashboard export options for PDF and Excel.
 
-### Plan
-1. **Sortable "Last Checked" column**
-   - Add a `lastCheckedSort` state (`"desc" | "asc"`) to `UserSubmittedJobsSection`.
-   - Make the "Last Checked" table header clickable, showing the same `ArrowUp` / `ArrowDown` icons already used in the Admin listing table.
-   - Sort the displayed rows by `updated_at` based on the selected direction.
+## What we will build
 
-2. **Status filter**
-   - Add a `statusFilter` state (`"all" | "active" | "removed"`) to the section.
-   - Render a small inline segmented control (All / Active / Removed) above the table, matching the existing filter style in the Admin page.
-   - Filter the rows by `job.active` before sorting.
+- Place an **Export** dropdown next to the Dashboard/Listings tabs in the admin panel.
+- Offer two options: **Download as PDF** and **Download as Excel (.xlsx)**.
+- Both exports use the existing `dashboardMetrics` object already computed in `src/pages/Admin.tsx`, so the numbers stay in sync with the on-screen dashboard.
 
-3. **Verify the table layout**
-   - Ensure the header still shows the other columns (Job Title, Employer, Category, Submitted, Last Checked, Status, Actions).
-   - Confirm the empty-state message still spans the correct column count.
+## PDF export
 
-No backend or database changes are required.
+- Add a `html2pdf.js` dependency (browser-based, converts a DOM element to a styled PDF).
+- Wrap the dashboard content in a printable container with a light background and explicit branding colors so it renders cleanly when exported.
+- Download filename: `tompkins-opportunity-dashboard-YYYY-MM-DD.pdf`.
+
+## Excel export
+
+- Add a `xlsx` dependency (SheetJS) to generate a workbook client-side.
+- Create a workbook with multiple sheets:
+  - **Summary** — the six summary cards (total applications, positions filled, listings removed, active listings, education listings, volunteer listings).
+  - **Applications by Org** — organization name + count.
+  - **Applications by Role** — role classification + count.
+  - **Applications by Opportunity** — opportunity title, organization, count.
+  - **Positions Filled by Org** — organization, listings closed, positions filled.
+  - **Removal Reasons** — reason + count.
+- Download filename: `tompkins-opportunity-dashboard-YYYY-MM-DD.xlsx`.
+
+## Files to change
+
+- `src/pages/Admin.tsx`: add the Export dropdown menu next to the Dashboard/Listings toggle.
+- `src/components/admin/AdminDashboard.tsx`: wrap the dashboard in a `ref`-backed container for PDF export.
+- `src/components/admin/DashboardExport.tsx` (new): export button/dropdown + helper functions for PDF and Excel generation.
+- `package.json` / lockfile: add `html2pdf.js` and `xlsx`.
+
+## Open decision
+
+- Default filename prefix is `tompkins-opportunity-dashboard`. Let me know if you prefer a different file name.

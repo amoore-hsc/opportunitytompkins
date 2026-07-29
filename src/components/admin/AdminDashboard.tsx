@@ -1,3 +1,4 @@
+import React, { forwardRef } from "react";
 import {
   Card,
   CardContent,
@@ -21,7 +22,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-interface DashboardMetrics {
+export interface DashboardMetrics {
   totalApplications: number;
   positionsFilled: number;
   listingsRemoved: number;
@@ -35,7 +36,7 @@ interface DashboardMetrics {
   removalReasons: Array<{ reason: string; count: number }>;
 }
 
-interface AdminDashboardProps {
+export interface AdminDashboardProps {
   metrics: DashboardMetrics;
 }
 
@@ -106,7 +107,7 @@ const BreakdownTable = ({
   </Card>
 );
 
-export const AdminDashboard = ({ metrics }: AdminDashboardProps) => {
+export const AdminDashboard = forwardRef<HTMLDivElement, AdminDashboardProps>(({ metrics }, ref) => {
   const {
     totalApplications,
     positionsFilled,
@@ -122,7 +123,7 @@ export const AdminDashboard = ({ metrics }: AdminDashboardProps) => {
   } = metrics;
 
   return (
-    <div className="space-y-8">
+    <div ref={ref} className="space-y-8 bg-white p-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <SummaryCard
           title="Total Applications"
@@ -246,6 +247,7 @@ export const AdminDashboard = ({ metrics }: AdminDashboardProps) => {
       </div>
     </div>
   );
-};
+});
+AdminDashboard.displayName = "AdminDashboard";
 
 export default AdminDashboard;
