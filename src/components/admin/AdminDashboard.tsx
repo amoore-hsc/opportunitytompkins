@@ -107,7 +107,7 @@ const BreakdownTable = ({
   </Card>
 );
 
-export const AdminDashboard = ({ metrics }: AdminDashboardProps) => {
+export const AdminDashboard = forwardRef<HTMLDivElement, AdminDashboardProps>(({ metrics }, ref) => {
   const {
     totalApplications,
     positionsFilled,
@@ -123,7 +123,7 @@ export const AdminDashboard = ({ metrics }: AdminDashboardProps) => {
   } = metrics;
 
   return (
-    <div className="space-y-8">
+    <div ref={ref} className="space-y-8 bg-white p-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <SummaryCard
           title="Total Applications"
