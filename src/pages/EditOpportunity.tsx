@@ -406,7 +406,7 @@ const EditOpportunity = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-dvh bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -414,7 +414,7 @@ const EditOpportunity = () => {
 
   if (notFound) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-dvh bg-background">
         <header className="border-b border-border bg-[#eeeeee]">
           <div className="container mx-auto px-4 py-6">
             <div className="flex items-center gap-2">
@@ -437,7 +437,7 @@ const EditOpportunity = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <header className="border-b border-border bg-[#eeeeee]">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">

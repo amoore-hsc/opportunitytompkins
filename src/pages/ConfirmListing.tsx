@@ -107,7 +107,7 @@ const ConfirmListing = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
           <p className="mt-4 text-muted-foreground">Loading listing details...</p>
@@ -118,7 +118,7 @@ const ConfirmListing = () => {
 
   if (error && !opportunity) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
@@ -137,7 +137,7 @@ const ConfirmListing = () => {
 
   if (confirmed) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CheckCircle2 className="h-16 w-16 text-green-600 mx-auto mb-4" />
@@ -171,7 +171,7 @@ const ConfirmListing = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Confirm Your Listing</CardTitle>
