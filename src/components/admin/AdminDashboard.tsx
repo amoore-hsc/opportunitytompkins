@@ -247,6 +247,7 @@ export const AdminDashboard = forwardRef<HTMLDivElement, AdminDashboardProps>(({
       </div>
     </div>
   );
-};
+});
+AdminDashboard.displayName = "AdminDashboard";
 
 export default AdminDashboard;
