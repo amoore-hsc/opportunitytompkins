@@ -384,6 +384,7 @@ const handler = async (req: Request): Promise<Response> => {
       .from("opportunities")
       .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, updated_at")
       .eq("active", true)
+      .eq("type", "volunteer")
       .is("reminder_sent_at", null)
       .lte("updated_at", sixtyDaysAgo.toISOString());
 
