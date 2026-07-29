@@ -103,7 +103,8 @@ const Opportunities = () => {
           Tompkins County DSS
         </a>{" "}
         (607) 274-5680
-      </div>
+      </aside>
+
 
       <header className="border-b border-border bg-[#eeeeee]">
         <div className="container mx-auto px-4 py-6">
