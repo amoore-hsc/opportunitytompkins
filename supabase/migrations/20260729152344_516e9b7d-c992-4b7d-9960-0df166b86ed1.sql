@@ -1,0 +1,1 @@
+UPDATE public.opportunities SET reminder_sent_at = timestamptz '2026-07-27 14:30:05+00' WHERE id = '1935f6c4-1531-4544-93a6-12eb257743f8' AND reminder_sent_at IS NULL;
