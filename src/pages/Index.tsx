@@ -16,12 +16,19 @@ const Index = () => {
     }, 500);
     return () => clearTimeout(timer);
   }, []);
-  return <div className="min-h-screen bg-background">
+  return <div className="min-h-dvh bg-background">
+      <SkipNavigation />
+
       {/* Exemption Status Popup */}
       <Dialog open={showPopup} onOpenChange={setShowPopup}>
-        <DialogContent className="sm:max-w-md" aria-describedby="exemption-description">
-          <DialogTitle className="sr-only">Exemption Status Information</DialogTitle>
-          <div className="text-center space-y-4 py-4">
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Exemption Status</DialogTitle>
+            <DialogDescription>
+              Some people are exempt from the new SNAP work requirements.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="text-center space-y-4 py-2">
             <p className="text-lg font-medium text-foreground">
               You may be exempt from new work requirements.
             </p>
@@ -43,6 +50,7 @@ const Index = () => {
           </div>
         </DialogContent>
       </Dialog>
+
 
       {/* Header */}
       <header className="border-b border-border bg-[#eeeeee]">
