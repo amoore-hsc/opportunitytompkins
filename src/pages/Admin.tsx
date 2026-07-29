@@ -1177,26 +1177,29 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       <main className="container mx-auto px-4 py-8">
         <h2 className="mb-6 text-2xl font-bold text-foreground">Manage Opportunities</h2>
 
-        <div className="mb-6 inline-flex rounded-md border border-border bg-card p-1">
-          {(["dashboard", "listings"] as const).map((value) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setActiveTab(value)}
-              className={`px-4 py-1.5 text-sm rounded capitalize transition-colors ${
-                activeTab === value
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent/50"
-              }`}
-            >
-              {value === "dashboard" ? "Dashboard" : "Listings"}
-            </button>
-          ))}
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="inline-flex rounded-md border border-border bg-card p-1">
+            {(["dashboard", "listings"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setActiveTab(value)}
+                className={`px-4 py-1.5 text-sm rounded capitalize transition-colors ${
+                  activeTab === value
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent/50"
+                }`}
+              >
+                {value === "dashboard" ? "Dashboard" : "Listings"}
+              </button>
+            ))}
+          </div>
+          <DashboardExport metrics={dashboardMetrics} dashboardRef={dashboardRef} />
         </div>
 
         {activeTab === "dashboard" && (
           <div className="mb-8">
-            <AdminDashboard metrics={dashboardMetrics} />
+            <AdminDashboard ref={dashboardRef} metrics={dashboardMetrics} />
           </div>
         )}
 
