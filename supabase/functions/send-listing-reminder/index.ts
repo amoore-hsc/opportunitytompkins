@@ -372,9 +372,9 @@ const handler = async (req: Request): Promise<Response> => {
 
 
     // Query opportunities that need reminders:
-    // - Active listings
+    // - Active volunteer listings
     // - Not updated in 60+ days
-    // - No reminder sent yet (one-shot; 90-day admin panel handles further follow-up)
+    // - No reminder sent since the listing was last updated (every edit re-arms the reminder)
     const sixtyDaysAgo = new Date();
     sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
@@ -382,10 +382,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { data: opportunities, error: fetchError } = await supabase
       .from("opportunities")
-      .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, updated_at")
+      .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, updated_at, reminder_sent_at")
       .eq("active", true)
       .eq("type", "volunteer")
-      .is("reminder_sent_at", null)
       .lte("updated_at", sixtyDaysAgo.toISOString());
 
     if (fetchError) {
@@ -393,7 +392,17 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Failed to fetch opportunities: ${fetchError.message}`);
     }
 
-    const eligibleOpportunities = (opportunities || []) as Opportunity[];
+    // Column-to-column comparison must happen in code: eligible when no reminder has
+    // ever been sent, or the last reminder predates the listing's most recent update.
+    const eligibleOpportunities = ((opportunities || []) as (Opportunity & {
+      updated_at: string;
+      reminder_sent_at: string | null;
+    })[]).filter(
+      (opp) =>
+        !opp.reminder_sent_at ||
+        new Date(opp.reminder_sent_at).getTime() < new Date(opp.updated_at).getTime(),
+    ) as Opportunity[];
+
 
     console.log(`Found ${eligibleOpportunities.length} opportunities needing reminders`);
 

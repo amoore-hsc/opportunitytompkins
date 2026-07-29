@@ -1,36 +1,32 @@
-Add dashboard export options for PDF and Excel.
+## What's broken
 
-## What we will build
+The Monday 9:30am reminder job selects active volunteer listings where the last-reminder field is empty **and** the listing hasn't been updated in 60+ days. Once a listing gets its one reminder, that field is set forever — editing the listing restarts the 60-day staleness clock but never clears it. Result: a listing can go permanently silent.
 
-- Place an **Export** dropdown next to the Dashboard/Listings tabs in the admin panel.
-- Offer two options: **Download as PDF** and **Download as Excel (.xlsx)**.
-- Both exports use the existing `dashboardMetrics` object already computed in `src/pages/Admin.tsx`, so the numbers stay in sync with the on-screen dashboard.
+Confirmed against live data: Habitat for Humanity's "Construction Volunteer" was reminded Apr 27 at 14:30, the org edited the listing at 18:14 that same day, and it is now 93 days stale with no further reminder possible.
 
-## PDF export
+## New rule
 
-- Add a `html2pdf.js` dependency (browser-based, converts a DOM element to a styled PDF).
-- Wrap the dashboard content in a printable container with a light background and explicit branding colors so it renders cleanly when exported.
-- Download filename: `tompkins-opportunity-dashboard-YYYY-MM-DD.pdf`.
+A listing is eligible when it is active, volunteer type, not updated in 60+ days, **and** has had no reminder since its most recent update. In other words, every edit re-arms the reminder. Still one reminder per stale cycle — no repeat nagging while the listing sits untouched.
 
-## Excel export
+## Changes
 
-- Add a `xlsx` dependency (SheetJS) to generate a workbook client-side.
-- Create a workbook with multiple sheets:
-  - **Summary** — the six summary cards (total applications, positions filled, listings removed, active listings, education listings, volunteer listings).
-  - **Applications by Org** — organization name + count.
-  - **Applications by Role** — role classification + count.
-  - **Applications by Opportunity** — opportunity title, organization, count.
-  - **Positions Filled by Org** — organization, listings closed, positions filled.
-  - **Removal Reasons** — reason + count.
-- Download filename: `tompkins-opportunity-dashboard-YYYY-MM-DD.xlsx`.
+1. **Reminder job** (`send-listing-reminder`)
+   - Replace the "no reminder ever sent" condition with "no reminder sent since the last update": eligible when the last-reminder field is empty **or** is older than the listing's last-updated timestamp.
+   - Because this comparison is between two columns, do the 60-day filter in the query and apply the reminder-vs-update comparison in code on the returned rows.
+   - Grouping by contact email, email content, and the existing education-type exclusion all stay as-is.
+   - Redeploy the function.
 
-## Files to change
+2. **Re-arm the three stuck listings** (one-time data fix, so they go out in Monday's batch):
+   - Habitat for Humanity — Construction Volunteer (93 days stale)
+   - Friends of Stewart Park — Garden and Park Cleanup (153 days stale)
+   - Amplify Equity — Virtual Office Support (103 days stale)
 
-- `src/pages/Admin.tsx`: add the Export dropdown menu next to the Dashboard/Listings toggle.
-- `src/components/admin/AdminDashboard.tsx`: wrap the dashboard in a `ref`-backed container for PDF export.
-- `src/components/admin/DashboardExport.tsx` (new): export button/dropdown + helper functions for PDF and Excel generation.
-- `package.json` / lockfile: add `html2pdf.js` and `xlsx`.
+   Clearing their last-reminder field makes them eligible under the new rule. No other listing is touched; the nine reminded on Jul 27 stay quiet until they are edited and go stale again.
 
-## Open decision
+3. **Admin panel** — no change. The 90-day delinquent banner keeps using last-updated, which is unaffected.
 
-- Default filename prefix is `tompkins-opportunity-dashboard`. Let me know if you prefer a different file name.
+## Technical notes
+
+- Sequence: run the data migration first, then edit and redeploy the edge function.
+- The comparison must use the listing's stored last-updated timestamp; the existing database trigger already preserves that timestamp when only reminder bookkeeping fields change, so setting the reminder timestamp will not itself re-arm the listing in a loop.
+- The manual "resend reminder" button in the admin panel writes to separate counter fields and is unaffected by this change.
