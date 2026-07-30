@@ -1,51 +1,38 @@
-## Accessibility audit results
+## What's wrong
 
-I ran an automated axe-core scan against the live site (home, Opportunities, Employment, List an Opportunity, Employment Resources) and reviewed the components by hand. The site is in decent shape — skip links, ARIA-hidden decorative icons, and semantic landmarks are already present on most pages — but there are real issues that affect screen-reader ("e-reader") and low-vision users.
+The volunteer opportunities page is broken for everyone. Two problems, both introduced by the recent security hardening:
 
-### Critical (blocks screen-reader users)
+1. **No Data API grants anywhere.** I checked every table and view in the database: `opportunities`, `public_opportunities`, `employment_opportunities`, `application_counts`, `scrape_sources`, `user_roles` all have zero grants for the app's `anon`, `authenticated`, and `service_role` roles. Any read from the site returns a "permission denied" error — which matches the user's report. This affects the job board and admin panel too, not just volunteer opportunities.
 
-1. **Unlabeled dropdown filters on Employment** — the three filter comboboxes (employer, sort, and one more) announce as "button" with no name. A screen reader user cannot tell what they change. (`src/pages/Employment.tsx`)
-2. **Unlabeled slider thumb** — the pay slider on Employment and the hours slider on Opportunities expose a `role="slider"` with no accessible name; the label sits on the wrapper, not on the thumb. Opportunities also throws an `aria-allowed-attr` error from `aria-valuetext` on the wrong element. (`src/pages/Employment.tsx`, `src/components/OpportunityFilters.tsx`, `src/components/ui/slider.tsx`)
-3. **Toast close button has no name** — the "X" on notification toasts announces as an unnamed button. (`src/components/ui/toast.tsx`)
-4. **Auto-opening popup on the homepage** — the exemption dialog opens on a 500 ms timer with no visible title (title is `sr-only`) and steals focus before the page has been read. Disorienting for screen-reader and keyboard users. (`src/pages/Index.tsx`)
+2. **The public view can't see its own rows.** `public_opportunities` is defined with `security_invoker=true`, meaning it runs under the visitor's permissions against the `opportunities` table. The only SELECT policy on `opportunities` is admin-only, so even after grants are restored, a public visitor would get an empty list.
 
-### Serious (degrades experience)
+## Fix
 
-5. **Color contrast below WCAG AA** — white text on the green `--success` (#16a249, ratio 3.33:1) and orange `--highlight` (#f26c0d, 3.03:1) buttons fails the 4.5:1 requirement. This affects every green "Post Opportunity" / "Visit Site" button and the orange employment buttons — 45 instances on Employment, 19 on Employment Resources. (`src/index.css`)
-6. **Homepage missing skip link and `#main-content`** — every other page has `<SkipNavigation />` and `<main id="main-content">`; the homepage has neither, so the skip link target is broken there. (`src/pages/Index.tsx`)
-7. **Links not distinguishable without color** — the `rhinton@uwtc.org` mailto links rely on color alone until hover. (`src/pages/ListOpportunity.tsx` and other footers)
-8. **Content outside landmarks** — the tab/segment bar on Opportunities sits outside any landmark region.
+**Step 1 — Make the public view able to read active listings**
 
-### Minor
+Switch `public_opportunities` to run with the view owner's rights instead of the visitor's. The view already excludes every sensitive column (no `edit_token`, no `org_email`, no admin contact) and filters to `active = true`, so this exposes exactly the fields the page is meant to show, and nothing more. The base `opportunities` table stays locked down — direct reads remain admin-only.
 
-9. Toast viewport uses `<ol>` containing non-`<li>` children (shadcn default).
-10. `min-h-screen` is used instead of `min-h-dvh` across pages — causes clipped content on mobile browsers with dynamic toolbars.
+**Step 2 — Restore the Data API grants**
 
-Admin pages were not scanned (auth-gated); they're internal-only, so I'd treat them as lower priority.
+Per object, matching the existing row-level policies:
 
-## Proposed fixes
+| Object | anon | authenticated | service_role |
+|---|---|---|---|
+| `public_opportunities` (view) | SELECT | SELECT | ALL |
+| `opportunities` | INSERT only (public submission form) | SELECT/INSERT/UPDATE/DELETE | ALL |
+| `employment_opportunities` | SELECT (has a public "active = true" policy) | SELECT/INSERT/UPDATE/DELETE | ALL |
+| `application_counts` | none | SELECT/INSERT/UPDATE/DELETE | ALL |
+| `scrape_sources` | none | SELECT/INSERT/UPDATE/DELETE | ALL |
+| `user_roles` | none | SELECT | ALL |
 
-Work in priority order, all frontend/presentation only:
+Row-level security stays exactly as it is — grants only make the tables reachable through the API; the policies still decide which rows each person sees.
 
-**Round 1 — critical**
-- Add `aria-label` to each `SelectTrigger` on Employment (e.g. "Filter by employer", "Sort jobs by").
-- Move slider labeling onto the Radix thumb so the accessible name lands on `role="slider"`; remove the invalid `aria-valuetext`/`id` placement on the Opportunities hours slider.
-- Add `aria-label="Close notification"` to the toast close button.
-- Give the homepage exemption dialog a visible `DialogTitle` and remove the auto-open timer in favor of an explicit trigger (or delay + no focus steal) — I'll confirm your preference before changing behavior.
+**Step 3 — Verify**
 
-**Round 2 — serious**
-- Darken `--success` and `--highlight` in `src/index.css` so white text clears 4.5:1 (roughly `142 76% 29%` and `25 90% 38%`), keeping the same hue family. Verify against the design tokens in both light and dark themes.
-- Add `<SkipNavigation />` and `<main id="main-content">` to the homepage.
-- Add `underline` to inline mailto/text links.
-- Wrap the Opportunities tab bar inside the `<main>` landmark.
+Load the volunteer opportunities page and the employment page as a signed-out visitor and confirm listings render with no console errors, then check the admin panel still loads for an admin account.
 
-**Round 3 — polish**
-- Swap `min-h-screen` for `min-h-dvh` across pages.
-- Fix the shadcn toast viewport list semantics.
+## Technical notes
 
-**Verification**
-After each round, re-run the axe-core scan on all five public routes and report the remaining violation count.
-
-### Technical notes
-- Contrast fixes are HSL token edits in `src/index.css` only; no component-level color hardcoding.
-- Slider and toast fixes touch the shadcn primitives in `src/components/ui/`, applied as ARIA additions rather than behavior rewrites.
+- Single migration: `ALTER VIEW public.public_opportunities SET (security_invoker = false);` followed by the GRANT block above.
+- No frontend changes needed — `src/pages/Opportunities.tsx` already queries `public_opportunities`.
+- Edge functions use the service role and were unaffected (service role bypasses both grants checks via `ALL` and RLS), which is why emails and scraping kept working while the public pages failed.
