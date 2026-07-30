@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.recheck-manual-jobs]
 verify_jwt = false
+
+[functions.health-check]
+verify_jwt = false
