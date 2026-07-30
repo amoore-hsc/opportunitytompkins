@@ -8,7 +8,8 @@ const corsHeaders = {
 };
 
 const ALERT_RECIPIENTS = ["rhinton@uwtc.org"];
-const SITE_URL = Deno.env.get("SITE_URL") ?? "https://tompkins-opportunity.org";
+const rawSiteUrl = (Deno.env.get("SITE_URL") ?? "https://tompkins-opportunity.org").trim();
+const SITE_URL = (/^https?:\/\//i.test(rawSiteUrl) ? rawSiteUrl : `https://${rawSiteUrl}`).replace(/\/+$/, "");
 
 interface CheckResult {
   name: string;
