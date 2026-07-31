@@ -31,6 +31,7 @@ import { User, Session } from "@supabase/supabase-js";
 import { UserSubmittedJobsSection } from "@/components/UserSubmittedJobsSection";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { ClientErrorsCard } from "@/components/admin/ClientErrorsCard";
+import { FeedbackCard } from "@/components/admin/FeedbackCard";
 import { DashboardExport } from "@/components/admin/DashboardExport";
 
 type DaySchedule = {
@@ -1203,6 +1204,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
         {activeTab === "dashboard" && (
           <div className="mb-8 space-y-6">
             <AdminDashboard ref={dashboardRef} metrics={dashboardMetrics} />
+            <FeedbackCard />
             <ClientErrorsCard />
           </div>
         )}
