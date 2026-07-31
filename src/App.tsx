@@ -12,6 +12,7 @@ import Admin from "./pages/Admin";
 import Employment from "./pages/Employment";
 import EmploymentResources from "./pages/EmploymentResources";
 import NotFound from "./pages/NotFound";
+import { FeedbackBubble } from "@/components/FeedbackBubble";
 
 
 const queryClient = new QueryClient();
