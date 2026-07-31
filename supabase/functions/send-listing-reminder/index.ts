@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { notifyGoogleChat } from "../_shared/googleChat.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -482,6 +483,20 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log(`Reminder process complete. Sent ${emailsSent} emails covering ${listingsUpdated} listings.`);
+
+    if (emailsSent > 0 || errors.length > 0) {
+      await notifyGoogleChat({
+        icon: "⏰",
+        title: "Listing reminders sent",
+        fields: [
+          { label: "Emails sent", value: String(emailsSent) },
+          { label: "Listings covered", value: String(listingsUpdated) },
+          ...(errors.length > 0
+            ? [{ label: "Errors", value: String(errors.length) }]
+            : []),
+        ],
+      });
+    }
 
     return new Response(
       JSON.stringify({ 

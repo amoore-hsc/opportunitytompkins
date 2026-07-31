@@ -1,0 +1,1 @@
+DELETE FROM public.feedback_submissions WHERE message = 'Automated smoke test of the feedback widget.';

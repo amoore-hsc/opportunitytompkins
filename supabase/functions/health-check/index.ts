@@ -1,4 +1,5 @@
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { notifyGoogleChat } from "../_shared/googleChat.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -150,6 +151,19 @@ Deno.serve(async (req) => {
     } catch (e) {
       console.error("Failed to send health alert email:", e);
     }
+
+    await notifyGoogleChat({
+      icon: "🚨",
+      title: `Site health check failed (${failures.length} issue${failures.length === 1 ? "" : "s"})`,
+      subtitle: "Automated hourly monitor",
+      body: "Visitors may be unable to see listings.",
+      fields: checks.map((c) => ({
+        label: `${c.ok ? "OK" : "FAILED"} — ${c.name}`,
+        value: c.detail,
+      })),
+      linkText: "Open site",
+      linkUrl: SITE_URL,
+    });
   }
 
   console.log("Health check results:", JSON.stringify(checks));

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { notifyGoogleChat } from "../_shared/googleChat.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -389,6 +390,16 @@ ${opp.program_components ? opp.program_components.split(',').map((c: string) => 
     });
 
     console.log("Weekly report email sent successfully:", emailResponse);
+
+    await notifyGoogleChat({
+      icon: "📊",
+      title: `Weekly application report — ${formatDate(startDate)} to ${formatDate(endDate)}`,
+      fields: [
+        { label: "Total applications", value: String(totalApplications) },
+        { label: "Opportunities with activity", value: String(sortedOpportunities.length) },
+      ],
+      body: "The full report was emailed to the admin distribution list.",
+    });
 
     return new Response(JSON.stringify({ 
       success: true, 

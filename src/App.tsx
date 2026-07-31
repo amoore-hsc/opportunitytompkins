@@ -12,6 +12,7 @@ import Admin from "./pages/Admin";
 import Employment from "./pages/Employment";
 import EmploymentResources from "./pages/EmploymentResources";
 import NotFound from "./pages/NotFound";
+import { FeedbackBubble } from "@/components/FeedbackBubble";
 
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <FeedbackBubble />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { notifyGoogleChat } from "../_shared/googleChat.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -211,6 +212,19 @@ ${isEducation
     });
 
     console.log("Confirmation email sent successfully:", emailResponse);
+
+    await notifyGoogleChat({
+      icon: "📝",
+      title: isEducation ? "New education listing submitted" : "New volunteer listing submitted",
+      fields: [
+        { label: "Organization", value: orgName || "Unknown" },
+        {
+          label: isEducation ? "Program" : "Position",
+          value: (isEducation ? programName : positionTitle) || "Not specified",
+        },
+        { label: "Contact", value: orgEmail || "Not provided" },
+      ],
+    });
 
     return new Response(JSON.stringify(emailResponse), {
       status: 200,
