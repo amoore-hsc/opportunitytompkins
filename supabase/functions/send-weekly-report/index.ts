@@ -383,7 +383,7 @@ ${opp.program_components ? opp.program_components.split(',').map((c: string) => 
     // Send the email
     const emailResponse = await resend.emails.send({
       from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
-      to: ["amoore@hsctc.org", "cwilcox@hsctc.org", "rhinton@uwtc.org"],
+      to: ["amoore@hsctc.org", "cwilcox@hsctc.org"],
       subject: `Weekly Application Report - ${formatDate(startDate)} to ${formatDate(endDate)}`,
       html: emailHtml,
     });

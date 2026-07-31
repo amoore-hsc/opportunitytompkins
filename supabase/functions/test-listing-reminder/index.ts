@@ -136,7 +136,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
           <div style="background-color: #f0f9ff; border-radius: 8px; padding: 15px; text-align: center;">
             <p style="margin: 0; font-size: 14px; color: #555;">
               <strong>Questions?</strong><br>
-              Contact <a href="mailto:rhinton@uwtc.org" style="color: #1e3a5f;">rhinton@uwtc.org</a>
+              Contact <a href="mailto:amoore@hsctc.org" style="color: #1e3a5f;">amoore@hsctc.org</a>
             </p>
           </div>
         </div>

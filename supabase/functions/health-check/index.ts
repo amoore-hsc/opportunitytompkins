@@ -7,7 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ALERT_RECIPIENTS = ["rhinton@uwtc.org"];
+const ALERT_RECIPIENTS = ["amoore@hsctc.org"];
 const rawSiteUrl = (Deno.env.get("SITE_URL") ?? "https://tompkins-opportunity.org").trim();
 const SITE_URL = (/^https?:\/\//i.test(rawSiteUrl) ? rawSiteUrl : `https://${rawSiteUrl}`).replace(/\/+$/, "");
 
