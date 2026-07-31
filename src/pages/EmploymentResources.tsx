@@ -310,8 +310,8 @@ const EmploymentResources = () => {
 
         <div className="mt-8 text-center text-sm text-muted-foreground">
           Questions? Contact{" "}
-          <a href="mailto:rhinton@uwtc.org" className="text-primary underline hover:no-underline">
-            rhinton@uwtc.org
+          <a href="mailto:amoore@hsctc.org" className="text-primary underline hover:no-underline">
+            amoore@hsctc.org
           </a>
         </div>
       </main>

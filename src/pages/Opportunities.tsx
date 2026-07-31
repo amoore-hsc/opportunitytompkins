@@ -170,8 +170,8 @@ const Opportunities = () => {
         <footer className="mt-8 text-center text-sm text-muted-foreground">
           <p>
             Need Help With Your Posting? Reach out to{" "}
-            <a href="mailto:rhinton@uwtc.org" className="underline hover:text-foreground">
-              rhinton@uwtc.org
+            <a href="mailto:amoore@hsctc.org" className="underline hover:text-foreground">
+              amoore@hsctc.org
             </a>{" "}
             for assistance.
           </p>
