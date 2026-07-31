@@ -134,6 +134,45 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback_submissions: {
+        Row: {
+          created_at: string
+          feedback_type: string
+          id: string
+          message: string
+          page_path: string | null
+          status: string
+          submitter_email: string | null
+          submitter_name: string | null
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          feedback_type: string
+          id?: string
+          message: string
+          page_path?: string | null
+          status?: string
+          submitter_email?: string | null
+          submitter_name?: string | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          feedback_type?: string
+          id?: string
+          message?: string
+          page_path?: string | null
+          status?: string
+          submitter_email?: string | null
+          submitter_name?: string | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       opportunities: {
         Row: {
           active: boolean
