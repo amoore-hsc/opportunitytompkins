@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
+import { notifyGoogleChat } from "../_shared/googleChat.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -225,6 +226,18 @@ Deno.serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+
+    await notifyGoogleChat({
+      icon: "🧾",
+      title: "New job posting submitted",
+      fields: [
+        { label: "Job title", value: job_title },
+        { label: "Employer", value: finalEmployer },
+        { label: "Submitted by", value: submitter_email },
+      ],
+      linkText: "View posting",
+      linkUrl: posting_url,
+    });
 
     return new Response(
       JSON.stringify({
