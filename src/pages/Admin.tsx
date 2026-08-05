@@ -217,6 +217,10 @@ const StaleListingsAlert = ({
           <ul className="mt-2 space-y-2 text-sm text-destructive/80">
             {staleListings.map(listing => {
               const count = listing.manual_reminder_count || 0;
+              const manualAt = listing.last_manual_reminder_at ? new Date(listing.last_manual_reminder_at) : null;
+              const autoAt = listing.reminder_sent_at ? new Date(listing.reminder_sent_at) : null;
+              const lastAt = [manualAt, autoAt].filter(Boolean).sort((a, b) => b!.getTime() - a!.getTime())[0] || null;
+              const lastWasAutomated = !!(lastAt && autoAt && lastAt.getTime() === autoAt.getTime());
               return (
                 <li key={listing.id} className="flex flex-wrap items-center justify-between gap-2 rounded border border-destructive/20 bg-background/40 p-2">
                   <div className="min-w-0">
@@ -225,12 +229,13 @@ const StaleListingsAlert = ({
                     <div className="text-xs text-destructive/60">
                       Updated {formatDistanceToNow(new Date(listing.updated_at), { addSuffix: true })}
                       {" · "}
-                      Reminder sent {count} {count === 1 ? 'time' : 'times'}
-                      {listing.last_manual_reminder_at && (
-                        <> · last {formatDistanceToNow(new Date(listing.last_manual_reminder_at), { addSuffix: true })}</>
+                      Manual reminders: {count}
+                      {lastAt && (
+                        <> · last reminder {formatDistanceToNow(lastAt, { addSuffix: true })} ({lastWasAutomated ? "automated" : "manual"})</>
                       )}
                     </div>
                   </div>
+
                   <div className="flex shrink-0 flex-wrap gap-2">
                     <Button
                       size="sm"

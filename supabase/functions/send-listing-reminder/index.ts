@@ -337,6 +337,25 @@ const handler = async (req: Request): Promise<Response> => {
         html: emailHtml,
       });
 
+      // Resend returns { data, error } — a failure here is NOT a thrown exception.
+      if ((emailResponse as any)?.error) {
+        const resendError = (emailResponse as any).error;
+        console.error("Resend rejected manual reminder:", JSON.stringify(resendError));
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: resendError?.message || "Email provider rejected the message",
+            provider_error: resendError,
+            recipient,
+          }),
+          { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      console.log(
+        `Manual reminder accepted by Resend (id: ${(emailResponse as any)?.data?.id}) for ${recipient}`
+      );
+
       let newCount = opp.manual_reminder_count || 0;
       let nowIso = new Date().toISOString();
       if (!sendToSelf) {
@@ -346,6 +365,7 @@ const handler = async (req: Request): Promise<Response> => {
           .update({
             manual_reminder_count: newCount,
             last_manual_reminder_at: nowIso,
+            reminder_sent_at: nowIso,
           })
           .eq("id", opp.id);
 
@@ -353,6 +373,7 @@ const handler = async (req: Request): Promise<Response> => {
           console.error("Failed to update manual reminder counters:", updateError);
         }
       }
+
 
       return new Response(
         JSON.stringify({
