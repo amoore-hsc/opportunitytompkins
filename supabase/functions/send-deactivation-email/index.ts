@@ -55,7 +55,7 @@ export const buildDeactivationEmail = (body: DeactivationEmailRequest) => {
   const detailsHtml = `<p style="margin:0 0 8px 0;"><strong>Organization:</strong> ${escapeHtml(body.orgName)}</p>
 <p style="margin:0 0 8px 0;"><strong>${isEducation ? "Program" : "Position"}:</strong> ${escapeHtml(listingName)}</p>
 <p style="margin:0 0 8px 0;"><strong>Removed On:</strong> ${escapeHtml(removedOn)}</p>
-${body.removalReason ? `<p style="margin:0 0 8px 0;"><strong>Reason:</strong> ${escapeHtml(body.removalReason)}</p>` : ""}
+<p style="margin:0 0 8px 0;"><strong>Reason:</strong> ${escapeHtml(body.removalReason || "Expired")}</p>
 ${
     body.positionsFilled !== null && body.positionsFilled !== undefined
       ? `<p style="margin:0 0 0 0;"><strong>Positions Filled:</strong> ${escapeHtml(body.positionsFilled)}</p>`
