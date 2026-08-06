@@ -928,14 +928,15 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       .sort((a, b) => b[1].positions - a[1].positions)
       .map(([name, data]) => ({ name, positions: data.positions, listings: data.listings }));
 
+    // Only listings with an explicitly recorded reason are counted:
+    // organization-provided closure reasons, or "Deactivated by admin" stamped
+    // when a system admin manually deactivates. Merely inactive listings are excluded.
     const removalReasons: Record<string, number> = {};
     for (const opp of opportunities) {
-      if (opp.removal_reason) {
-        removalReasons[opp.removal_reason] = (removalReasons[opp.removal_reason] || 0) + 1;
-      } else if (opp.active === false && opp.deactivated_at) {
-        removalReasons["Deactivated"] = (removalReasons["Deactivated"] || 0) + 1;
-      }
+      if (!opp.removal_reason) continue;
+      removalReasons[opp.removal_reason] = (removalReasons[opp.removal_reason] || 0) + 1;
     }
+
 
 
 
