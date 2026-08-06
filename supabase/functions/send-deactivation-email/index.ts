@@ -86,7 +86,7 @@ ${
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">This listing has been deactivated and is no longer visible to the public. Thank you for keeping the community listings up to date. If this was done in error, or if the opportunity opens again, it can be reactivated at any time using the button below.</p>
+<p style="margin:0 0 25px 0;">This listing has been deactivated and is no longer visible to the public.</p>
 
 <!-- Listing Details Card -->
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
@@ -97,7 +97,7 @@ ${detailsHtml}
 <!-- Reactivate Card (Green) -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Reactivate Anytime</h2>
-<p style="margin:0 0 15px 0;">Your listing has not been deleted. You can bring it back at any time — the details are saved exactly as you left them, and you can edit them before or after reactivating.</p>
+<p style="margin:0 0 15px 0;">Your listing has not been deleted. Click the button below to reactivate if the opportunity becomes available again.</p>
 <p style="margin:0 0 15px 0; text-align:center;">
 <a href="${reactivateUrl}" style="display:inline-block; padding:14px 28px; background-color:#2e7d32; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Reactivate Your Listing</a>
 </p>
@@ -107,7 +107,7 @@ ${detailsHtml}
 <!-- Need Help Card (Orange) -->
 <div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">Need Help?</h2>
-<p style="margin:0;">For additional assistance, please email: <a href="mailto:amoore@hsctc.org" style="color:#1e3a5f; font-weight:bold;">amoore@hsctc.org</a></p>
+<p style="margin:0;">For additional assistance, please email: <a href="mailto:rhinton@uwtc.org" style="color:#1e3a5f; font-weight:bold;">rhinton@uwtc.org</a></p>
 </div>
 
 </td>
@@ -117,7 +117,7 @@ ${detailsHtml}
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:amoore@hsctc.org" style="color:#ffffff; font-weight:bold;">amoore@hsctc.org</a></p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">rhinton@uwtc.org</a></p>
 </td>
 </tr>
 
