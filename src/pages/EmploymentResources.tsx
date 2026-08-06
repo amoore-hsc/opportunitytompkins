@@ -238,9 +238,7 @@ const EmploymentResources = () => {
                     </div>
                     <div className="inline-flex items-center gap-2">
                       <Phone className="h-4 w-4 text-primary" aria-hidden="true" />
-                      <a href="tel:607-272-7570" className="text-primary hover:underline">
-                        (607) 272-7570
-                      </a>
+                      <span className="text-foreground">(607) 272-7570</span>
                     </div>
                     <div className="inline-flex items-center gap-2">
                       <Mail className="h-4 w-4 text-primary" aria-hidden="true" />
