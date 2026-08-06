@@ -8,7 +8,7 @@ const corsHeaders = {
 
 interface UpdateOpportunityRequest {
   token: string;
-  action?: "update" | "deactivate";
+  action?: "update" | "deactivate" | "reactivate";
   updates?: {
     type?: string;
     role_classification?: string;
