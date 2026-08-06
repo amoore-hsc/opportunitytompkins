@@ -118,8 +118,81 @@ const handler = async (req: Request): Promise<Response> => {
 
       console.log("Opportunity deactivated:", deactivatedOpportunity.id);
 
+      // Send deactivation confirmation email (non-blocking failure)
+      try {
+        const recipients = Array.from(
+          new Set(
+            [deactivatedOpportunity.org_email, deactivatedOpportunity.admin_email].filter(
+              (e: string | null) => !!e,
+            ),
+          ),
+        );
+        const emailRes = await fetch(`${supabaseUrl}/functions/v1/send-deactivation-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({
+            to: recipients,
+            orgName: deactivatedOpportunity.org_name,
+            opportunityType: deactivatedOpportunity.type,
+            positionTitle: deactivatedOpportunity.position_title,
+            programName: deactivatedOpportunity.program_name,
+            positionsFilled: deactivatedOpportunity.positions_filled,
+            removalReason: deactivatedOpportunity.removal_reason,
+            deactivatedAt: deactivatedOpportunity.deactivated_at,
+            editToken: token,
+          }),
+        });
+        if (!emailRes.ok) {
+          console.error("Deactivation email failed:", emailRes.status, await emailRes.text());
+        }
+      } catch (emailError) {
+        console.error("Deactivation email error:", emailError);
+      }
+
       return new Response(
         JSON.stringify({ success: true, opportunity: { id: deactivatedOpportunity.id }, action: "deactivated" }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Handle reactivation action
+    if (action === "reactivate") {
+      if (existingOpportunity.active) {
+        return new Response(
+          JSON.stringify({ success: true, opportunity: { id: existingOpportunity.id }, action: "already_active" }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      const { data: reactivated, error: reactivateError } = await supabase
+        .from("opportunities")
+        .update({
+          active: true,
+          deactivated_at: null,
+          removal_reason: null,
+          positions_filled: null,
+          reminder_sent_at: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("edit_token", token)
+        .select("id")
+        .single();
+
+      if (reactivateError) {
+        console.error("Reactivation error:", reactivateError);
+        return new Response(
+          JSON.stringify({ error: "Failed to reactivate opportunity" }),
+          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      console.log("Opportunity reactivated:", reactivated.id);
+
+      return new Response(
+        JSON.stringify({ success: true, opportunity: { id: reactivated.id }, action: "reactivated" }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
