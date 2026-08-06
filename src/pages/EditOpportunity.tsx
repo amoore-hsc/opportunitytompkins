@@ -445,7 +445,7 @@ const EditOpportunity = () => {
   if (notFound) {
     return (
       <div className="min-h-dvh bg-background">
-        <header className="border-b border-border bg-[#eeeeee]">
+        <header className="border-b border-border bg-card">
           <div className="container mx-auto px-4 py-6">
             <div className="flex items-center gap-2">
               <Handshake className="h-8 w-8 text-primary" />
@@ -468,7 +468,7 @@ const EditOpportunity = () => {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="border-b border-border bg-[#eeeeee]">
+      <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">

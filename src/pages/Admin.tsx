@@ -1221,7 +1221,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="border-b border-border bg-[#eeeeee]">
+      <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
