@@ -97,7 +97,7 @@ ${detailsHtml}
 <!-- Reactivate Card (Green) -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#2e7d32;">Reactivate Anytime</h2>
-<p style="margin:0 0 15px 0;">Your listing has not been deleted. You can bring it back at any time — the details are saved exactly as you left them, and you can edit them before or after reactivating.</p>
+<p style="margin:0 0 15px 0;">Your listing has not been deleted. Click the button below to reactivate if the opportunity becomes available again.</p>
 <p style="margin:0 0 15px 0; text-align:center;">
 <a href="${reactivateUrl}" style="display:inline-block; padding:14px 28px; background-color:#2e7d32; color:#ffffff; text-decoration:none; font-weight:bold; border-radius:6px;">Reactivate Your Listing</a>
 </p>
