@@ -47,3 +47,6 @@ verify_jwt = false
 
 [functions.submit-feedback]
 verify_jwt = false
+
+[functions.send-deactivation-email]
+verify_jwt = false
