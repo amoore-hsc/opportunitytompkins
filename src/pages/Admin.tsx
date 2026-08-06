@@ -752,7 +752,9 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
     const isEducation = editingOpportunity.type === "education";
     const previous = opportunities.find((o) => o.id === editingOpportunity.id);
     const isDeactivating = previous?.active === true && editingOpportunity.active === false;
+    const isReactivating = previous?.active === false && editingOpportunity.active === true;
     const deactivatedAt = new Date().toISOString();
+
 
     try {
       const { error } = await supabase
@@ -780,6 +782,10 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
           website: isEducation ? editingOpportunity.website : null,
           program_components: isEducation ? editingOpportunity.program_components : null,
           ...(isDeactivating ? { deactivated_at: deactivatedAt } : {}),
+          ...(isReactivating
+            ? { deactivated_at: null, removal_reason: null, positions_filled: null, reminder_sent_at: null }
+            : {}),
+
         })
         .eq("id", editingOpportunity.id);
 
@@ -808,6 +814,27 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
           console.error("Failed to send deactivation email:", e);
           emailNote = " But the deactivation email could not be sent.";
         }
+      } else if (isReactivating) {
+        const recipient = editingOpportunity.admin_email || editingOpportunity.org_email;
+        try {
+          const { error: emailError } = await supabase.functions.invoke("send-reactivation-email", {
+            body: {
+              to: [recipient],
+              orgName: editingOpportunity.org_name,
+              opportunityType: editingOpportunity.type,
+              positionTitle: editingOpportunity.position_title,
+              programName: editingOpportunity.program_name,
+              reactivatedAt: new Date().toISOString(),
+              editToken: editingOpportunity.edit_token,
+            },
+          });
+          if (emailError) throw emailError;
+          emailNote = ` Reactivation email sent to ${recipient}.`;
+        } catch (e) {
+          console.error("Failed to send reactivation email:", e);
+          emailNote = " But the reactivation email could not be sent.";
+        }
+
       }
 
       toast({

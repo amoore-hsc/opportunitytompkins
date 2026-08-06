@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -167,6 +167,7 @@ const handler = async (req: Request): Promise<Response> => {
         );
       }
 
+      const reactivatedAt = new Date().toISOString();
       const { data: reactivated, error: reactivateError } = await supabase
         .from("opportunities")
         .update({
@@ -175,10 +176,10 @@ const handler = async (req: Request): Promise<Response> => {
           removal_reason: null,
           positions_filled: null,
           reminder_sent_at: null,
-          updated_at: new Date().toISOString(),
+          updated_at: reactivatedAt,
         })
         .eq("edit_token", token)
-        .select("id")
+        .select()
         .single();
 
       if (reactivateError) {
@@ -190,6 +191,37 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       console.log("Opportunity reactivated:", reactivated.id);
+
+      // Send reactivation confirmation email (non-blocking failure)
+      try {
+        const recipients = Array.from(
+          new Set(
+            [reactivated.org_email, reactivated.admin_email].filter((e: string | null) => !!e),
+          ),
+        );
+        const emailRes = await fetch(`${supabaseUrl}/functions/v1/send-reactivation-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify({
+            to: recipients,
+            orgName: reactivated.org_name,
+            opportunityType: reactivated.type,
+            positionTitle: reactivated.position_title,
+            programName: reactivated.program_name,
+            reactivatedAt,
+            editToken: token,
+          }),
+        });
+        if (!emailRes.ok) {
+          console.error("Reactivation email failed:", emailRes.status, await emailRes.text());
+        }
+      } catch (emailError) {
+        console.error("Reactivation email error:", emailError);
+      }
+
 
       return new Response(
         JSON.stringify({ success: true, opportunity: { id: reactivated.id }, action: "reactivated" }),
