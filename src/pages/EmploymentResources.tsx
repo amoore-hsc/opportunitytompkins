@@ -12,6 +12,8 @@ import {
   Wrench,
   LifeBuoy,
   Users,
+  Phone,
+  Mail,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -229,9 +231,26 @@ const EmploymentResources = () => {
                     Services for every job seeker — empowering individuals and families to find
                     better employment and build better lives.
                   </p>
-                  <div className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
-                    Center Ithaca on the Commons, Downtown Ithaca
+                  <div className="mt-3 flex flex-col gap-1 text-sm text-muted-foreground">
+                    <div className="inline-flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
+                      Center Ithaca on the Commons, Downtown Ithaca
+                    </div>
+                    <div className="inline-flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-primary" aria-hidden="true" />
+                      <a href="tel:607-272-7570" className="text-primary hover:underline">
+                        (607) 272-7570
+                      </a>
+                    </div>
+                    <div className="inline-flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-primary" aria-hidden="true" />
+                      <a
+                        href="mailto:workforce@tompkinscountyny.gov"
+                        className="text-primary hover:underline"
+                      >
+                        workforce@tompkinscountyny.gov
+                      </a>
+                    </div>
                   </div>
                 </div>
                 <a
