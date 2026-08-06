@@ -781,7 +781,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
           program_name: isEducation ? editingOpportunity.program_name : null,
           website: isEducation ? editingOpportunity.website : null,
           program_components: isEducation ? editingOpportunity.program_components : null,
-          ...(isDeactivating ? { deactivated_at: deactivatedAt } : {}),
+          ...(isDeactivating ? { deactivated_at: deactivatedAt, removal_reason: "Deactivated by admin" } : {}),
           ...(isReactivating
             ? { deactivated_at: null, removal_reason: null, positions_filled: null, reminder_sent_at: null }
             : {}),
