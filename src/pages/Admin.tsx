@@ -814,6 +814,27 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
           console.error("Failed to send deactivation email:", e);
           emailNote = " But the deactivation email could not be sent.";
         }
+      } else if (isReactivating) {
+        const recipient = editingOpportunity.admin_email || editingOpportunity.org_email;
+        try {
+          const { error: emailError } = await supabase.functions.invoke("send-reactivation-email", {
+            body: {
+              to: [recipient],
+              orgName: editingOpportunity.org_name,
+              opportunityType: editingOpportunity.type,
+              positionTitle: editingOpportunity.position_title,
+              programName: editingOpportunity.program_name,
+              reactivatedAt: new Date().toISOString(),
+              editToken: editingOpportunity.edit_token,
+            },
+          });
+          if (emailError) throw emailError;
+          emailNote = ` Reactivation email sent to ${recipient}.`;
+        } catch (e) {
+          console.error("Failed to send reactivation email:", e);
+          emailNote = " But the reactivation email could not be sent.";
+        }
+
       }
 
       toast({
