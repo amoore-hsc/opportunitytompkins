@@ -115,6 +115,8 @@ const EditOpportunity = () => {
   const [removing, setRemoving] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [opportunityId, setOpportunityId] = useState<string | null>(null);
+  const [isActive, setIsActive] = useState(true);
+  const [reactivating, setReactivating] = useState(false);
   const [locationError, setLocationError] = useState("");
   const [descriptionWordCount, setDescriptionWordCount] = useState(0);
   
@@ -177,6 +179,7 @@ const EditOpportunity = () => {
 
         const opp = data.opportunity;
         setOpportunityId(opp.id);
+        setIsActive(opp.active !== false);
         setFormData({
           type: opp.type || "",
           roleClassification: opp.role_classification || "",
@@ -356,6 +359,33 @@ const EditOpportunity = () => {
     }
   };
 
+  const handleReactivateListing = async () => {
+    setReactivating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("update-opportunity-by-token", {
+        body: { token, action: "reactivate" }
+      });
+
+      if (error || data?.error) {
+        throw new Error(data?.error || error?.message || "Failed to reactivate listing");
+      }
+
+      setIsActive(true);
+      toast({
+        title: "Listing Reactivated",
+        description: "Your listing is live again and visible to the community."
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setReactivating(false);
+    }
+  };
+
   const handleRemoveListing = async () => {
     if (!removalReason) {
       toast({
@@ -459,6 +489,27 @@ const EditOpportunity = () => {
         <div className="mb-8">
           <h2 className="mb-2 text-3xl font-bold text-foreground">Edit Your {isEducation ? "Program" : "Opportunity"}</h2>
           <p className="text-muted-foreground">Update your listing details below.</p>
+          {!isActive && (
+            <div className="mt-6 rounded-lg border border-border bg-muted/50 p-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h3 className="font-semibold text-foreground">This listing is deactivated</h3>
+                  <p className="text-sm text-muted-foreground">
+                    It is not visible to the public. You can reactivate it at any time.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="success"
+                  onClick={handleReactivateListing}
+                  disabled={reactivating}
+                >
+                  {reactivating && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                  Reactivate Listing
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 rounded-xl bg-card p-8 shadow-sm border border-border">
