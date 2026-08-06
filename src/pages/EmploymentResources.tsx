@@ -243,10 +243,10 @@ const EmploymentResources = () => {
                     <div className="inline-flex items-center gap-2">
                       <Mail className="h-4 w-4 text-primary" aria-hidden="true" />
                       <a
-                        href="mailto:workforce@tompkinscountyny.gov"
+                        href="mailto:workforce@tompkins-co.org"
                         className="text-primary hover:underline"
                       >
-                        workforce@tompkinscountyny.gov
+                        workforce@tompkins-co.org
                       </a>
                     </div>
                   </div>
