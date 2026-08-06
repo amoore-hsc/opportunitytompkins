@@ -930,10 +930,13 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
 
     const removalReasons: Record<string, number> = {};
     for (const opp of opportunities) {
-      if (!opp.removal_reason && opp.active !== false) continue;
-      const reason = opp.removal_reason || "Deactivated";
-      removalReasons[reason] = (removalReasons[reason] || 0) + 1;
+      if (opp.removal_reason) {
+        removalReasons[opp.removal_reason] = (removalReasons[opp.removal_reason] || 0) + 1;
+      } else if (opp.active === false && opp.deactivated_at) {
+        removalReasons["Deactivated"] = (removalReasons["Deactivated"] || 0) + 1;
+      }
     }
+
 
 
     const removalReasonsSorted = Object.entries(removalReasons)
