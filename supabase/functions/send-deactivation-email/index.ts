@@ -107,7 +107,7 @@ ${detailsHtml}
 <!-- Need Help Card (Orange) -->
 <div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">Need Help?</h2>
-<p style="margin:0;">For additional assistance, please email: <a href="mailto:amoore@hsctc.org" style="color:#1e3a5f; font-weight:bold;">amoore@hsctc.org</a></p>
+<p style="margin:0;">For additional assistance, please email: <a href="mailto:rhinton@uwtc.org" style="color:#1e3a5f; font-weight:bold;">rhinton@uwtc.org</a></p>
 </div>
 
 </td>
@@ -117,7 +117,7 @@ ${detailsHtml}
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:amoore@hsctc.org" style="color:#ffffff; font-weight:bold;">amoore@hsctc.org</a></p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">rhinton@uwtc.org</a></p>
 </td>
 </tr>
 
