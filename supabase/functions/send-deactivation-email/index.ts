@@ -86,7 +86,7 @@ ${
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">This listing has been deactivated and is no longer visible to the public. Thank you for keeping the community listings up to date. If this was done in error, or if the opportunity opens again, it can be reactivated at any time using the button below.</p>
+<p style="margin:0 0 25px 0;">This listing has been deactivated and is no longer visible to the public.</p>
 
 <!-- Listing Details Card -->
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
