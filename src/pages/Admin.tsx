@@ -752,7 +752,9 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
     const isEducation = editingOpportunity.type === "education";
     const previous = opportunities.find((o) => o.id === editingOpportunity.id);
     const isDeactivating = previous?.active === true && editingOpportunity.active === false;
+    const isReactivating = previous?.active === false && editingOpportunity.active === true;
     const deactivatedAt = new Date().toISOString();
+
 
     try {
       const { error } = await supabase
