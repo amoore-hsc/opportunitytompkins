@@ -1,0 +1,1 @@
+UPDATE public.opportunities SET deactivated_at = now() WHERE id = '5bff3ef4-8307-462c-b397-07511cc41abc' AND active = false AND deactivated_at IS NULL;
