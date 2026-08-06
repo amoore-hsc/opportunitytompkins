@@ -779,17 +779,44 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
           program_name: isEducation ? editingOpportunity.program_name : null,
           website: isEducation ? editingOpportunity.website : null,
           program_components: isEducation ? editingOpportunity.program_components : null,
+          ...(isDeactivating ? { deactivated_at: deactivatedAt } : {}),
         })
         .eq("id", editingOpportunity.id);
 
       if (error) throw error;
 
+      let emailNote = "";
+      if (isDeactivating) {
+        const recipient = editingOpportunity.admin_email || editingOpportunity.org_email;
+        try {
+          const { error: emailError } = await supabase.functions.invoke("send-deactivation-email", {
+            body: {
+              to: [recipient],
+              orgName: editingOpportunity.org_name,
+              opportunityType: editingOpportunity.type,
+              positionTitle: editingOpportunity.position_title,
+              programName: editingOpportunity.program_name,
+              positionsFilled: editingOpportunity.positions_filled ?? null,
+              removalReason: editingOpportunity.removal_reason ?? null,
+              deactivatedAt,
+              editToken: editingOpportunity.edit_token,
+            },
+          });
+          if (emailError) throw emailError;
+          emailNote = ` Deactivation email sent to ${recipient}.`;
+        } catch (e) {
+          console.error("Failed to send deactivation email:", e);
+          emailNote = " But the deactivation email could not be sent.";
+        }
+      }
+
       toast({
         title: "Success",
-        description: "Opportunity updated successfully",
+        description: `Opportunity updated successfully.${emailNote}`,
       });
       setEditingOpportunity(null);
       fetchAllOpportunities();
+
     } catch (error: any) {
       toast({
         title: "Error",
