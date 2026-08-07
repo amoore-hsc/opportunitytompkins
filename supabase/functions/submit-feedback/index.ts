@@ -1,10 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "https://esm.sh/resend@2.0.0";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,7 +9,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const ALERT_RECIPIENTS = ["amoore@hsctc.org"];
 const rawSiteUrl = (Deno.env.get("SITE_URL") ?? "https://tompkins-opportunity.org").trim();
 const SITE_URL = (/^https?:\/\//i.test(rawSiteUrl) ? rawSiteUrl : `https://${rawSiteUrl}`)
   .replace(/\/+$/, "");
