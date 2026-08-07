@@ -24,13 +24,6 @@ const BodySchema = z.object({
   website: z.string().max(0).optional().nullable(),
 });
 
-const escapeHtml = (value: string) =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -81,34 +74,6 @@ serve(async (req) => {
     }
 
     const label = feedback_type === "bug" ? "Bug report" : "Feature request";
-
-    try {
-      await resend.emails.send({
-        from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
-        to: ALERT_RECIPIENTS,
-        subject: `${feedback_type === "bug" ? "🐞" : "💡"} ${label} submitted`,
-        html: `
-          <table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;max-width:640px;">
-            <tr>
-              <td style="background:#1e3a5f;padding:20px 24px;">
-                <span style="color:#ffffff;font-size:20px;font-weight:bold;">${label}</span>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:24px;color:#111827;">
-                <p style="margin:0 0 16px;white-space:pre-wrap;">${escapeHtml(message)}</p>
-                <p style="margin:0 0 6px;font-size:14px;color:#4b5563;"><strong>Page:</strong> ${escapeHtml(page_path || "Not provided")}</p>
-                <p style="margin:0 0 6px;font-size:14px;color:#4b5563;"><strong>Name:</strong> ${escapeHtml(submitter_name || "Not provided")}</p>
-                <p style="margin:0 0 6px;font-size:14px;color:#4b5563;"><strong>Email:</strong> ${escapeHtml(submitter_email || "Not provided")}</p>
-                <p style="margin:16px 0 0;font-size:13px;color:#6b7280;">View all feedback in the Admin dashboard: <a href="${SITE_URL}/admin">${escapeHtml(SITE_URL)}/admin</a></p>
-              </td>
-            </tr>
-          </table>
-        `,
-      });
-    } catch (e) {
-      console.error("Failed to send feedback email:", e);
-    }
 
     await notifyGoogleChat({
       icon: feedback_type === "bug" ? "🐞" : "💡",
