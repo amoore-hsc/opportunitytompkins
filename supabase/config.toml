@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.send-deactivation-email]
 verify_jwt = false
+
+[functions.weekly-webhook-test]
+verify_jwt = false
