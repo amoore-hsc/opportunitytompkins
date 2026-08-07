@@ -31,8 +31,8 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const ok = await notifyGoogleChat({
-      icon: "💓",
-      title: "Weekly webhook heartbeat",
+      icon: "🧪",
+      title: "Weekly webhook test",
       subtitle: "Feedback notifications are flowing",
       body: "This is an automated weekly test. If you can see this message in Google Chat, the feedback webhook is working correctly.",
       fields: [
@@ -41,7 +41,7 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     if (!ok) {
-      console.error("Weekly webhook heartbeat failed to post to Google Chat");
+      console.error("Weekly webhook test failed to post to Google Chat");
       return new Response(
         JSON.stringify({ ok: false, error: "Failed to post to Google Chat" }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
@@ -49,7 +49,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     return new Response(
-      JSON.stringify({ ok: true, message: "Heartbeat posted to Google Chat" }),
+      JSON.stringify({ ok: true, message: "Weekly webhook test posted to Google Chat" }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
   } catch (err) {
