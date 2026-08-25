@@ -2,14 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
 All colors MUST be HSL.
-Tompkins County Government Color Scheme
+Brand Color Scheme — customize these tokens for your county/organization
 */
 
 @layer base {
   :root {
-    /* Tompkins County Navy Blue primary palette */
+    /* Primary palette — navy blue */
     --background: 0 0% 100%;
     --foreground: 213 50% 20%;
 
@@ -19,7 +19,7 @@ Tompkins County Government Color Scheme
     --popover: 0 0% 100%;
     --popover-foreground: 213 50% 20%;
 
-    /* Deep Navy Blue primary - Tompkins County brand */
+    /* Deep Navy Blue primary */
     --primary: 213 55% 25%;
     --primary-foreground: 0 0% 100%;
 

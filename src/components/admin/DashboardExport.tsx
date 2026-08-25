@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DashboardMetrics } from "@/components/admin/AdminDashboard";
+import { siteConfig } from "@/config";
 
 interface DashboardExportProps {
   metrics: DashboardMetrics;
@@ -20,7 +21,8 @@ export const DashboardExport = ({ metrics, dashboardRef }: DashboardExportProps)
   const [isExporting, setIsExporting] = useState(false);
 
   const date = new Date().toISOString().slice(0, 10);
-  const baseFilename = `tompkins-opportunity-dashboard-${date}`;
+  const slug = siteConfig.siteName.toLowerCase().replace(/\s+/g, "-");
+  const baseFilename = `${slug}-dashboard-${date}`;
 
   const exportToPdf = async () => {
     if (!dashboardRef.current) return;

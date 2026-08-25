@@ -62,11 +62,11 @@ export async function notifyGoogleChat(
   const payload = {
     cardsV2: [
       {
-        cardId: `tompkins-${Date.now()}`,
+        cardId: `opportunity-board-${Date.now()}`,
         card: {
           header: {
             title: `${icon ? `${icon} ` : ""}${title}`,
-            subtitle: subtitle || "Tompkins Opportunity",
+            subtitle: subtitle || getSiteName(),
           },
           sections: [{ widgets }],
         },

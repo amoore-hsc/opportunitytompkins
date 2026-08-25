@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -121,7 +122,7 @@ function generateEmail(
               </table>
               
               <p style="margin: 0;">
-                Thank you for being part of the Tompkins Opportunity network!
+                Thank you for being part of the ${getSiteName()} network!
               </p>
               
             </td>
@@ -131,7 +132,7 @@ function generateEmail(
           <tr>
             <td style="background-color: #1e3a5f; padding: 25px; text-align: center;">
               <p style="margin: 0 0 5px 0; color: #ffffff; font-size: 16px;">Need Help?</p>
-              <p style="margin: 0; color: #a0c4e8; font-size: 14px;"><a href="mailto:amoore@hsctc.org" style="color: #ffffff; font-weight: bold;">Contact Us</a></p>
+              <p style="margin: 0; color: #a0c4e8; font-size: 14px;"><a href="mailto:${getSupportEmail()}" style="color: #ffffff; font-weight: bold;">Contact Us</a></p>
             </td>
           </tr>
           
@@ -153,7 +154,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    const siteUrl = Deno.env.get("SITE_URL") || "https://tompkins-opportunity.org";
+    const siteUrl = Deno.env.get("SITE_URL") || "https://example.com";
 
     if (!supabaseUrl || !supabaseServiceKey) {
       throw new Error("Missing Supabase environment variables");
@@ -213,7 +214,7 @@ const handler = async (req: Request): Promise<Response> => {
       const testHtml = generateEmail(sampleOpp as Opportunity, 5, siteUrl);
 
       const { error: emailError } = await resend.emails.send({
-        from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+        from: getFromEmail(),
         to: [testEmail],
         subject: `Great News! Interest In Your Listing`,
         html: testHtml,
@@ -314,7 +315,7 @@ const handler = async (req: Request): Promise<Response> => {
         const notificationEmail = opportunity.admin_email || opportunity.org_email;
 
         const { error: emailError } = await resend.emails.send({
-          from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+          from: getFromEmail(),
           to: [notificationEmail],
           subject: `Great News! Interest In Your Listing`,
           html: emailHtml,

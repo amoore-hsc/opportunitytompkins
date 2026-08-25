@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -369,7 +370,7 @@ ${opp.program_components ? opp.program_components.split(',').map((c: string) => 
 <!-- Footer -->
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
-<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Tompkins Opportunity</p>
+<p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">${getSiteName()}</p>
 <p style="margin:0; color:#a0c4e8; font-size:14px;">This is an automated weekly report</p>
 </td>
 </tr>
@@ -383,8 +384,8 @@ ${opp.program_components ? opp.program_components.split(',').map((c: string) => 
 
     // Send the email
     const emailResponse = await resend.emails.send({
-      from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
-      to: ["amoore@hsctc.org", "cwilcox@hsctc.org"],
+      from: getFromEmail(),
+      to: getAlertRecipients(),
       subject: `Weekly Application Report - ${formatDate(startDate)} to ${formatDate(endDate)}`,
       html: emailHtml,
     });

@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -122,7 +123,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">You have <strong>${listingCount} ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} not been updated in 60+ days.</p>
+<p style="margin:0 0 25px 0;">You have <strong>${listingCount} ${listingWord}</strong> on ${getSiteName()} that ${listingCount === 1 ? 'has' : 'have'} not been updated in 60+ days.</p>
 
 <!-- Action Items Card -->
 <div style="background-color:#e6f7e6; border-left:4px solid #2e7d32; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
@@ -147,7 +148,7 @@ ${listingBlocks}
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px;"><a href="mailto:amoore@hsctc.org" style="color:#ffffff; font-weight:bold;">Contact Us</a></p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;"><a href="mailto:${getSupportEmail()}" style="color:#ffffff; font-weight:bold;">Contact Us</a></p>
 </td>
 </tr>
 
@@ -286,7 +287,7 @@ const handler = async (req: Request): Promise<Response> => {
         : `[TEST] Reminder: Your ${listingCount} Listings Need Attention`;
 
       const emailResponse = await resend.emails.send({
-        from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+        from: getFromEmail(),
         to: [testEmail],
         subject: subject,
         html: emailHtml,
@@ -331,7 +332,7 @@ const handler = async (req: Request): Promise<Response> => {
       const subject = `${subjectPrefix}Reminder: Your "${opp.position_title || opp.type}" Listing Needs Attention`;
 
       const emailResponse = await resend.emails.send({
-        from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+        from: getFromEmail(),
         to: [recipient],
         subject,
         html: emailHtml,
@@ -474,7 +475,7 @@ const handler = async (req: Request): Promise<Response> => {
           : `Reminder: Your ${listingCount} Listings Need Attention`;
 
         const emailResponse = await resend.emails.send({
-          from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+          from: getFromEmail(),
           to: [email],
           subject: subject,
           html: emailHtml,

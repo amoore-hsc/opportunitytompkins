@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -112,7 +113,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
           </p>
           
           <p style="font-size: 16px; color: #333; margin-bottom: 25px;">
-            You have <strong>${listingCount} opportunity ${listingWord}</strong> on Tompkins Opportunity that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates. Please review ${listingCount === 1 ? 'it' : 'them'} to ensure the information is still current.
+            You have <strong>${listingCount} opportunity ${listingWord}</strong> on ${getSiteName()} that ${listingCount === 1 ? 'has' : 'have'} been active for 60+ days without updates. Please review ${listingCount === 1 ? 'it' : 'them'} to ensure the information is still current.
           </p>
           
           <!-- Listing Blocks -->
@@ -136,7 +137,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
           <div style="background-color: #f0f9ff; border-radius: 8px; padding: 15px; text-align: center;">
             <p style="margin: 0; font-size: 14px; color: #555;">
               <strong>Questions?</strong><br>
-              Contact <a href="mailto:amoore@hsctc.org" style="color: #1e3a5f;">amoore@hsctc.org</a>
+              Contact <a href="mailto:${getSupportEmail()}" style="color: #1e3a5f;">${getSupportEmail()}</a>
             </p>
           </div>
         </div>
@@ -147,7 +148,7 @@ const generateConsolidatedEmail = (opportunities: Opportunity[], siteUrl: string
             Thank you for supporting our community!
           </p>
           <p style="color: #a0aec0; margin: 10px 0 0 0; font-size: 12px;">
-            Tompkins Opportunity
+            ${getSiteName()}
           </p>
         </div>
         
@@ -235,7 +236,7 @@ const handler = async (req: Request): Promise<Response> => {
     const subject = `Reminder: Your ${sampleOpportunities.length} Listings Need Attention`;
 
     const emailResponse = await resend.emails.send({
-      from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+      from: getFromEmail(),
       to: [email],
       subject: subject,
       html: emailHtml,

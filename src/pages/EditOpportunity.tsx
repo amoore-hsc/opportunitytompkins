@@ -11,6 +11,7 @@ import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { siteConfig } from "@/config";
 import {
   Dialog,
   DialogContent,
@@ -209,7 +210,7 @@ const EditOpportunity = () => {
         } else {
           const loc = (opp.location || "").toLowerCase();
           if (loc === "remote") setLocationType("remote");
-          else if (loc === "tompkins county") setLocationType("general");
+          else if (loc === siteConfig.countyName.toLowerCase()) setLocationType("general");
           else setLocationType("specific");
         }
         
@@ -449,7 +450,7 @@ const EditOpportunity = () => {
           <div className="container mx-auto px-4 py-6">
             <div className="flex items-center gap-2">
               <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
-              <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
+              <h1 className="text-2xl font-bold text-foreground">{siteConfig.siteName}</h1>
             </div>
           </div>
         </header>
@@ -473,7 +474,7 @@ const EditOpportunity = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
-              <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
+              <h1 className="text-2xl font-bold text-foreground">{siteConfig.siteName}</h1>
             </div>
             <Link to="/opportunities">
               <Button variant="outline" size="sm">
@@ -608,7 +609,7 @@ const EditOpportunity = () => {
               required
               value={formData.orgName}
               onChange={e => setFormData({ ...formData, orgName: e.target.value })}
-              placeholder="e.g., Tompkins County Food Bank"
+              placeholder={`e.g., ${siteConfig.countyName} Food Bank`}
             />
           </div>
 
@@ -698,7 +699,7 @@ const EditOpportunity = () => {
                     setLocationType(value);
                     setLocationError("");
                     if (value === "general") {
-                      setFormData({ ...formData, location: "Tompkins County", onBusRoute: false });
+                      setFormData({ ...formData, location: siteConfig.countyName, onBusRoute: false });
                     } else if (value === "remote") {
                       setFormData({ ...formData, location: "Remote", onBusRoute: false });
                     } else {
@@ -711,7 +712,7 @@ const EditOpportunity = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="specific">Specific Address</SelectItem>
-                    <SelectItem value="general">Tompkins County</SelectItem>
+                    <SelectItem value="general">{siteConfig.countyName}</SelectItem>
                     <SelectItem value="remote">Remote</SelectItem>
                   </SelectContent>
                 </Select>
@@ -1078,7 +1079,7 @@ const EditOpportunity = () => {
 
       <footer className="border-t border-border bg-muted/50 py-6 mt-8">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>Questions? Contact Tompkins County DSS at (607) 274-5680</p>
+          <p>Questions? Contact {siteConfig.dssName} at {siteConfig.dssPhone}</p>
         </div>
       </footer>
     </div>
