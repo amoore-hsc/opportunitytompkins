@@ -312,8 +312,80 @@ Deno.serve(async (req) => {
 
         const cfg0 = (source.scrape_config ?? {}) as Record<string, unknown>;
         const apiType = typeof cfg0.api_type === "string" ? cfg0.api_type : null;
+        // Special path: ApplicantPro-hosted career sites (e.g. Cayuga Health).
+        // SPA listings page, but each job detail page carries schema.org JSON-LD.
+        if (apiType === "applicantpro") {
+          const employerName = typeof cfg0.employer === "string" ? cfg0.employer : source.name;
+          const boardUrl = typeof cfg0.board_url === "string" ? cfg0.board_url : source.url;
+
+          const apJobs = await fetchApplicantProJobs(
+            boardUrl,
+            employerName,
+            source.name,
+            sourceResult.errors,
+          );
+          console.log(`Found ${apJobs.length} jobs from ${source.name} via ApplicantPro`);
+
+          const apClassifications = await classifyJobs(
+            apJobs.map((j) => ({ job_title: j.job_title, employer: j.employer })),
+          );
+          for (let i = 0; i < apJobs.length; i++) {
+            apJobs[i].job_category = apClassifications[i] || null;
+          }
+
+          for (const job of apJobs) {
+            const { data: existing } = await supabase
+              .from("employment_opportunities")
+              .select("id")
+              .eq("source_site", job.source_site)
+              .eq("source_id", job.source_id)
+              .maybeSingle();
+
+            if (existing) {
+              await supabase
+                .from("employment_opportunities")
+                .update({
+                  job_title: job.job_title,
+                  employer: job.employer,
+                  employment_type: job.employment_type,
+                  ...(job.wage ? { wage: job.wage } : {}),
+                  location: job.location,
+                  posting_url: job.posting_url,
+                  active: true,
+                  job_category: job.job_category,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq("id", existing.id);
+            } else {
+              await supabase
+                .from("employment_opportunities")
+                .insert({ ...job, active: true, is_manual: false });
+            }
+            sourceResult.scraped++;
+          }
+
+          // Sitemap is authoritative: anything not listed is gone.
+          const apSeen = apJobs.map((j) => j.source_id).filter(Boolean) as string[];
+          if (apSeen.length > 0) {
+            await supabase
+              .from("employment_opportunities")
+              .update({ active: false })
+              .eq("source_site", source.name)
+              .eq("is_manual", false)
+              .eq("active", true)
+              .not("source_id", "in", `(${apSeen.map((s) => `"${s}"`).join(",")})`);
+          }
+
+          await supabase
+            .from("scrape_sources")
+            .update({ last_scraped_at: new Date().toISOString() })
+            .eq("id", source.id);
+
+          continue;
+        }
 
         // Special path: Oracle HCM Cloud (e.g. Ithaca College).
+
         // The candidate site is a SPA — Firecrawl can't reliably extract per-job
         // links. Instead, hit the public REST API directly to get clean,
         // canonical job records and posting URLs.
