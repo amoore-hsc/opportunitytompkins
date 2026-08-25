@@ -12,21 +12,20 @@ import { defaultConfig, type SiteConfig } from "./site.config";
 export const localConfig: SiteConfig = {
   ...defaultConfig,
 
-  siteName: "Tompkins Opportunity",
-  countyName: "Tompkins County",
-  stateName: "New York",
+  siteName: "Your County Opportunity",
+  countyName: "Your County",
+  stateName: "Your State",
 
-  dssName: "Tompkins County DSS",
-  dssUrl: "https://www.tompkinscountyny.gov/All-Departments/Social-Services",
-  dssPhone: "(607) 274-5680",
+  dssName: "Your County DSS",
+  dssUrl: "https://your-county.gov/social-services",
+  dssPhone: "(000) 000-0000",
 
-  exemptionFormUrl:
-    "https://docs.google.com/forms/d/e/1FAIpQLSfXDths0eQwRcWRMrqVdjjhILjLpi5qz7lMyn27VyhdKTt6nw/viewform",
+  exemptionFormUrl: "https://forms.example.com/exemption-check",
 
-  fromEmail: "hello@tompkins-opportunity.org",
-  fromName: "Tompkins Opportunity",
+  fromEmail: "hello@your-site.org",
+  fromName: "Your County Opportunity",
 
-  supportEmail: "support@example.gov",
+  supportEmail: "support@your-site.org",
 
   // ...override verificationForms, careerCenter, trainingAndEducation,
   // jobSearchLinks, logos, countyPlaces, outOfCountyBlocklist as needed.
