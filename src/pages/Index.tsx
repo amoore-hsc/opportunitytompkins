@@ -55,17 +55,6 @@ const Index = () => {
       </Dialog>
 
 
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center gap-2">
-            <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
-            <h1 className="text-2xl font-bold text-foreground">Tompkins County 
-Opportunity Finder</h1>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <main id="main-content" className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-4xl text-center">
