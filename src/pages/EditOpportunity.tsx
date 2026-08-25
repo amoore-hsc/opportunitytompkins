@@ -11,8 +11,8 @@ import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import {
 import { siteConfig } from "@/config";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
