@@ -9,6 +9,7 @@ import { ShareOpportunitiesDialog } from "@/components/ShareOpportunitiesDialog"
 import { PrintableOpportunities } from "@/components/PrintableOpportunities";
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
 import { SkipNavigation } from "@/components/SkipNavigation";
+import { siteConfig } from "@/config";
 import { ApplicationDialog } from "@/components/ApplicationDialog";
 import { useToast } from "@/hooks/use-toast";
 
@@ -85,7 +86,7 @@ const Opportunities = () => {
 
         You may be exempt from new work requirements.<br />
         <a 
-          href="https://docs.google.com/forms/d/e/1FAIpQLSfXDths0eQwRcWRMrqVdjjhILjLpi5qz7lMyn27VyhdKTt6nw/viewform" 
+          href={siteConfig.exemptionFormUrl} 
           target="_blank" 
           rel="noopener noreferrer" 
           className="underline hover:no-underline"
@@ -95,14 +96,14 @@ const Opportunities = () => {
         <br />
         Questions? Contact{" "}
         <a 
-          href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" 
+          href={siteConfig.dssUrl} 
           target="_blank" 
           rel="noopener noreferrer" 
           className="underline hover:no-underline"
         >
-          Tompkins County DSS
+          {siteConfig.dssName}
         </a>{" "}
-        (607) 274-5680
+        {siteConfig.dssPhone}
       </aside>
 
 
@@ -111,7 +112,7 @@ const Opportunities = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
-              <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
+              <h1 className="text-2xl font-bold text-foreground">{siteConfig.siteName}</h1>
             </div>
             <Link to="/">
               <Button variant="outline" size="sm">
