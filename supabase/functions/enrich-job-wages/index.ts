@@ -92,6 +92,9 @@ Deno.serve(async (req) => {
       Number(body?.limit) || DEFAULT_LIMIT,
       100
     );
+    // Offset lets callers page through candidates so rows whose page never
+    // yields a wage don't block the rest of the queue on repeated runs.
+    const offset = Math.max(Number(body?.offset) || 0, 0);
 
     // Target rows with no wage OR a placeholder value ("Null", "Not listed", ...)
     let q = supabase
@@ -102,7 +105,8 @@ Deno.serve(async (req) => {
         "wage.is.null,wage.eq.,wage.ilike.null,wage.ilike.n/a,wage.ilike.na,wage.ilike.none,wage.ilike.not listed,wage.ilike.not specified,wage.ilike.not provided,wage.ilike.not available,wage.ilike.unspecified,wage.ilike.unknown,wage.ilike.tbd"
       )
       .not("posting_url", "is", null)
-      .limit(limit);
+      .order("updated_at", { ascending: false })
+      .range(offset, offset + limit - 1);
     if (sourceSite) q = q.eq("source_site", sourceSite);
 
     const { data: rows, error } = await q;
