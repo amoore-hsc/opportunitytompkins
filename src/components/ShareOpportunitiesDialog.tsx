@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Printer, Mail } from "lucide-react";
+import { Printer, Mail, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/pages/Opportunities";
@@ -63,7 +63,7 @@ export const ShareOpportunitiesDialog = ({
   return <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <img src="/favicon.png" alt="" aria-hidden="true" className="mr-2 h-4 w-4" />
+          <Share2 className="mr-2 h-4 w-4" />
           Share Results ({opportunities.length})
         </Button>
       </DialogTrigger>
