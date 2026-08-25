@@ -26,9 +26,9 @@ const Index = () => {
       <Dialog open={showPopup} onOpenChange={setShowPopup}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Exemption Status</DialogTitle>
+            <DialogTitle>{"\n"}</DialogTitle>
             <DialogDescription>
-              Some people are exempt from the new SNAP work requirements.
+              {"\n"}
             </DialogDescription>
           </DialogHeader>
           <div className="text-center space-y-4 py-2">
