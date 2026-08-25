@@ -186,7 +186,7 @@ ${isEducation
 ${isEducation
 ? `<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">⭐ Thank You for Supporting Our Community! ⭐</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px; font-weight:bold;">Tompkins County Opportunity Finder</p>
+<p style="margin:0; color:#a0c4e8; font-size:14px; font-weight:bold;">${getSiteName()}</p>
 </td>`
 : `<td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
