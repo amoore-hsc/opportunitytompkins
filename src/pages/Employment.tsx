@@ -572,17 +572,8 @@ const Employment = () => {
           )}
         </div>
 
-        <footer className="mt-8 text-center text-sm text-muted-foreground">
-          <p className="mb-3">Want to list a job? Submit your posting and we'll add it automatically.</p>
-          <SubmitJobDialog
-            trigger={
-              <Button variant="outline" size="sm">
-                Submit a job posting
-              </Button>
-            }
-            onSuccess={() => window.location.reload()}
-          />
-        </footer>
+
+
       </main>
     </div>
   );
