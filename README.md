@@ -44,8 +44,8 @@ npm install
 ### 2. Set up Supabase
 
 1. Create a new project at [supabase.com](https://supabase.com).
-2. Run the schema migration: `supabase/migrations/schema.sql` (in the SQL editor).
-3. Optionally run the cron seed: `supabase/migrations/seed_cron.sql`.
+2. Run the schema migration: `supabase/schema.sql` (in the SQL editor).
+3. Optionally run the cron seed: `supabase/seed_cron.sql`.
 4. Copy your project URL, anon key, and project ID from Settings → API.
 
 ### 3. Configure environment variables
@@ -107,7 +107,8 @@ src/
 supabase/
   functions/         # Edge Functions (emails, scraping, feedback, health check)
     _shared/         # Shared helpers (emailConfig, googleChat, jobLocation, wage)
-  migrations/       # SQL schema and cron schedules
+  schema.sql        # Consolidated schema (tables, RLS, policies, grants)
+  seed_cron.sql     # Cron job schedules for automated tasks
 ```
 
 ## Customization Guide
@@ -128,7 +129,7 @@ Set `verificationForms` in `site.config.local.ts` with your own Adobe Acrobat /
 Google Form / portal links.
 
 ### Cron schedules
-Edit `supabase/migrations/seed_cron.sql` to set your own schedule, then run it
+Edit `supabase/seed_cron.sql` to set your own schedule, then run it
 in the Supabase SQL editor. Requires the `pg_cron` extension.
 
 ## License
