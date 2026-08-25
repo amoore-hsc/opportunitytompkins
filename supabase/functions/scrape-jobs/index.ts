@@ -134,6 +134,130 @@ async function classifyJobs(
 
 const MAX_WAGE_ENRICHMENTS_PER_RUN = 25;
 
+const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
+  FULL_TIME: "Full-time",
+  PART_TIME: "Part-time",
+  CONTRACTOR: "Contract",
+  TEMPORARY: "Temporary",
+  INTERN: "Internship",
+  VOLUNTEER: "Volunteer",
+  PER_DIEM: "Per Diem",
+  OTHER: "Other",
+};
+
+/** Format a schema.org JobPosting baseSalary into display text. */
+function formatBaseSalary(baseSalary: unknown): string | null {
+  const bs = baseSalary as
+    | { value?: { unitText?: string; minValue?: unknown; maxValue?: unknown; value?: unknown } }
+    | undefined;
+  const v = bs?.value;
+  if (!v) return null;
+  const num = (x: unknown) => {
+    const n = Number(x);
+    return Number.isFinite(n) && n > 0 ? n : null;
+  };
+  const min = num(v.minValue) ?? num(v.value);
+  const max = num(v.maxValue);
+  if (!min && !max) return null;
+  const unit = String(v.unitText || "").toUpperCase();
+  const suffix = unit === "HOUR" ? "/hr" : unit === "YEAR" ? "/year" : unit === "MONTH" ? "/month" : "";
+  const fmt = (n: number) =>
+    unit === "HOUR" ? `$${n.toFixed(2)}` : `$${Math.round(n).toLocaleString("en-US")}`;
+  if (min && max && max > min) return `${fmt(min)} - ${fmt(max)}${suffix}`;
+  return `${fmt(min ?? max!)}${suffix}`;
+}
+
+/**
+ * ApplicantPro-hosted career sites (e.g. Cayuga Health) are Vue SPAs that
+ * Firecrawl can't read. Their sitemap lists every job detail page, and each
+ * detail page embeds a clean schema.org JobPosting JSON-LD block — so we read
+ * the sitemap and parse the structured data directly.
+ */
+async function fetchApplicantProJobs(
+  baseUrl: string,
+  employer: string,
+  sourceName: string,
+  errors: string[],
+): Promise<JobListing[]> {
+  const origin = new URL(baseUrl).origin;
+  const sitemapRes = await fetch(`${origin}/sitemap.xml`, {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; TompkinsOpportunityBot)" },
+  });
+  if (!sitemapRes.ok) {
+    errors.push(`ApplicantPro sitemap error: ${sitemapRes.status}`);
+    return [];
+  }
+  const xml = await sitemapRes.text();
+  const host = new URL(baseUrl).host;
+  const urlPattern = new RegExp(
+    `https://${host.replace(/\./g, "\\.")}/jobs/\\d+\\.html`,
+    "g",
+  );
+  const jobUrls = Array.from(new Set(xml.match(urlPattern) ?? []));
+  console.log(`ApplicantPro sitemap: ${jobUrls.length} job pages for ${sourceName}`);
+
+  const jobs: JobListing[] = [];
+  const concurrency = 8;
+  let cursor = 0;
+
+  async function worker() {
+    while (cursor < jobUrls.length) {
+      const url = jobUrls[cursor++];
+      try {
+        const res = await fetch(url, {
+          headers: { "User-Agent": "Mozilla/5.0 (compatible; TompkinsOpportunityBot)" },
+        });
+        if (!res.ok) continue;
+        const html = await res.text();
+        const match = html.match(
+          /<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/i,
+        );
+        if (!match) continue;
+        let ld: Record<string, unknown>;
+        try {
+          ld = JSON.parse(match[1]);
+        } catch {
+          continue;
+        }
+        if (ld["@type"] !== "JobPosting") continue;
+        const title = typeof ld.title === "string" ? ld.title.trim() : "";
+        if (!title) continue;
+
+        const address = (ld.jobLocation as { address?: Record<string, string> } | undefined)?.address;
+        const city = address?.addressLocality?.trim() || "";
+        const region = address?.addressRegion?.trim() || "";
+        const location = [city, region].filter(Boolean).join(", ") || null;
+
+        const rawType = typeof ld.employmentType === "string" ? ld.employmentType : "";
+        const employmentType = EMPLOYMENT_TYPE_LABELS[rawType.toUpperCase()] ?? (rawType || null);
+
+        const idObj = ld.identifier as { sameAs?: string } | undefined;
+        const sourceId =
+          (idObj?.sameAs && String(idObj.sameAs).trim()) ||
+          url.match(/(\d+)\.html$/)?.[1] ||
+          null;
+
+        jobs.push({
+          job_title: title,
+          employer,
+          employment_type: employmentType === "Other" ? null : employmentType,
+          wage: normalizeWage(formatBaseSalary(ld.baseSalary)),
+          location,
+          posting_url: url,
+          source_site: sourceName,
+          source_id: sourceId,
+        });
+      } catch (e) {
+        console.warn(`ApplicantPro fetch failed for ${url}: ${e}`);
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: concurrency }, () => worker()));
+  return jobs;
+}
+
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
