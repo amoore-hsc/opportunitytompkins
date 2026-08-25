@@ -197,7 +197,7 @@ const Employment = () => {
         .eq("active", true)
         .order("updated_at", { ascending: false });
       if (error) throw error;
-      // Only show roles in Tompkins County (remote roles always qualify).
+      // Only show roles in the target county (remote roles always qualify).
       const local = (data || []).filter((j) => !isOutsideTompkins(j.location));
       setJobs(local);
       setFilteredJobs(local);

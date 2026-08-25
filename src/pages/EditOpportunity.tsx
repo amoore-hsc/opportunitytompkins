@@ -210,7 +210,7 @@ const EditOpportunity = () => {
         } else {
           const loc = (opp.location || "").toLowerCase();
           if (loc === "remote") setLocationType("remote");
-          else if (loc === "tompkins county") setLocationType("general");
+          else if (loc === siteConfig.countyName.toLowerCase()) setLocationType("general");
           else setLocationType("specific");
         }
         

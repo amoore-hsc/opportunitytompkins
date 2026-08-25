@@ -568,7 +568,7 @@ const ListOpportunity = () => {
                         setLocationType(value);
                         setLocationError("");
                         if (value === "general") {
-                          setFormData({ ...formData, location: "Tompkins County", onBusRoute: false });
+                          setFormData({ ...formData, location: siteConfig.countyName, onBusRoute: false });
                         } else if (value === "remote") {
                           setFormData({ ...formData, location: "Remote", onBusRoute: false });
                         } else {

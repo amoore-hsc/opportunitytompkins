@@ -1401,7 +1401,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                             setEditFlexibleTime(isFlexible);
                             const loc = opp.location.toLowerCase();
                             if (loc === "remote") setEditLocationType("remote");
-                            else if (loc === "tompkins county") setEditLocationType("general");
+                            else if (loc === siteConfig.countyName.toLowerCase()) setEditLocationType("general");
                             else setEditLocationType("specific");
                           }}
                         >
