@@ -48,6 +48,23 @@ const formatEmploymentType = (raw: string | null): string | null => {
 };
 
 /**
+ * Placeholder strings that AI extraction sometimes returns instead of an
+ * actual omission — these should never be shown as a pay value.
+ */
+const WAGE_PLACEHOLDERS = new Set([
+  'null', 'nil', 'none', 'n/a', 'na', 'not listed', 'not specified',
+  'not provided', 'not available', 'unspecified', 'unknown', 'tbd', '-', '--', '/', '$',
+]);
+
+const hasDisplayableWage = (raw: string | null): boolean => {
+  if (!raw) return false;
+  const t = raw.trim();
+  if (!t) return false;
+  return !WAGE_PLACEHOLDERS.has(t.toLowerCase().replace(/[.\s]+$/, ''));
+};
+
+
+/**
  * Parse a free-text wage string into an hourly-equivalent number.
  * Returns null when no usable dollar amount can be extracted.
  * - Annual salaries (>= $10k or "year"/"annual"/"salary"/"/yr") → ÷ 2080
@@ -500,7 +517,7 @@ const Employment = () => {
                                   {job.location}
                                 </span>
                               )}
-                              {job.wage && job.wage.replace(/[,\s]/g, '') !== "" && (
+                              {hasDisplayableWage(job.wage) && (
                                 <span className="flex items-center gap-1">
                                   <span aria-hidden="true">💵</span>
                                   {job.wage}

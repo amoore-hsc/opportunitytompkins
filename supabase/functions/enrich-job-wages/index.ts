@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { normalizeWage } from "../_shared/wage.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -51,11 +52,7 @@ async function enrichWageFromPostingUrl(
     }
     const data = await res.json();
     const json = data?.data?.json || data?.json;
-    const wage = json?.wage;
-    if (typeof wage === "string" && wage.trim().length > 0) {
-      return wage.trim();
-    }
-    return null;
+    return normalizeWage(json?.wage);
   } catch (err) {
     console.warn(`Wage enrich error for ${url}:`, err);
     return null;
@@ -96,11 +93,14 @@ Deno.serve(async (req) => {
       100
     );
 
+    // Target rows with no wage OR a placeholder value ("Null", "Not listed", ...)
     let q = supabase
       .from("employment_opportunities")
       .select("id, posting_url, source_site")
       .eq("active", true)
-      .is("wage", null)
+      .or(
+        "wage.is.null,wage.eq.,wage.ilike.null,wage.ilike.n/a,wage.ilike.na,wage.ilike.none,wage.ilike.not listed,wage.ilike.not specified,wage.ilike.not provided,wage.ilike.not available,wage.ilike.unspecified,wage.ilike.unknown,wage.ilike.tbd"
+      )
       .not("posting_url", "is", null)
       .limit(limit);
     if (sourceSite) q = q.eq("source_site", sourceSite);

@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { normalizeWage } from "../_shared/wage.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -123,7 +124,7 @@ Deno.serve(async (req) => {
             job_title: stillJobTitle,
             employer: j?.employer?.trim() || job.employer,
             employment_type: j?.employment_type?.trim() || null,
-            wage: j?.wage?.trim() || null,
+            ...(normalizeWage(j?.wage) ? { wage: normalizeWage(j?.wage) } : {}),
             location: j?.location?.trim() || null,
           })
           .eq("id", job.id);

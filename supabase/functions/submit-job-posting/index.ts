@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
+import { normalizeWage } from "../_shared/wage.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -207,7 +208,7 @@ Deno.serve(async (req) => {
         job_title,
         employer: finalEmployer,
         employment_type: j?.employment_type?.trim() || null,
-        wage: j?.wage?.trim() || null,
+        wage: normalizeWage(j?.wage),
         location: j?.location?.trim() || null,
         posting_url,
         source_site: "user-submitted",
