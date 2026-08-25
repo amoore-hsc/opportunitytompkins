@@ -192,7 +192,7 @@ const EmploymentResources = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
-              <h1 className="text-2xl font-bold text-foreground">Employment Resources</h1>
+              <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
             </div>
             <Link to="/">
               <Button variant="outline" size="sm">
