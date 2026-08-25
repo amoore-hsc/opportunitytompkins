@@ -168,13 +168,7 @@ const Opportunities = () => {
         <ElectronicVerificationForms />
 
         <footer className="mt-8 text-center text-sm text-muted-foreground">
-          <p>
-            Need Help With Your Posting? Reach out to{" "}
-            <a href="mailto:amoore@hsctc.org" className="underline hover:text-foreground">
-              amoore@hsctc.org
-            </a>{" "}
-            for assistance.
-          </p>
+          <p>{"\n"}</p>
         </footer>
 
         {autoOpenOpportunity && (
