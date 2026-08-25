@@ -45,3 +45,6 @@ export function classifyJobLocation(location: string | null | undefined): JobLoc
 export function isOutsideCounty(location: string | null | undefined): boolean {
   return classifyJobLocation(location) === "out-of-county";
 }
+
+/** Backward-compatible alias. */
+export const isOutsideTompkins = isOutsideCounty;
