@@ -323,10 +323,6 @@ const EmploymentResources = () => {
             ))}
           </div>
         </section>
-
-        <div className="mt-8 text-center text-sm text-muted-foreground">
-          {"\n"}
-        </div>
       </main>
     </div>
   );
