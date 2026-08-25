@@ -325,10 +325,7 @@ const EmploymentResources = () => {
         </section>
 
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          Questions? Contact{" "}
-          <a href="mailto:amoore@hsctc.org" className="text-primary underline hover:no-underline">
-            amoore@hsctc.org
-          </a>
+          {"\n"}
         </div>
       </main>
     </div>
