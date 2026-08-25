@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Handshake, ArrowLeft, Plus, X } from "lucide-react";
+import { ArrowLeft, Plus, X } from "lucide-react";
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
 import { SkipNavigation } from "@/components/SkipNavigation";
 import { VisuallyHidden } from "@/components/VisuallyHidden";
@@ -306,7 +306,7 @@ const ListOpportunity = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Handshake className="h-8 w-8 text-primary" aria-hidden="true" />
+              <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
               <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
             </div>
             <Link to="/">

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
-import { Handshake, ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send, Link2, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send, Link2, ArrowUp, ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -976,7 +976,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
           <div className="mb-6 text-center">
-            <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
+            <img src="/favicon.png" alt="" aria-hidden="true" className="mx-auto h-12 w-12 mb-4" />
             <h1 className="text-2xl font-bold text-foreground">Set New Password</h1>
             <p className="text-sm text-muted-foreground mt-2">
               Choose a new password for your admin account
@@ -1057,7 +1057,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
         <div className="min-h-dvh bg-background flex items-center justify-center">
           <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
             <div className="mb-6 text-center">
-              <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
+              <img src="/favicon.png" alt="" aria-hidden="true" className="mx-auto h-12 w-12 mb-4" />
               <h1 className="text-2xl font-bold text-foreground">Reset Password</h1>
               <p className="text-sm text-muted-foreground mt-2">
                 Enter your email to receive a password reset link
@@ -1118,7 +1118,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm">
           <div className="mb-6 text-center">
-            <Handshake className="mx-auto h-12 w-12 text-primary mb-4" />
+            <img src="/favicon.png" alt="" aria-hidden="true" className="mx-auto h-12 w-12 mb-4" />
             <h1 className="text-2xl font-bold text-foreground">
               {isSignUp ? "Create Admin Account" : "Admin Login"}
             </h1>
@@ -1197,7 +1197,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
     return (
       <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="w-full max-w-md p-8 bg-card rounded-xl border border-border shadow-sm text-center">
-          <Handshake className="mx-auto h-12 w-12 text-destructive mb-4" />
+          <img src="/favicon.png" alt="" aria-hidden="true" className="mx-auto h-12 w-12 mb-4" />
           <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
           <p className="text-muted-foreground mb-6">
             You don't have admin privileges. Please contact an administrator if you need access.
@@ -1225,7 +1225,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Handshake className="h-8 w-8 text-primary" />
+              <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
               <h1 className="text-2xl font-bold text-foreground">Admin Panel</h1>
             </div>
             <div className="flex items-center gap-2">

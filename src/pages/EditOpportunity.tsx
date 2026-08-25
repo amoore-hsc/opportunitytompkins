@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Handshake, ArrowLeft, Plus, X, Loader2, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Plus, X, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -448,7 +448,7 @@ const EditOpportunity = () => {
         <header className="border-b border-border bg-card">
           <div className="container mx-auto px-4 py-6">
             <div className="flex items-center gap-2">
-              <Handshake className="h-8 w-8 text-primary" />
+              <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
               <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
             </div>
           </div>
@@ -472,7 +472,7 @@ const EditOpportunity = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Handshake className="h-8 w-8 text-primary" />
+              <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
               <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
             </div>
             <Link to="/opportunities">
