@@ -33,6 +33,7 @@ import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { ClientErrorsCard } from "@/components/admin/ClientErrorsCard";
 import { FeedbackCard } from "@/components/admin/FeedbackCard";
 import { DashboardExport } from "@/components/admin/DashboardExport";
+import { siteConfig } from "@/config";
 
 type DaySchedule = {
   [key: string]: {
@@ -703,7 +704,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:amoore@hsctc.org" style="color:#ffffff; font-weight:bold;">amoore@hsctc.org</a></p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:{siteConfig.supportEmail}" style="color:#ffffff; font-weight:bold;">{siteConfig.supportEmail}</a></p>
 </td>
 </tr>
 
@@ -1557,7 +1558,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                     onValueChange={value => {
                                       setEditLocationType(value);
                                       if (value === "general") {
-                                        setEditingOpportunity({ ...editingOpportunity, location: "Tompkins County", on_bus_route: false });
+                                        setEditingOpportunity({ ...editingOpportunity, location: siteConfig.countyName, on_bus_route: false });
                                       } else if (value === "remote") {
                                         setEditingOpportunity({ ...editingOpportunity, location: "Remote", on_bus_route: false });
                                       }
@@ -1568,7 +1569,7 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                                     </SelectTrigger>
                                     <SelectContent>
                                       <SelectItem value="specific">Specific Address</SelectItem>
-                                      <SelectItem value="general">Tompkins County</SelectItem>
+                                      <SelectItem value="general">{siteConfig.countyName}</SelectItem>
                                       <SelectItem value="remote">Remote</SelectItem>
                                     </SelectContent>
                                   </Select>

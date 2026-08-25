@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { triggerConfetti } from "@/lib/confetti";
 import { z } from "zod";
+import { siteConfig } from "@/config";
 
 const isValidAddressPattern = (address: string): boolean => {
   const parts = address.split(',').map(p => p.trim()).filter(p => p.length > 0);
@@ -307,7 +308,7 @@ const ListOpportunity = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
-              <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
+              <h1 className="text-2xl font-bold text-foreground">{siteConfig.siteName}</h1>
             </div>
             <Link to="/">
               <Button variant="outline" size="sm">
@@ -580,7 +581,7 @@ const ListOpportunity = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="specific">Specific Address</SelectItem>
-                        <SelectItem value="general">Tompkins County</SelectItem>
+                        <SelectItem value="general">{siteConfig.countyName}</SelectItem>
                         <SelectItem value="remote">Remote</SelectItem>
                       </SelectContent>
                     </Select>
@@ -974,7 +975,7 @@ const ListOpportunity = () => {
                 {loading ? "Submitting..." : isEducation ? "Submit Program" : "Submit Opportunity"}
               </Button>
               <p className="text-sm text-muted-foreground text-center mt-3">
-                Once an opportunity has been submitted, you will receive a confirmation email from <span className="whitespace-nowrap">hello@tompkins-opportunity.org</span>. Please check your spam folder if you did not receive an email.
+                Once an opportunity has been submitted, you will receive a confirmation email from <span className="whitespace-nowrap">{siteConfig.fromEmail}</span>. Please check your spam folder if you did not receive an email.
               </p>
             </>
           )}

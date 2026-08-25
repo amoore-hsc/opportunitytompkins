@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+import { siteConfig } from "@/config";
   Dialog,
   DialogContent,
   DialogDescription,
@@ -119,7 +120,7 @@ export const SubmitJobDialog = ({ trigger, onSuccess }: Props) => {
         <DialogHeader>
           <DialogTitle>Submit a job posting</DialogTitle>
           <DialogDescription>
-            Paste a link to a single job listing. We'll add it to Tompkins Opportunity and automatically remove it once the posting is taken down.
+            Paste a link to a single job listing. We'll add it to {siteConfig.siteName} and automatically remove it once the posting is taken down.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -167,7 +168,7 @@ export const SubmitJobDialog = ({ trigger, onSuccess }: Props) => {
             <Input
               id="job-employer"
               type="text"
-              placeholder="Tompkins County"
+              placeholder={siteConfig.countyName}
               value={employer}
               onChange={(e) => setEmployer(e.target.value)}
               maxLength={200}

@@ -1,4 +1,5 @@
 import { Opportunity } from "@/pages/Opportunities";
+import { siteConfig } from "@/config";
 
 interface PrintableOpportunitiesProps {
   opportunities: Opportunity[];
@@ -42,7 +43,7 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
       `}</style>
       <div>
         <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '10px' }}>
-          Tompkins Opportunity
+          {siteConfig.siteName}
         </h1>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
           {opportunities.length} {opportunities.length === 1 ? 'Opportunity' : 'Opportunities'} Found
@@ -111,7 +112,7 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
               )}
               {!isEducation && (
                 <div style={{ fontSize: '14px', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #f0f0f0', color: '#666' }}>
-                  To apply, visit Tompkins Opportunity and submit an application through the online form.
+                  To apply, visit {siteConfig.siteName} and submit an application through the online form.
                 </div>
               )}
 
@@ -123,8 +124,8 @@ export const PrintableOpportunities = ({ opportunities }: PrintableOpportunities
         })}
         
         <div style={{ marginTop: '30px', fontSize: '12px', color: '#666', borderTop: '1px solid #e0e0e0', paddingTop: '15px' }}>
-          <p>For help or questions, contact: amoore@hsctc.org</p>
-          <p>Powered by Tompkins Opportunity</p>
+          <p>For help or questions, contact: {siteConfig.supportEmail}</p>
+          <p>Powered by {siteConfig.siteName}</p>
         </div>
       </div>
     </div>

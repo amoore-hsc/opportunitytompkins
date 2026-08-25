@@ -14,6 +14,7 @@ import { SubmitJobDialog } from "@/components/SubmitJobDialog";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { isOutsideTompkins } from "@/lib/jobLocation";
+import { siteConfig } from "@/config";
 
 export interface EmploymentOpportunity {
   id: string;
@@ -242,7 +243,7 @@ const Employment = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
-              <h1 className="text-2xl font-bold text-foreground">Tompkins Opportunity</h1>
+              <h1 className="text-2xl font-bold text-foreground">{siteConfig.siteName}</h1>
             </div>
             <Link to="/">
               <Button variant="outline" size="sm">
@@ -287,7 +288,7 @@ const Employment = () => {
             <div className="flex-1 min-w-0">
               <h2 className="mb-2 text-3xl font-bold text-foreground">Find Employment</h2>
               <p className="text-muted-foreground">
-                Browse job openings from employers in Tompkins County
+                Browse job openings from employers in {siteConfig.countyName}
               </p>
             </div>
             {filteredJobs.length > 0 && <ShareJobsDialog jobs={filteredJobs} />}

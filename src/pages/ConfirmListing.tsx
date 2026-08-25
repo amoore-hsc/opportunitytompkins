@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, XCircle, Loader2, Building2, MapPin, Calendar, Briefcase, Edit, Clock, CalendarDays, ClipboardList } from "lucide-react";
+import { siteConfig } from "@/config";
 
 interface OpportunityDetails {
   id: string;
@@ -143,7 +144,7 @@ const ConfirmListing = () => {
             <CheckCircle2 className="h-16 w-16 text-green-600 mx-auto mb-4" />
             <CardTitle className="text-green-600">Listing Confirmed!</CardTitle>
             <CardDescription className="text-base mt-2">
-              Thank you for confirming that your listing is still active. It will continue to appear on Tompkins Opportunity.
+              Thank you for confirming that your listing is still active. It will continue to appear on {siteConfig.siteName}.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
