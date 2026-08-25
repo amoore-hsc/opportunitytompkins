@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { normalizeWage } from "../_shared/wage.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -421,7 +422,7 @@ Deno.serve(async (req) => {
               job_title: job.job_title.trim(),
               employer: job.employer.trim(),
               employment_type: job.employment_type?.trim() || null,
-              wage: job.wage?.trim() || null,
+              wage: normalizeWage(job.wage),
               location: job.location?.trim() || null,
               posting_url: postingUrl,
               source_site: source.name,
@@ -457,7 +458,9 @@ Deno.serve(async (req) => {
                   job_title: job.job_title,
                   employer: job.employer,
                   employment_type: job.employment_type,
-                  wage: job.wage,
+                  // Never wipe an existing wage (possibly filled by the
+                  // enrichment job) with a missing scrape value.
+                  ...(job.wage ? { wage: job.wage } : {}),
                   location: job.location,
                   posting_url: job.posting_url,
                   active: true,
@@ -488,7 +491,7 @@ Deno.serve(async (req) => {
                   job_title: job.job_title,
                   employer: job.employer,
                   employment_type: job.employment_type,
-                  wage: job.wage,
+                  ...(job.wage ? { wage: job.wage } : {}),
                   location: job.location,
                   active: true,
                   job_category: job.job_category,
