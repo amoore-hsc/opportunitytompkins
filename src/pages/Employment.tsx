@@ -13,6 +13,7 @@ import { ShareJobsDialog } from "@/components/ShareJobsDialog";
 import { SubmitJobDialog } from "@/components/SubmitJobDialog";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
+import { isOutsideTompkins } from "@/lib/jobLocation";
 
 export interface EmploymentOpportunity {
   id: string;
@@ -195,8 +196,10 @@ const Employment = () => {
         .eq("active", true)
         .order("updated_at", { ascending: false });
       if (error) throw error;
-      setJobs(data || []);
-      setFilteredJobs(data || []);
+      // Only show roles in Tompkins County (remote roles always qualify).
+      const local = (data || []).filter((j) => !isOutsideTompkins(j.location));
+      setJobs(local);
+      setFilteredJobs(local);
     } catch (error: any) {
       toast({
         title: "Error loading employment opportunities",
