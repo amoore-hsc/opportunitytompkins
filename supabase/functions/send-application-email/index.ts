@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -137,7 +138,7 @@ const handler = async (req: Request): Promise<Response> => {
 <tr>
 <td style="padding:30px;">
 
-<p style="margin:0 0 25px 0;">You have received a new application through Tompkins Opportunity.</p>
+<p style="margin:0 0 25px 0;">You have received a new application through ${getSiteName()}.</p>
 
 <!-- Opportunity Details Card -->
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
@@ -169,7 +170,7 @@ const handler = async (req: Request): Promise<Response> => {
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px;"><a href="mailto:amoore@hsctc.org" style="color:#ffffff; font-weight:bold;">Contact Us</a></p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;"><a href="mailto:${getSupportEmail()}" style="color:#ffffff; font-weight:bold;">Contact Us</a></p>
 </td>
 </tr>
 
@@ -182,7 +183,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Email to organization
     const orgEmailResponse = await resend.emails.send({
-      from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+      from: getFromEmail(),
       to: [notificationEmail],
       subject: `New Application - ${positionTitle || 'Position'}`,
       html: emailHtml,
@@ -226,7 +227,7 @@ const handler = async (req: Request): Promise<Response> => {
 
 <p style="margin:0 0 25px 0;">Hi ${escapeHtml(clientName)},</p>
 
-<p style="margin:0 0 25px 0;">Thank you for submitting your application through Tompkins Opportunity. Here's a summary of your application:</p>
+<p style="margin:0 0 25px 0;">Thank you for submitting your application through ${getSiteName()}. Here's a summary of your application:</p>
 
 <!-- Application Details Card -->
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
@@ -267,7 +268,7 @@ const handler = async (req: Request): Promise<Response> => {
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px;"><a href="mailto:amoore@hsctc.org" style="color:#ffffff; font-weight:bold;">Contact Us</a></p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;"><a href="mailto:${getSupportEmail()}" style="color:#ffffff; font-weight:bold;">Contact Us</a></p>
 </td>
 </tr>
 
@@ -279,7 +280,7 @@ const handler = async (req: Request): Promise<Response> => {
 </html>`;
 
     const applicantEmailResponse = await resend.emails.send({
-      from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+      from: getFromEmail(),
       to: [clientEmail],
       subject: `Application Submitted - ${positionTitle || 'Position'} at ${orgName}`,
       html: applicantEmailHtml,

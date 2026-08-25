@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -31,7 +32,7 @@ interface ReactivationEmailRequest {
 }
 
 export const buildReactivationEmail = (body: ReactivationEmailRequest) => {
-  const siteUrl = body.siteUrl || Deno.env.get("SITE_URL") || "https://tompkins-opportunity.org";
+  const siteUrl = body.siteUrl || Deno.env.get("SITE_URL") || "https://example.com";
   const editUrl = `${siteUrl}/edit-opportunity/${body.editToken}`;
   const listingsUrl = `${siteUrl}/opportunities`;
   const isEducation = body.opportunityType === "education";
@@ -99,7 +100,7 @@ ${detailsHtml}
 <!-- Need Help Card (Orange) -->
 <div style="background-color:#fff0e6; border-left:4px solid #e67e22; padding:20px; margin:0 0 25px 0; border-radius:0 8px 8px 0;">
 <h2 style="margin:0 0 15px 0; font-size:18px; color:#e67e22;">Need Help?</h2>
-<p style="margin:0;">For additional assistance, please email: <a href="mailto:rhinton@uwtc.org" style="color:#1e3a5f; font-weight:bold;">rhinton@uwtc.org</a></p>
+<p style="margin:0;">For additional assistance, please email: <a href="mailto:${getSupportEmail()}" style="color:#1e3a5f; font-weight:bold;">${getSupportEmail()}</a></p>
 </div>
 
 </td>
@@ -109,7 +110,7 @@ ${detailsHtml}
 <tr>
 <td style="background-color:#1e3a5f; padding:25px; text-align:center;">
 <p style="margin:0 0 5px 0; color:#ffffff; font-size:16px;">Need Help?</p>
-<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:rhinton@uwtc.org" style="color:#ffffff; font-weight:bold;">rhinton@uwtc.org</a></p>
+<p style="margin:0; color:#a0c4e8; font-size:14px;">Contact us at <a href="mailto:${getSupportEmail()}" style="color:#ffffff; font-weight:bold;">${getSupportEmail()}</a></p>
 </td>
 </tr>
 
@@ -154,7 +155,7 @@ const handler = async (req: Request): Promise<Response> => {
     const { html, subject, listingName } = buildReactivationEmail(body);
 
     const emailResponse = await resend.emails.send({
-      from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+      from: getFromEmail(),
       to: recipients,
       subject,
       html,

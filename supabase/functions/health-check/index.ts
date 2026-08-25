@@ -1,5 +1,6 @@
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -8,8 +9,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ALERT_RECIPIENTS = ["amoore@hsctc.org"];
-const rawSiteUrl = (Deno.env.get("SITE_URL") ?? "https://tompkins-opportunity.org").trim();
+const ALERT_RECIPIENTS = getAlertRecipients();
+const rawSiteUrl = (Deno.env.get("SITE_URL") ?? "https://example.com").trim();
 const SITE_URL = (/^https?:\/\//i.test(rawSiteUrl) ? rawSiteUrl : `https://${rawSiteUrl}`).replace(/\/+$/, "");
 
 interface CheckResult {
@@ -121,7 +122,7 @@ Deno.serve(async (req) => {
 
     try {
       await resend.emails.send({
-        from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
+        from: getFromEmail(),
         to: ALERT_RECIPIENTS,
         subject: `⚠️ Site health check failed (${failures.length} issue${failures.length === 1 ? "" : "s"})`,
         html: `

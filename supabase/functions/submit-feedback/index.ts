@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
 
 const escapeHtml = (s: unknown): string =>
   String(s ?? "")
@@ -18,7 +19,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const rawSiteUrl = (Deno.env.get("SITE_URL") ?? "https://tompkins-opportunity.org").trim();
+const rawSiteUrl = (Deno.env.get("SITE_URL") ?? "https://example.com").trim();
 const SITE_URL = (/^https?:\/\//i.test(rawSiteUrl) ? rawSiteUrl : `https://${rawSiteUrl}`)
   .replace(/\/+$/, "");
 
@@ -103,8 +104,8 @@ serve(async (req) => {
         if (resendKey) {
           const resend = new Resend(resendKey);
           await resend.emails.send({
-            from: "Tompkins Opportunity <hello@tompkins-opportunity.org>",
-            to: ["amoore@hsctc.org"],
+            from: getFromEmail(),
+            to: getAlertRecipients(),
             subject: `[Backup] ${label} submitted`,
             html: `<!DOCTYPE html>
 <html lang="en"><body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:#333333;background-color:#f5f5f5;">

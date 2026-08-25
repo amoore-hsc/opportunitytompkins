@@ -66,7 +66,7 @@ export async function notifyGoogleChat(
         card: {
           header: {
             title: `${icon ? `${icon} ` : ""}${title}`,
-            subtitle: subtitle || "Tompkins Opportunity",
+            subtitle: subtitle || getSiteName(),
           },
           sections: [{ widgets }],
         },
