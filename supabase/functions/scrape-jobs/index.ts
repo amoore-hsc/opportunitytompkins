@@ -182,7 +182,7 @@ async function fetchApplicantProJobs(
 ): Promise<JobListing[]> {
   const origin = new URL(baseUrl).origin;
   const sitemapRes = await fetch(`${origin}/sitemap.xml`, {
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; TompkinsOpportunityBot)" },
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; OpportunityBoardBot)" },
   });
   if (!sitemapRes.ok) {
     errors.push(`ApplicantPro sitemap error: ${sitemapRes.status}`);
@@ -206,7 +206,7 @@ async function fetchApplicantProJobs(
       const url = jobUrls[cursor++];
       try {
         const res = await fetch(url, {
-          headers: { "User-Agent": "Mozilla/5.0 (compatible; TompkinsOpportunityBot)" },
+          headers: { "User-Agent": "Mozilla/5.0 (compatible; OpportunityBoardBot)" },
         });
         if (!res.ok) continue;
         const html = await res.text();
@@ -327,7 +327,7 @@ Deno.serve(async (req) => {
           );
           console.log(`Found ${apJobs.length} jobs from ${source.name} via ApplicantPro`);
 
-          // Only Tompkins County (or remote) roles belong on this board.
+          // Only in-county (or remote) roles belong on this board.
           const apKept = apJobs.filter((j) => !isOutsideTompkins(j.location));
           const apDropped = apJobs.length - apKept.length;
           if (apDropped > 0) {
