@@ -265,6 +265,23 @@ const Employment = () => {
           </div>
         </Link>
 
+        <SubmitJobDialog
+          trigger={
+            <button
+              type="button"
+              className="w-full text-left mb-6 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 flex items-center gap-3 hover:bg-primary/10 transition-colors"
+            >
+              <Briefcase className="h-5 w-5 text-primary shrink-0" aria-hidden="true" />
+              <span className="text-sm font-medium text-foreground">
+                Want to list a job? Submit your posting and we'll add it automatically
+              </span>
+              <ArrowRight className="h-4 w-4 text-primary ml-auto shrink-0" aria-hidden="true" />
+            </button>
+          }
+          onSuccess={() => window.location.reload()}
+        />
+
+
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="flex-1 min-w-0">
@@ -572,17 +589,8 @@ const Employment = () => {
           )}
         </div>
 
-        <footer className="mt-8 text-center text-sm text-muted-foreground">
-          <p className="mb-3">Want to list a job? Submit your posting and we'll add it automatically.</p>
-          <SubmitJobDialog
-            trigger={
-              <Button variant="outline" size="sm">
-                Submit a job posting
-              </Button>
-            }
-            onSuccess={() => window.location.reload()}
-          />
-        </footer>
+
+
       </main>
     </div>
   );
