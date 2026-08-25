@@ -1,6 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { normalizeWage } from "../_shared/wage.ts";
-import { isOutsideTompkins } from "../_shared/jobLocation.ts";
+import { isOutsideCounty } from "../_shared/jobLocation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -328,7 +328,7 @@ Deno.serve(async (req) => {
           console.log(`Found ${apJobs.length} jobs from ${source.name} via ApplicantPro`);
 
           // Only in-county (or remote) roles belong on this board.
-          const apKept = apJobs.filter((j) => !isOutsideTompkins(j.location));
+          const apKept = apJobs.filter((j) => !isOutsideCounty(j.location));
           const apDropped = apJobs.length - apKept.length;
           if (apDropped > 0) {
             console.log(`Skipped ${apDropped} out-of-county jobs from ${source.name}`);
@@ -450,7 +450,7 @@ Deno.serve(async (req) => {
 
           console.log(`Found ${oracleJobs.length} jobs from ${source.name} via Oracle API`);
 
-          const oracleKept = oracleJobs.filter((j) => !isOutsideTompkins(j.location));
+          const oracleKept = oracleJobs.filter((j) => !isOutsideCounty(j.location));
           const oracleDropped = oracleJobs.length - oracleKept.length;
           if (oracleDropped > 0) {
             console.log(`Skipped ${oracleDropped} out-of-county jobs from ${source.name}`);
@@ -647,7 +647,7 @@ Deno.serve(async (req) => {
 
         console.log(`Found ${jobs.length} jobs from ${source.name}`);
 
-        const keptJobs = jobs.filter((j) => !isOutsideTompkins(j.location));
+        const keptJobs = jobs.filter((j) => !isOutsideCounty(j.location));
         const droppedJobs = jobs.length - keptJobs.length;
         if (droppedJobs > 0) {
           console.log(`Skipped ${droppedJobs} out-of-county jobs from ${source.name}`);

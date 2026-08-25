@@ -13,7 +13,7 @@ import { ShareJobsDialog } from "@/components/ShareJobsDialog";
 import { SubmitJobDialog } from "@/components/SubmitJobDialog";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
-import { isOutsideTompkins } from "@/lib/jobLocation";
+import { isOutsideCounty } from "@/lib/jobLocation";
 import { siteConfig } from "@/config";
 
 export interface EmploymentOpportunity {
@@ -198,7 +198,7 @@ const Employment = () => {
         .order("updated_at", { ascending: false });
       if (error) throw error;
       // Only show roles in the target county (remote roles always qualify).
-      const local = (data || []).filter((j) => !isOutsideTompkins(j.location));
+      const local = (data || []).filter((j) => !isOutsideCounty(j.location));
       setJobs(local);
       setFilteredJobs(local);
     } catch (error: any) {

@@ -52,6 +52,6 @@ export function classifyJobLocation(location: string | null | undefined): JobLoc
 }
 
 /** True only when the location is a *known* place outside the target county. */
-export function isOutsideTompkins(location: string | null | undefined): boolean {
+export function isOutsideCounty(location: string | null | undefined): boolean {
   return classifyJobLocation(location) === "out-of-county";
 }

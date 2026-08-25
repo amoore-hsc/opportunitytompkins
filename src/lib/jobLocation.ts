@@ -47,4 +47,4 @@ export function isOutsideCounty(location: string | null | undefined): boolean {
 }
 
 /** Backward-compatible alias. */
-export const isOutsideTompkins = isOutsideCounty;
+export const isOutsideCounty = isOutsideCounty;
