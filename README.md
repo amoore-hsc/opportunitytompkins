@@ -1,73 +1,136 @@
-# Welcome to your Lovable project
+# Opportunity Board
 
-## Project info
+A configurable community opportunity board for SNAP ABAWD work-requirement compliance,
+volunteer/training/educational opportunity listings, and local job aggregation.
 
-**URL**: https://lovable.dev/projects/fa92fadf-d682-4eeb-b6ca-5c2897068382
+Originally built for **Tompkins County, NY** as "Tompkins Opportunity" and generalized
+into a reusable template. Fork this repo, set your config, and deploy your own
+county-level opportunity board.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- **Volunteer / Training / Educational Opportunities** — Community organizations post
+  listings; the public browses, filters, and applies. Listings auto-expire after 60 days
+  with email reminders, and can be deactivated/reactivated via magic-link tokens.
+- **Employment Opportunities** — Daily automated scraping of local job sites (Cornell
+  University, Ithaca College, Tompkins Chamber, Cayuga Health, Tompkins County government).
+  AI-powered job-category classification and wage enrichment. Multi-select category pills,
+  pay slider, employer filter, and print/email sharing.
+- **Admin Dashboard** — Aggregate reporting, listing management, feedback review, manual
+  reminder sending, stale-listing alerts, and dashboard export (PDF/Excel).
+- **Automated Emails** — Listing confirmations, application notifications, weekly reports,
+  60-day reminders, interest notifications, deactivation/reactivation emails.
+- **Accessibility** — WCAG 2.1 AA targeted: skip links, ARIA landmarks, screen-reader-only
+  labels, high-contrast design.
 
-**Use Lovable**
+## Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/fa92fadf-d682-4eeb-b6ca-5c2897068382) and start prompting.
+- **Frontend:** React 18, Vite 5, TypeScript 5, Tailwind CSS v3, shadcn/ui
+- **Backend:** Supabase (Postgres, Auth, Edge Functions, Storage)
+- **Email:** Resend
+- **AI:** Lovable AI Gateway (job categorization, wage extraction)
+- **Scraping:** Firecrawl
 
-Changes made via Lovable will be committed automatically to this repo.
+## Quick Start
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### 1. Clone & install
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone <your-repo-url> opportunity-board
+cd opportunity-board
+npm install
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 2. Set up Supabase
 
-# Step 3: Install the necessary dependencies.
-npm i
+1. Create a new project at [supabase.com](https://supabase.com).
+2. Run the schema migration: `supabase/migrations/schema.sql` (in the SQL editor).
+3. Optionally run the cron seed: `supabase/migrations/seed_cron.sql`.
+4. Copy your project URL, anon key, and project ID from Settings → API.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 3. Configure environment variables
+
+```sh
+cp .env.example .env
+```
+
+Edit `.env` with your Supabase credentials and other config values.
+
+### 4. Configure frontend site settings
+
+```sh
+cp src/config/site.config.local.example.ts src/config/site.config.local.ts
+```
+
+Edit `src/config/site.config.local.ts` with your county name, support email,
+verification form URLs, career center info, and county place lists.
+
+The color palette is defined as HSL tokens in `src/index.css` — customize the
+`--primary`, `--secondary`, and accent values to match your brand.
+
+### 5. Set Edge Function secrets
+
+In your Supabase dashboard (Project Settings → Edge Functions → Secrets), add:
+`RESEND_API_KEY`, `FIRECRAWL_API_KEY`, `LOVABLE_API_KEY`, `INTERNAL_TASK_SECRET`,
+`FROM_EMAIL`, `FROM_NAME`, `SUPPORT_EMAIL`, `ALERT_RECIPIENTS`, `SITE_NAME`,
+`SITE_URL`, `COUNTY_PLACES`, `OUT_OF_COUNTY_BLOCKLIST`, `OUT_OF_STATE_REGIONS`,
+and optionally `GOOGLE_CHAT_WEBHOOK_URL`.
+
+### 6. Deploy Edge Functions
+
+```sh
+supabase functions deploy --no-verify-jwt
+```
+
+Or deploy individual functions from `supabase/functions/`.
+
+### 7. Run the dev server
+
+```sh
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Architecture
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+src/
+  config/           # Site configuration (defaults + local override)
+    site.config.ts          # Neutral placeholder defaults (committed)
+    site.config.local.ts    # Your county values (gitignored)
+    site.config.local.example.ts
+    index.ts                # Config loader
+  pages/            # Route pages (Index, Opportunities, Employment, Admin, etc.)
+  components/        # Reusable UI components
+  lib/              # Utilities (jobLocation, confetti, errorReporting)
+  integrations/      # Supabase client (auto-generated)
 
-**Use GitHub Codespaces**
+supabase/
+  functions/         # Edge Functions (emails, scraping, feedback, health check)
+    _shared/         # Shared helpers (emailConfig, googleChat, jobLocation, wage)
+  migrations/       # SQL schema and cron schedules
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Customization Guide
 
-## What technologies are used for this project?
+### Brand colors
+Edit HSL tokens in `src/index.css` (`--primary`, `--secondary`, `--highlight`, etc.).
 
-This project is built with:
+### Site name, emails, county info
+Edit `src/config/site.config.local.ts`.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Job scraper sources
+The scraper in `supabase/functions/scrape-jobs/index.ts` has source-specific
+fetchers (ApplicantPro sitemaps, Oracle REST APIs, Firecrawl page scrapes).
+Adapt these for your local employers, or remove sources you don't need.
 
-## How can I deploy this project?
+### Verification forms
+Set `verificationForms` in `site.config.local.ts` with your own Adobe Acrobat /
+Google Form / portal links.
 
-Simply open [Lovable](https://lovable.dev/projects/fa92fadf-d682-4eeb-b6ca-5c2897068382) and click on Share -> Publish.
+### Cron schedules
+Edit `supabase/migrations/seed_cron.sql` to set your own schedule, then run it
+in the Supabase SQL editor. Requires the `pg_cron` extension.
 
-## Can I connect a custom domain to my Lovable project?
+## License
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT — see [LICENSE](LICENSE).
