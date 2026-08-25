@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
 import { SkipNavigation } from "@/components/SkipNavigation";
+import { siteConfig } from "@/config";
 
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
 import chrnLogo from "@/assets/chrn-logo.jpg";
@@ -35,7 +36,7 @@ const Index = () => {
             <p className="text-lg font-medium text-foreground">
               You may be exempt from new work requirements.
             </p>
-            <a href="https://forms.gle/9fBQrPjE7xNZbHQR8" target="_blank" rel="noopener noreferrer" className="inline-block">
+            <a href={siteConfig.exemptionFormUrl} target="_blank" rel="noopener noreferrer" className="inline-block">
               <Button className="text-base">
                 Click Here to Check your Exemption Status
               </Button>
@@ -44,11 +45,11 @@ const Index = () => {
               Questions?
               <br />
               Contact{" "}
-              <a href="https://www.tompkinscountyny.gov/All-Departments/Social-Services" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
-                Tompkins County DSS
+              <a href={siteConfig.dssUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
+                {siteConfig.dssName}
               </a>
               <br />
-              <span className="text-primary">(607) 274-5680</span>
+              <span className="text-primary">{siteConfig.dssPhone}</span>
             </p>
           </div>
         </DialogContent>
@@ -91,7 +92,7 @@ const Index = () => {
             <div className="rounded-xl border-2 border-highlight bg-card p-8 transition-all hover:shadow-lg">
               <Briefcase className="mx-auto mb-4 h-12 w-12 text-highlight" aria-hidden="true" />
               <h3 className="mb-2 text-xl font-semibold text-foreground">Find Employment</h3>
-              <p className="text-muted-foreground">Browse job openings from local employers in Tompkins County</p>
+              <p className="text-muted-foreground">Browse job openings from local employers in {siteConfig.countyName}</p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 <Link to="/employment">
                   <Button size="lg" className="w-full bg-highlight text-highlight-foreground hover:bg-highlight/90">
