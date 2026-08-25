@@ -24,4 +24,4 @@ export const siteConfig: SiteConfig = localOverride
   ? { ...defaultConfig, ...localOverride }
   : defaultConfig;
 
-export type { SiteConfig } from "./site.config";
+export type { SiteConfig, VerificationForm, ResourceLink, CareerCenterService, CareerCenterInfo } from "./site.config";
