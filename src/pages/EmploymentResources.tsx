@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import {
-  Handshake,
   ArrowLeft,
   ExternalLink,
   GraduationCap,
@@ -192,7 +191,7 @@ const EmploymentResources = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Handshake className="h-8 w-8 text-primary" aria-hidden="true" />
+              <img src="/favicon.png" alt="" aria-hidden="true" className="h-8 w-8" />
               <h1 className="text-2xl font-bold text-foreground">Employment Resources</h1>
             </div>
             <Link to="/">
