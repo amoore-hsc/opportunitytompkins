@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
-import { ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send, Link2, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2, LogOut, AlertTriangle, Mail, Eye, EyeOff, Send, Link2, ArrowUp, ArrowDown, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -285,6 +285,7 @@ const Admin = () => {
   }>>([]);
   const [editingOpportunity, setEditingOpportunity] = useState<Opportunity | null>(null);
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
+  const [confirmingActiveId, setConfirmingActiveId] = useState<string | null>(null);
   const [previewingEmailOpp, setPreviewingEmailOpp] = useState<Opportunity | null>(null);
   const [editFlexibleTime, setEditFlexibleTime] = useState(false);
   const [editLocationType, setEditLocationType] = useState("");
@@ -632,6 +633,35 @@ const Admin = () => {
     }
   };
 
+  const handleConfirmActive = async (opp: Opportunity) => {
+    setConfirmingActiveId(opp.id);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("confirm-listing-active", {
+        body: { token: opp.edit_token },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      toast({
+        title: "Listing Confirmed",
+        description: `"${opp.position_title || opp.type}" marked as still active. The 60-day reminder timer has been reset.`,
+      });
+
+      await fetchAllOpportunities();
+    } catch (error: any) {
+      console.error("Error confirming listing:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to confirm listing",
+        variant: "destructive",
+      });
+    } finally {
+      setConfirmingActiveId(null);
+    }
+  };
+
   const generateEmailPreviewHtml = (opp: Opportunity): string => {
     const siteUrl = window.location.origin;
     const editUrl = `${siteUrl}/edit-opportunity/${opp.edit_token}`;
@@ -932,10 +962,24 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
     // Only listings with an explicitly recorded reason are counted:
     // organization-provided closure reasons, or "Deactivated by admin" stamped
     // when a system admin manually deactivates. Merely inactive listings are excluded.
+    // Canonical labels: variants differing only in wording/casing collapse into one row.
+    const CANONICAL_REMOVAL_REASONS: Record<string, string> = {
+      "position filled": "Position(s) Filled",
+      "positions filled": "Position(s) Filled",
+      "position(s) filled": "Position(s) Filled",
+      "no longer needed": "No Longer Needed",
+      "posted in error": "Posted in Error",
+      "organization changes": "Organization Changes",
+      "other": "Other",
+      "deactivated by admin": "Deactivated by admin",
+    };
+
     const removalReasons: Record<string, number> = {};
     for (const opp of opportunities) {
       if (!opp.removal_reason) continue;
-      removalReasons[opp.removal_reason] = (removalReasons[opp.removal_reason] || 0) + 1;
+      const key = opp.removal_reason.trim().toLowerCase();
+      const reason = CANONICAL_REMOVAL_REASONS[key] ?? opp.removal_reason.trim();
+      removalReasons[reason] = (removalReasons[reason] || 0) + 1;
     }
 
 
@@ -1847,6 +1891,17 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
                     >
                       <Link2 className="h-4 w-4" />
                     </Button>
+                    {opp.active && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleConfirmActive(opp)}
+                        disabled={confirmingActiveId === opp.id}
+                        title="Confirm listing is still active (resets reminder timer)"
+                      >
+                        <CheckCircle2 className={`h-4 w-4 text-success ${confirmingActiveId === opp.id ? "animate-pulse" : ""}`} />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"

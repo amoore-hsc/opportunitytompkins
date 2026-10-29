@@ -58,6 +58,23 @@ export const DashboardExport = ({ metrics, dashboardRef }: DashboardExportProps)
     summarySheet["!cols"] = [{ wch: 28 }, { wch: 12 }];
     XLSX.utils.book_append_sheet(wb, summarySheet, "Summary");
 
+    const positionsFilled = metrics.positionsFilledByOrg.map((o) => ({
+      Organization: o.name,
+      "Listings Closed": o.listings,
+      "Positions Filled": o.positions,
+    }));
+    const filledSheet = XLSX.utils.json_to_sheet(positionsFilled);
+    filledSheet["!cols"] = [{ wch: 40 }, { wch: 16 }, { wch: 16 }];
+    XLSX.utils.book_append_sheet(wb, filledSheet, "Positions Filled by Org");
+
+    const removalReasons = metrics.removalReasons.map((r) => ({
+      Reason: r.reason,
+      Count: r.count,
+    }));
+    const reasonsSheet = XLSX.utils.json_to_sheet(removalReasons);
+    reasonsSheet["!cols"] = [{ wch: 40 }, { wch: 12 }];
+    XLSX.utils.book_append_sheet(wb, reasonsSheet, "Removal Reasons");
+
     const appsByOrg = metrics.applicationsByOrg.map((o) => ({
       Organization: o.name,
       Applications: o.count,
@@ -82,23 +99,6 @@ export const DashboardExport = ({ metrics, dashboardRef }: DashboardExportProps)
     const oppSheet = XLSX.utils.json_to_sheet(appsByOpportunity);
     oppSheet["!cols"] = [{ wch: 50 }, { wch: 40 }, { wch: 12 }];
     XLSX.utils.book_append_sheet(wb, oppSheet, "Applications by Opportunity");
-
-    const positionsFilled = metrics.positionsFilledByOrg.map((o) => ({
-      Organization: o.name,
-      "Listings Closed": o.listings,
-      "Positions Filled": o.positions,
-    }));
-    const filledSheet = XLSX.utils.json_to_sheet(positionsFilled);
-    filledSheet["!cols"] = [{ wch: 40 }, { wch: 16 }, { wch: 16 }];
-    XLSX.utils.book_append_sheet(wb, filledSheet, "Positions Filled by Org");
-
-    const removalReasons = metrics.removalReasons.map((r) => ({
-      Reason: r.reason,
-      Count: r.count,
-    }));
-    const reasonsSheet = XLSX.utils.json_to_sheet(removalReasons);
-    reasonsSheet["!cols"] = [{ wch: 40 }, { wch: 12 }];
-    XLSX.utils.book_append_sheet(wb, reasonsSheet, "Removal Reasons");
 
     XLSX.writeFile(wb, `${baseFilename}.xlsx`);
   };

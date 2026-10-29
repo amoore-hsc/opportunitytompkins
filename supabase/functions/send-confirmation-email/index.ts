@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
 import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
 
@@ -49,11 +50,10 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const body: ConfirmationEmailRequest = await req.json();
+    const body: ConfirmationEmailRequest & { opportunityId?: string } = await req.json();
     const {
       orgName,
       contactName,
-      orgEmail,
       opportunityType,
       roleClassification,
       positionTitle,
@@ -63,12 +63,50 @@ const handler = async (req: Request): Promise<Response> => {
       onBusRoute,
       hoursAvailable,
       daysTimesAvailable,
-      editToken,
       siteUrl,
       programName,
       website,
       programComponents,
     } = body;
+    let { orgEmail, editToken } = body;
+
+    // Public visitors can't read the private edit link, so look it up here.
+    // The email always goes to the address saved on the listing, and only for
+    // listings created in the last 15 minutes.
+    if (body.opportunityId) {
+      const admin = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
+      const { data: opp, error: oppErr } = await admin
+        .from("opportunities")
+        .select("edit_token, org_email, admin_email, created_at")
+        .eq("id", body.opportunityId)
+        .maybeSingle();
+      if (oppErr || !opp) throw new Error("Listing not found");
+      if (Date.now() - new Date(opp.created_at).getTime() > 15 * 60 * 1000) {
+        throw new Error("Confirmation window has passed");
+      }
+      editToken = opp.edit_token;
+      orgEmail = opp.admin_email || opp.org_email;
+    } else {
+      // Resends with a known edit link are only allowed for signed-in admins.
+      const admin = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
+      const jwt = (req.headers.get("Authorization") || "").replace("Bearer ", "");
+      const { data: u } = await admin.auth.getUser(jwt);
+      const { data: isAdmin } = u?.user
+        ? await admin.rpc("has_role", { _user_id: u.user.id, _role: "admin" })
+        : { data: false };
+      if (!isAdmin || !editToken) {
+        return new Response(JSON.stringify({ error: "Not allowed" }), {
+          status: 403,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
+    }
 
     console.log(`Sending confirmation email to ${orgEmail}`);
 

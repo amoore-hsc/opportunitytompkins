@@ -83,6 +83,7 @@ CREATE TABLE public.employment_opportunities (
   is_manual BOOLEAN NOT NULL DEFAULT false,
   active BOOLEAN NOT NULL DEFAULT true,
   job_category TEXT,
+  wage_checked_at TIMESTAMPTZ,
   special_requirements TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),

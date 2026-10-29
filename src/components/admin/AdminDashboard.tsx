@@ -165,19 +165,53 @@ export const AdminDashboard = forwardRef<HTMLDivElement, AdminDashboardProps>(({
 
       <div className="space-y-6">
         <BreakdownTable
+          title="Positions Filled by Organization"
+          headers={["Organization", "Listings Closed", "Positions Filled"]}
+          rows={positionsFilledByOrg.map((org) => (
+            <TableRow key={org.name}>
+              <TableCell className="font-medium">{org.name}</TableCell>
+              <TableCell className="text-center text-muted-foreground">
+                {org.listings}
+              </TableCell>
+              <TableCell className="text-center">
+                <span className="inline-block h-7 min-w-7 rounded-full bg-success/10 px-3 text-center text-sm font-semibold leading-7 text-success">
+                  {org.positions}
+                </span>
+              </TableCell>
+            </TableRow>
+          ))}
+        />
+
+        <BreakdownTable
+          title="Removal Reasons"
+          headers={["Reason", "Count"]}
+          rows={removalReasons.map((item) => (
+            <TableRow key={item.reason}>
+              <TableCell className="font-medium">{item.reason}</TableCell>
+              <TableCell className="text-center">
+                <span className="inline-block h-7 min-w-7 rounded-full bg-destructive/10 px-3 text-center text-sm font-semibold leading-7 text-destructive">
+                  {item.count}
+                </span>
+              </TableCell>
+            </TableRow>
+          ))}
+        />
+
+        <BreakdownTable
           title="Applications by Organization"
           headers={["Organization", "Applications"]}
           rows={applicationsByOrg.map((org) => (
             <TableRow key={org.name}>
               <TableCell className="font-medium">{org.name}</TableCell>
               <TableCell className="text-center">
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                <span className="inline-block h-7 min-w-7 rounded-full bg-primary/10 px-3 text-center text-sm font-semibold leading-7 text-primary">
                   {org.count}
                 </span>
               </TableCell>
             </TableRow>
           ))}
         />
+
 
         <BreakdownTable
           title="Applications by Role Classification"
@@ -186,7 +220,7 @@ export const AdminDashboard = forwardRef<HTMLDivElement, AdminDashboardProps>(({
             <TableRow key={role.name}>
               <TableCell className="font-medium">{role.name}</TableCell>
               <TableCell className="text-center">
-                <span className="inline-flex items-center rounded-full bg-[#e67e22]/10 px-3 py-1 text-sm font-semibold text-[#e67e22]">
+                <span className="inline-block h-7 min-w-7 rounded-full bg-[#e67e22]/10 px-3 text-center text-sm font-semibold leading-7 text-[#e67e22]">
                   {role.count}
                 </span>
               </TableCell>
@@ -204,7 +238,7 @@ export const AdminDashboard = forwardRef<HTMLDivElement, AdminDashboardProps>(({
                 {opp.orgName}
               </TableCell>
               <TableCell className="text-center">
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                <span className="inline-block h-7 min-w-7 rounded-full bg-primary/10 px-3 text-center text-sm font-semibold leading-7 text-primary">
                   {opp.count}
                 </span>
               </TableCell>
@@ -212,38 +246,6 @@ export const AdminDashboard = forwardRef<HTMLDivElement, AdminDashboardProps>(({
           ))}
         />
 
-        <BreakdownTable
-          title="Positions Filled by Organization"
-          headers={["Organization", "Listings Closed", "Positions Filled"]}
-          rows={positionsFilledByOrg.map((org) => (
-            <TableRow key={org.name}>
-              <TableCell className="font-medium">{org.name}</TableCell>
-              <TableCell className="text-center text-muted-foreground">
-                {org.listings}
-              </TableCell>
-              <TableCell className="text-center">
-                <span className="inline-flex items-center rounded-full bg-success/10 px-3 py-1 text-sm font-semibold text-success">
-                  {org.positions}
-                </span>
-              </TableCell>
-            </TableRow>
-          ))}
-        />
-
-        <BreakdownTable
-          title="Removal Reasons"
-          headers={["Reason", "Count"]}
-          rows={removalReasons.map((item) => (
-            <TableRow key={item.reason}>
-              <TableCell className="font-medium">{item.reason}</TableCell>
-              <TableCell className="text-center">
-                <span className="inline-flex items-center rounded-full bg-destructive/10 px-3 py-1 text-sm font-semibold text-destructive">
-                  {item.count}
-                </span>
-              </TableCell>
-            </TableRow>
-          ))}
-        />
       </div>
     </div>
   );

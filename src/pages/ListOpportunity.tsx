@@ -239,7 +239,8 @@ const ListOpportunity = () => {
             admin_email: sameContact ? null : formData.adminEmail,
           };
 
-      const { data, error } = await supabase.from("opportunities").insert(insertData).select().single();
+      // Only "id" is readable by the public; the edit link is looked up by the email function.
+      const { data, error } = await supabase.from("opportunities").insert(insertData).select("id").single();
 
       if (error) throw error;
 
@@ -262,7 +263,7 @@ const ListOpportunity = () => {
         onBusRoute: formData.onBusRoute,
         hoursAvailable: formData.hoursAvailable,
         daysTimesAvailable: daysTimesAvailable,
-        editToken: data.edit_token,
+        opportunityId: data.id,
         siteUrl: window.location.origin,
       };
 

@@ -105,6 +105,8 @@ Deno.serve(async (req) => {
         "wage.is.null,wage.eq.,wage.ilike.null,wage.ilike.n/a,wage.ilike.na,wage.ilike.none,wage.ilike.not listed,wage.ilike.not specified,wage.ilike.not provided,wage.ilike.not available,wage.ilike.unspecified,wage.ilike.unknown,wage.ilike.tbd"
       )
       .not("posting_url", "is", null)
+      // Skip postings already checked once with no pay found (saves Firecrawl credits)
+      .is("wage_checked_at", null)
       .order("updated_at", { ascending: false })
       .range(offset, offset + limit - 1);
     if (sourceSite) q = q.eq("source_site", sourceSite);
@@ -138,11 +140,15 @@ Deno.serve(async (req) => {
         attempted++;
         if (!perSource[r.source_site]) perSource[r.source_site] = { attempted: 0, enriched: 0 };
         perSource[r.source_site].attempted++;
+        await supabase
+          .from("employment_opportunities")
+          .update(
+            r.wage
+              ? { wage: r.wage, wage_checked_at: new Date().toISOString() }
+              : { wage_checked_at: new Date().toISOString() }
+          )
+          .eq("id", r.id);
         if (r.wage) {
-          await supabase
-            .from("employment_opportunities")
-            .update({ wage: r.wage })
-            .eq("id", r.id);
           enriched++;
           perSource[r.source_site].enriched++;
         }

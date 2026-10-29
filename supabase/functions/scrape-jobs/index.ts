@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { normalizeWage } from "../_shared/wage.ts";
+import { categorizeJob } from "../_shared/jobCategory.ts";
 import { isOutsideCounty } from "../_shared/jobLocation.ts";
 
 const corsHeaders = {
@@ -44,7 +45,13 @@ async function classifyJobs(
   jobs: { job_title: string; employer: string }[]
 ): Promise<Record<number, string>> {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY || jobs.length === 0) return {};
+  if (jobs.length === 0) return {};
+  // Free fallback: keyword rules when no AI key is configured
+  if (!LOVABLE_API_KEY) {
+    const out: Record<number, string> = {};
+    jobs.forEach((j, i) => (out[i] = categorizeJob(j.job_title, j.employer)));
+    return out;
+  }
 
   const jobList = jobs
     .map((j, i) => `${i}: "${j.job_title}" at "${j.employer}"`)
