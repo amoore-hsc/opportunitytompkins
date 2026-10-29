@@ -1,0 +1,1 @@
+ALTER TABLE public.employment_opportunities ADD COLUMN IF NOT EXISTS wage_checked_at timestamp with time zone;
