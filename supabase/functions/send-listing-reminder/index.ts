@@ -2,7 +2,8 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
-import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName, getSiteUrl } from "../_shared/emailConfig.ts";
+import { getErrorMessage } from "../_shared/errors.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -233,7 +234,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
 
-    const siteUrl = Deno.env.get("SITE_URL") || "https://oosxopnxaivfdtksrvam.lovableproject.com";
+    const siteUrl = getSiteUrl();
 
     // Initialize Supabase client with service role for full access
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -274,7 +275,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.log(`Found ${realListings.length} real listing(s) to use for test email`);
 
       // Use real listings but override the org_email display
-      const testOpportunities: Opportunity[] = realListings.map((listing: any) => ({
+      const testOpportunities: Opportunity[] = realListings.map((listing) => ({
         ...listing,
         // Keep all real data including edit_token so buttons work
       }));
@@ -314,7 +315,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (isAdminManualSend && manualOpportunityId) {
       const { data: opp, error: oppErr } = await supabase
         .from("opportunities")
-        .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, manual_reminder_count")
+        .select("id, org_name, contact_name, org_email, admin_contact_name, admin_email, position_title, type, description, location, role_classification, hours_available, days_times_available, additional_requirements, created_at, edit_token, manual_reminder_count, last_manual_reminder_at")
         .eq("id", manualOpportunityId)
         .maybeSingle();
 
@@ -339,8 +340,8 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
       // Resend returns { data, error } — a failure here is NOT a thrown exception.
-      if ((emailResponse as any)?.error) {
-        const resendError = (emailResponse as any).error;
+      if (emailResponse?.error) {
+        const resendError = emailResponse.error;
         console.error("Resend rejected manual reminder:", JSON.stringify(resendError));
         return new Response(
           JSON.stringify({
@@ -354,11 +355,11 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       console.log(
-        `Manual reminder accepted by Resend (id: ${(emailResponse as any)?.data?.id}) for ${recipient}`
+        `Manual reminder accepted by Resend (id: ${emailResponse?.data?.id}) for ${recipient}`
       );
 
       let newCount = opp.manual_reminder_count || 0;
-      let nowIso = new Date().toISOString();
+      const nowIso = new Date().toISOString();
       if (!sendToSelf) {
         newCount = newCount + 1;
         const { error: updateError } = await supabase
@@ -498,9 +499,9 @@ const handler = async (req: Request): Promise<Response> => {
           listingsUpdated += oppIds.length;
         }
 
-      } catch (emailError: any) {
+      } catch (emailError) {
         console.error(`Error sending email to ${email}:`, emailError);
-        errors.push(`Failed to send email to ${email}: ${emailError.message}`);
+        errors.push(`Failed to send email to ${email}: ${getErrorMessage(emailError)}`);
       }
     }
 
@@ -534,10 +535,10 @@ const handler = async (req: Request): Promise<Response> => {
       }
     );
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in send-listing-reminder function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: getErrorMessage(error) }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

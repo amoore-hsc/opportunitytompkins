@@ -1,6 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
-import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.23.8";
+import { fetchActiveByIds, MAX_SHARED_LISTINGS } from "../_shared/fetchByIds.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName, getSiteUrl } from "../_shared/emailConfig.ts";
+import { getErrorMessage } from "../_shared/errors.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -30,8 +34,6 @@ interface Opportunity {
   days_times_available: string;
   additional_requirements: string | null;
   org_name: string;
-  org_email: string;
-  org_phone: string;
   role_classification: string | null;
   updated_at: string;
   program_name: string | null;
@@ -39,10 +41,22 @@ interface Opportunity {
   program_components: string | null;
 }
 
-interface OpportunitiesEmailRequest {
-  email: string;
-  opportunities: Opportunity[];
-}
+// The browser sends only listing ids; content is loaded from the database so
+// this endpoint can't be used to email arbitrary text or links.
+const BodySchema = z.object({
+  email: z.string().trim().email().max(320),
+  opportunityIds: z.array(z.string().uuid()).min(1).max(MAX_SHARED_LISTINGS),
+});
+
+// Public columns only (same as the public_opportunities view).
+const OPPORTUNITY_COLUMNS =
+  "id, type, position_title, description, location, on_bus_route, hours_available, days_times_available, additional_requirements, org_name, role_classification, updated_at, program_name, website, program_components";
+
+const jsonResponse = (body: unknown, status: number) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", ...corsHeaders },
+  });
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -51,12 +65,30 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, opportunities }: OpportunitiesEmailRequest = await req.json();
+    const parsed = BodySchema.safeParse(await req.json().catch(() => ({})));
+    if (!parsed.success) {
+      return jsonResponse(
+        { error: `Please enter a valid email address. Up to ${MAX_SHARED_LISTINGS} opportunities can be emailed at once.` },
+        400,
+      );
+    }
+    const { email, opportunityIds } = parsed.data;
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const opportunities = await fetchActiveByIds<Opportunity>(
+      supabase, "opportunities", OPPORTUNITY_COLUMNS, opportunityIds,
+    );
+    if (opportunities.length === 0) {
+      return jsonResponse({ error: "Those opportunities are no longer available." }, 404);
+    }
 
     console.log(`Sending opportunities email to: ${email}`);
     console.log(`Number of opportunities: ${opportunities.length}`);
 
-    const siteUrl = Deno.env.get("SITE_URL") || "https://oosxopnxaivfdtksrvam.lovableproject.com";
+    const siteUrl = getSiteUrl();
     
     const opportunitiesHtml = opportunities.map((opp) => `
 <div style="background-color:#f0f7ff; border-left:4px solid #1e3a5f; padding:20px; margin:0 0 20px 0; border-radius:0 8px 8px 0;">
@@ -145,10 +177,10 @@ ${opportunitiesHtml}
         ...corsHeaders,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in send-opportunities-email function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: getErrorMessage(error) }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

@@ -34,6 +34,7 @@ import { ClientErrorsCard } from "@/components/admin/ClientErrorsCard";
 import { FeedbackCard } from "@/components/admin/FeedbackCard";
 import { DashboardExport } from "@/components/admin/DashboardExport";
 import { siteConfig } from "@/config";
+import { getErrorMessage } from "@/lib/errors";
 
 type DaySchedule = {
   [key: string]: {
@@ -196,7 +197,7 @@ const StaleListingsAlert = ({
         description: `"Your Listing Needs Attention" email resent${data?.recipient ? ` to ${data.recipient}` : ""}.`,
       });
       onReminderSent();
-    } catch (err: any) {
+    } catch (err) {
       toast({
         title: "Failed to send reminder",
         description: err?.message || "Please try again.",
@@ -266,7 +267,6 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(false);
@@ -435,10 +435,10 @@ const Admin = () => {
 
       setOpportunities(oppsResult.data || []);
       setApplicationCounts(countsResult.data || []);
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     }
@@ -449,50 +449,26 @@ const Admin = () => {
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/admin`
-          }
-        });
+      // Admin accounts are created by invitation from the Supabase dashboard;
+      // public sign-up is disabled.
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) {
-          toast({
-            title: "Sign Up Failed",
-            description: error.message,
-            variant: "destructive",
-          });
-          setLoading(false);
-        } else {
-          toast({
-            title: "Account Created",
-            description: "You can now sign in. Note: You won't have admin access until an administrator grants it.",
-          });
-          setIsSignUp(false);
-          setLoading(false);
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+      if (error) {
+        toast({
+          title: "Login Failed",
+          description: error.message,
+          variant: "destructive",
         });
-
-        if (error) {
-          toast({
-            title: "Login Failed",
-            description: error.message,
-            variant: "destructive",
-          });
-          setLoading(false);
-        }
-        // Don't set loading to false on success - let checkAdminRole handle it via onAuthStateChange
+        setLoading(false);
       }
-    } catch (error: any) {
+      // Don't set loading to false on success - let checkAdminRole handle it via onAuthStateChange
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       setLoading(false);
@@ -521,10 +497,10 @@ const Admin = () => {
           description: "Check your inbox for a link to reset your password.",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -574,10 +550,10 @@ const Admin = () => {
       setIsResetPassword(false);
       setNewPassword("");
       setConfirmNewPassword("");
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -594,8 +570,6 @@ const Admin = () => {
     setSendingEmailId(opp.id);
 
     try {
-      const siteUrl = window.location.origin;
-
       const { error } = await supabase.functions.invoke("send-confirmation-email", {
         body: {
           orgName: opp.org_name,
@@ -611,7 +585,6 @@ const Admin = () => {
           hoursAvailable: opp.hours_available,
           daysTimesAvailable: opp.days_times_available,
           editToken: opp.edit_token,
-          siteUrl,
         },
       });
 
@@ -621,11 +594,11 @@ const Admin = () => {
         title: "Email Sent",
         description: `Confirmation email resent to ${opp.admin_email || opp.org_email}`,
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error resending email:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to resend email",
+        description: getErrorMessage(error) || "Failed to resend email",
         variant: "destructive",
       });
     } finally {
@@ -650,11 +623,11 @@ const Admin = () => {
       });
 
       await fetchAllOpportunities();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error confirming listing:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to confirm listing",
+        description: getErrorMessage(error) || "Failed to confirm listing",
         variant: "destructive",
       });
     } finally {
@@ -768,10 +741,10 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
         description: "Opportunity deleted successfully",
       });
       fetchAllOpportunities();
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     }
@@ -875,10 +848,10 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       setEditingOpportunity(null);
       fetchAllOpportunities();
 
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     }
@@ -1165,10 +1138,10 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
           <div className="mb-6 text-center">
             <img src="/favicon.png" alt="" aria-hidden="true" className="mx-auto h-12 w-12 mb-4" />
             <h1 className="text-2xl font-bold text-foreground">
-              {isSignUp ? "Create Admin Account" : "Admin Login"}
+              Admin Login
             </h1>
             <p className="text-sm text-muted-foreground mt-2">
-              {isSignUp ? "Sign up for an admin account" : "Sign in with your admin account"}
+              Sign in with your admin account
             </p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -1206,25 +1179,15 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
               </div>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (isSignUp ? "Creating account..." : "Signing in...") : (isSignUp ? "Sign Up" : "Sign In")}
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
-            {!isSignUp && (
-              <Button
-                type="button"
-                variant="link"
-                className="w-full text-sm"
-                onClick={() => setIsForgotPassword(true)}
-              >
-                Forgot your password?
-              </Button>
-            )}
             <Button
               type="button"
-              variant="ghost"
-              className="w-full"
-              onClick={() => setIsSignUp(!isSignUp)}
+              variant="link"
+              className="w-full text-sm"
+              onClick={() => setIsForgotPassword(true)}
             >
-              {isSignUp ? "Already have an account? Sign In" : "Need an account? Sign Up"}
+              Forgot your password?
             </Button>
             <Link to="/">
               <Button variant="outline" className="w-full">

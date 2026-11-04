@@ -1,4 +1,4 @@
-project_id = "oosxopnxaivfdtksrvam"
+project_id = "jgwyjzdqeocdueftqgxf"
 
 [functions.send-opportunities-email]
 verify_jwt = false
@@ -22,9 +22,6 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.send-confirmation-email]
-verify_jwt = false
-
-[functions.test-listing-reminder]
 verify_jwt = false
 
 [functions.confirm-listing-active]
@@ -52,4 +49,11 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.weekly-webhook-test]
+verify_jwt = false
+
+# These two check the caller themselves (internal task secret / admin login).
+[functions.enrich-job-wages]
+verify_jwt = false
+
+[functions.send-reactivation-email]
 verify_jwt = false

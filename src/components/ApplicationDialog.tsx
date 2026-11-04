@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/pages/Opportunities";
+import { getFunctionErrorMessage } from "@/lib/errors";
 
 interface ApplicationDialogProps {
   opportunity: Opportunity;
@@ -44,6 +45,7 @@ export const ApplicationDialog = ({
     hoursRequested: "",
     availabilityConfirmed: false,
   });
+  const [website, setWebsite] = useState(""); // honeypot
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,16 +68,13 @@ export const ApplicationDialog = ({
           clientEmail: formData.email,
           clientPhone: formData.phone,
           hoursRequested: formData.hoursRequested,
-          orgName: opportunity.org_name,
-          opportunityDescription: opportunity.description,
-          opportunityType: opportunity.type === "volunteer" ? "Volunteer" : "Education & Training",
-          positionTitle: opportunity.position_title || "",
           opportunityId: opportunity.id,
+          website,
         },
       });
 
-
-      if (error) throw error;
+      // Show the server's explanation (e.g. daily limit reached) when there is one.
+      if (error) throw new Error(await getFunctionErrorMessage(error));
 
       triggerConfetti();
       
@@ -92,10 +91,11 @@ export const ApplicationDialog = ({
         hoursRequested: "",
         availabilityConfirmed: false,
       });
-    } catch (error: any) {
+      setWebsite("");
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -172,6 +172,19 @@ export const ApplicationDialog = ({
             <Label htmlFor="availability" className="cursor-pointer text-sm">
               I confirm I am available during the listed days and times. *
             </Label>
+          </div>
+
+          {/* Honeypot — hidden from real users */}
+          <div className="hidden" aria-hidden="true">
+            <label htmlFor="application-website">Website</label>
+            <input
+              id="application-website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
           </div>
 
           <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>

@@ -12,6 +12,7 @@ import { SkipNavigation } from "@/components/SkipNavigation";
 import { siteConfig } from "@/config";
 import { ApplicationDialog } from "@/components/ApplicationDialog";
 import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/errors";
 
 export interface Opportunity {
   id: string;
@@ -60,17 +61,17 @@ const Opportunities = () => {
   const fetchOpportunities = async () => {
     try {
       const { data, error } = await supabase
-        .from("public_opportunities" as any)
+        .from("public_opportunities")
         .select("*")
         .order("updated_at", { ascending: false });
       if (error) throw error;
       setOpportunities(((data as unknown) as Opportunity[]) || []);
       setFilteredOpportunities(((data as unknown) as Opportunity[]) || []);
 
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error loading opportunities",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive"
       });
     } finally {

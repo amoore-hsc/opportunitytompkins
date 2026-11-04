@@ -1,3 +1,4 @@
+import { normalizeWebsite } from "@/lib/url";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Plus, X, Loader2, AlertTriangle } from "lucide-react";
@@ -20,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getErrorMessage } from "@/lib/errors";
 
 const addressSchema = z.string().min(1, "Address is required").refine(val => {
   const parts = val.split(',').map(p => p.trim()).filter(p => p.length > 0);
@@ -297,7 +299,7 @@ const EditOpportunity = () => {
       const adminContactName = sameContact ? null : formData.adminContactName;
       const adminEmail = sameContact ? null : formData.adminEmail;
 
-      const updates: Record<string, any> = {
+      const updates: Record<string, unknown> = {
         type: formData.type,
         description: formData.description,
         hours_available: formData.hoursAvailable,
@@ -309,7 +311,7 @@ const EditOpportunity = () => {
 
       if (isEducation) {
         updates.program_name = formData.programName || null;
-        updates.website = formData.website;
+        updates.website = normalizeWebsite(formData.website);
         updates.program_components = formData.programComponents.length > 0 ? formData.programComponents.join(", ") : null;
         updates.location = "N/A";
         updates.on_bus_route = false;
@@ -349,10 +351,10 @@ const EditOpportunity = () => {
         description: "Your opportunity has been updated."
       });
       navigate("/opportunities");
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive"
       });
     } finally {
@@ -376,10 +378,10 @@ const EditOpportunity = () => {
         title: "Listing Reactivated",
         description: "Your listing is live again and visible to the community."
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive"
       });
     } finally {
@@ -424,10 +426,10 @@ const EditOpportunity = () => {
       });
       setShowRemoveDialog(false);
       navigate("/opportunities");
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive"
       });
     } finally {
@@ -656,14 +658,19 @@ const EditOpportunity = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="website">Website *</Label>
+                <Label htmlFor="website">
+                  Website <span aria-hidden="true" className="text-destructive">*</span>
+                  <span className="sr-only">(required)</span>
+                </Label>
                 <Input
                   id="website"
-                  type="url"
+                  type="text"
+                  inputMode="url"
+                  autoComplete="url"
                   required
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  placeholder="e.g., https://www.example.org/program"
+                  placeholder="e.g., www.example.org/program"
                 />
               </div>
             </>

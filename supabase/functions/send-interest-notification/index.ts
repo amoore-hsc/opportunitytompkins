@@ -1,7 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
-import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName, getSiteUrl } from "../_shared/emailConfig.ts";
+import { getErrorMessage } from "../_shared/errors.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -43,7 +44,7 @@ function generateEmail(
   applicationCount: number, 
   siteUrl: string
 ): string {
-  const editUrl = `${siteUrl}/edit-opportunity?token=${opportunity.edit_token}`;
+  const editUrl = `${siteUrl}/edit-opportunity/${opportunity.edit_token}`;
   const contactName = opportunity.admin_contact_name || opportunity.contact_name || 'there';
   const positionTitle = opportunity.position_title || opportunity.type;
   
@@ -154,7 +155,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    const siteUrl = Deno.env.get("SITE_URL") || "https://example.com";
+    const siteUrl = getSiteUrl();
 
     if (!supabaseUrl || !supabaseServiceKey) {
       throw new Error("Missing Supabase environment variables");
@@ -359,10 +360,10 @@ const handler = async (req: Request): Promise<Response> => {
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in send-interest-notification function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: getErrorMessage(error) }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

@@ -1,3 +1,4 @@
+import { normalizeWebsite } from "@/lib/url";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Plus, X } from "lucide-react";
@@ -16,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { triggerConfetti } from "@/lib/confetti";
 import { z } from "zod";
 import { siteConfig } from "@/config";
+import { getErrorMessage } from "@/lib/errors";
 
 const isValidAddressPattern = (address: string): boolean => {
   const parts = address.split(',').map(p => p.trim()).filter(p => p.length > 0);
@@ -220,7 +222,7 @@ const ListOpportunity = () => {
         ? {
             ...baseData,
             program_name: formData.programName || null,
-            website: formData.website,
+            website: normalizeWebsite(formData.website),
             program_components: formData.programComponents.length > 0 ? formData.programComponents.join(", ") : null,
             location: "N/A",
             on_bus_route: false,
@@ -250,7 +252,7 @@ const ListOpportunity = () => {
       const confirmationEmail = adminEmail || formData.orgEmail;
       const confirmationName = adminContactName || formData.contactName || formData.orgName;
 
-      const emailBody: Record<string, any> = {
+      const emailBody: Record<string, unknown> = {
         orgName: formData.orgName,
         contactName: confirmationName,
         orgEmail: confirmationEmail,
@@ -264,12 +266,11 @@ const ListOpportunity = () => {
         hoursAvailable: formData.hoursAvailable,
         daysTimesAvailable: daysTimesAvailable,
         opportunityId: data.id,
-        siteUrl: window.location.origin,
       };
 
       if (isEducation) {
         emailBody.programName = formData.programName || null;
-        emailBody.website = formData.website || null;
+        emailBody.website = normalizeWebsite(formData.website) || null;
         emailBody.programComponents = formData.programComponents.length > 0 ? formData.programComponents.join(", ") : null;
       }
 
@@ -288,11 +289,11 @@ const ListOpportunity = () => {
         description: "Your opportunity has been listed. Check your email for confirmation."
       });
       navigate("/opportunities");
-    } catch (error: any) {
-      setFormError(error.message);
+    } catch (error) {
+      setFormError(getErrorMessage(error));
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive"
       });
     } finally {
@@ -515,14 +516,19 @@ const ListOpportunity = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="website">Website *</Label>
+                <Label htmlFor="website">
+                  Website <span aria-hidden="true" className="text-destructive">*</span>
+                  <span className="sr-only">(required)</span>
+                </Label>
                 <Input
                   id="website"
-                  type="url"
+                  type="text"
+                  inputMode="url"
+                  autoComplete="url"
                   required
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  placeholder="e.g., https://www.example.org/program"
+                  placeholder="e.g., www.example.org/program"
                 />
               </div>
             </>

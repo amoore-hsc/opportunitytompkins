@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
-import { ExternalLink, RefreshCw, Trash2, EyeOff, Eye, ArrowUp, ArrowDown } from "lucide-react";
+import { ExternalLink, Trash2, EyeOff, Eye, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -23,7 +23,6 @@ export const UserSubmittedJobsSection = () => {
   const { toast } = useToast();
   const [jobs, setJobs] = useState<UserJob[]>([]);
   const [loading, setLoading] = useState(true);
-  const [rechecking, setRechecking] = useState(false);
   const [lastCheckedSort, setLastCheckedSort] = useState<"desc" | "asc">("desc");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "removed">("all");
 
@@ -45,36 +44,6 @@ export const UserSubmittedJobsSection = () => {
   }, [toast]);
 
   useEffect(() => { fetchJobs(); }, [fetchJobs]);
-
-  const handleRecheckAll = async () => {
-    setRechecking(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("recheck-manual-jobs", { body: {} });
-      if (error) throw error;
-      toast({
-        title: "Re-check complete",
-        description: `Checked ${data?.checked ?? 0} job(s).`,
-      });
-      await fetchJobs();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Re-check failed";
-      toast({ title: "Error", description: msg, variant: "destructive" });
-    } finally {
-      setRechecking(false);
-    }
-  };
-
-  const handleRecheckOne = async (id: string) => {
-    try {
-      const { error } = await supabase.functions.invoke("recheck-manual-jobs", { body: { id } });
-      if (error) throw error;
-      toast({ title: "Re-checked", description: "Job status refreshed." });
-      await fetchJobs();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Re-check failed";
-      toast({ title: "Error", description: msg, variant: "destructive" });
-    }
-  };
 
   const handleToggleActive = async (job: UserJob) => {
     const { error } = await supabase
@@ -118,17 +87,11 @@ export const UserSubmittedJobsSection = () => {
 
   return (
     <section className="mt-10">
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">User-Submitted Jobs</h2>
-          <p className="text-sm text-muted-foreground">
-            Job postings submitted via the public form on the Employment page.
-          </p>
-        </div>
-        <Button variant="outline" size="sm" onClick={handleRecheckAll} disabled={rechecking || loading}>
-          <RefreshCw className={`mr-2 h-4 w-4 ${rechecking ? "animate-spin" : ""}`} />
-          {rechecking ? "Re-checking..." : "Re-check now"}
-        </Button>
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-foreground">User-Submitted Jobs</h2>
+        <p className="text-sm text-muted-foreground">
+          Job postings submitted via the public form on the Employment page.
+        </p>
       </div>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -217,9 +180,6 @@ export const UserSubmittedJobsSection = () => {
                   </span>
                 </TableCell>
                 <TableCell className="text-right whitespace-nowrap">
-                  <Button variant="ghost" size="sm" onClick={() => handleRecheckOne(job.id)} title="Re-check this job">
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
                   <Button variant="ghost" size="sm" onClick={() => handleToggleActive(job)} title={job.active ? "Deactivate" : "Reactivate"}>
                     {job.active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>

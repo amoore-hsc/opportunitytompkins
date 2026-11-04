@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { Download, FileText, Table } from "lucide-react";
-import html2pdf from "html2pdf.js";
-import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,6 +26,8 @@ export const DashboardExport = ({ metrics, dashboardRef }: DashboardExportProps)
     if (!dashboardRef.current) return;
     setIsExporting(true);
     try {
+      // Loaded on demand: these libraries are large and only admins export.
+      const { default: html2pdf } = await import("html2pdf.js");
       await html2pdf()
         .set({
           margin: 0.5,
@@ -43,7 +43,8 @@ export const DashboardExport = ({ metrics, dashboardRef }: DashboardExportProps)
     }
   };
 
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
+    const XLSX = await import("xlsx");
     const wb = XLSX.utils.book_new();
 
     const summarySheet = XLSX.utils.aoa_to_sheet([
