@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { normalizeWage } from "../_shared/wage.ts";
+import { CREDITS_PER_JSON_SCRAPE, optionalCreditAllowance } from "../_shared/firecrawlBudget.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,7 +8,9 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const DEFAULT_LIMIT = 25;
+// Each lookup is a 5-credit Firecrawl scrape; the free plan has 1,000/month.
+const DEFAULT_LIMIT = 10;
+const MAX_LIMIT = 10;
 const CONCURRENCY = 3;
 
 async function enrichWageFromPostingUrl(
@@ -88,10 +91,21 @@ Deno.serve(async (req) => {
     try { body = await req.json(); } catch { /* no body */ }
 
     const sourceSite = body?.source_site as string | undefined;
+    // Stay inside the free plan: only spend credits left over after
+    // reserving enough for the daily job scrapes.
+    const allowance = await optionalCreditAllowance(FIRECRAWL_API_KEY);
     const limit = Math.min(
       Number(body?.limit) || DEFAULT_LIMIT,
-      100
+      MAX_LIMIT,
+      Math.floor(allowance / CREDITS_PER_JSON_SCRAPE),
     );
+    if (limit <= 0) {
+      console.log("enrich-job-wages: skipped to save Firecrawl credits for the daily scrapes");
+      return new Response(
+        JSON.stringify({ success: true, attempted: 0, enriched: 0, skipped: "credit_budget" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
     // Offset lets callers page through candidates so rows whose page never
     // yields a wage don't block the rest of the queue on repeated runs.
     const offset = Math.max(Number(body?.offset) || 0, 0);

@@ -27,7 +27,7 @@
 --   Listing reminder       — Mon 14:30 (10:30 AM ET)
 --   Interest notification  — Mon 15:00 (11:00 AM ET)
 --   Health check           — every hour
---   Recheck manual jobs    — daily 09:00 UTC (5:00 AM ET)
+--   Recheck manual jobs    — Mon 09:00 UTC (5:00 AM ET), weekly to save Firecrawl credits
 --   Scrapers               — daily from 11:00 UTC (7:00 AM ET), staggered
 --
 -- Re-running is safe: cron.schedule replaces jobs with the same name.
@@ -68,7 +68,7 @@ BEGIN
     ('send-listing-reminder-weekly',      '30 14 * * 1', 'send-listing-reminder',      '{}'),
     ('send-interest-notification-weekly', '0 15 * * 1',  'send-interest-notification', '{}'),
     ('health-check-hourly',               '0 * * * *',   'health-check',               '{}'),
-    ('recheck-manual-jobs-daily',         '0 9 * * *',   'recheck-manual-jobs',        '{"scheduled": true}');
+    ('recheck-manual-jobs-weekly',        '0 9 * * 1',   'recheck-manual-jobs',        '{"scheduled": true}');
 
   FOR src IN SELECT id, name FROM public.scrape_sources WHERE active ORDER BY created_at, name LOOP
     job_name := 'scrape-' || trim(both '-' from regexp_replace(lower(src.name), '[^a-z0-9]+', '-', 'g'));
