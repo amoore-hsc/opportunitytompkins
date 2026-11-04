@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { triggerConfetti } from "@/lib/confetti";
 import { z } from "zod";
 import { siteConfig } from "@/config";
+import { getErrorMessage } from "@/lib/errors";
 
 const isValidAddressPattern = (address: string): boolean => {
   const parts = address.split(',').map(p => p.trim()).filter(p => p.length > 0);
@@ -250,7 +251,7 @@ const ListOpportunity = () => {
       const confirmationEmail = adminEmail || formData.orgEmail;
       const confirmationName = adminContactName || formData.contactName || formData.orgName;
 
-      const emailBody: Record<string, any> = {
+      const emailBody: Record<string, unknown> = {
         orgName: formData.orgName,
         contactName: confirmationName,
         orgEmail: confirmationEmail,
@@ -288,11 +289,11 @@ const ListOpportunity = () => {
         description: "Your opportunity has been listed. Check your email for confirmation."
       });
       navigate("/opportunities");
-    } catch (error: any) {
-      setFormError(error.message);
+    } catch (error) {
+      setFormError(getErrorMessage(error));
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive"
       });
     } finally {

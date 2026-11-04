@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { isOutsideCounty } from "@/lib/jobLocation";
 import { siteConfig } from "@/config";
+import { getErrorMessage } from "@/lib/errors";
 
 export interface EmploymentOpportunity {
   id: string;
@@ -201,10 +202,10 @@ const Employment = () => {
       const local = (data || []).filter((j) => !isOutsideCounty(j.location));
       setJobs(local);
       setFilteredJobs(local);
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error loading employment opportunities",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {

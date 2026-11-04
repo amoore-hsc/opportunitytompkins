@@ -14,7 +14,7 @@ county-level opportunity board.
   with email reminders, and can be deactivated/reactivated via magic-link tokens.
 - **Employment Opportunities** — Daily automated scraping of local job sites (Cornell
   University, Ithaca College, Tompkins Chamber, Cayuga Health, Tompkins County government).
-  AI-powered job-category classification and wage enrichment. Multi-select category pills,
+  Rule-based (keyword) job-category classification and wage enrichment. Multi-select category pills,
   pay slider, employer filter, and print/email sharing.
 - **Admin Dashboard** — Aggregate reporting, listing management, feedback review, manual
   reminder sending, stale-listing alerts, and dashboard export (PDF/Excel).
@@ -28,7 +28,6 @@ county-level opportunity board.
 - **Frontend:** React 18, Vite 5, TypeScript 5, Tailwind CSS v3, shadcn/ui
 - **Backend:** Supabase (Postgres, Auth, Edge Functions, Storage)
 - **Email:** Resend
-- **AI:** Lovable AI Gateway (job categorization, wage extraction)
 - **Scraping:** Firecrawl
 
 ## Quick Start
@@ -71,7 +70,7 @@ The color palette is defined as HSL tokens in `src/index.css` — customize the
 ### 5. Set Edge Function secrets
 
 In your Supabase dashboard (Project Settings → Edge Functions → Secrets), add:
-`RESEND_API_KEY`, `FIRECRAWL_API_KEY`, `LOVABLE_API_KEY`, `INTERNAL_TASK_SECRET`,
+`RESEND_API_KEY`, `FIRECRAWL_API_KEY`, `INTERNAL_TASK_SECRET`,
 `FROM_EMAIL`, `FROM_NAME`, `SUPPORT_EMAIL`, `ALERT_RECIPIENTS`, `SITE_NAME`,
 `SITE_URL`, `COUNTY_PLACES`, `OUT_OF_COUNTY_BLOCKLIST`, `OUT_OF_STATE_REGIONS`,
 and optionally `GOOGLE_CHAT_WEBHOOK_URL`.

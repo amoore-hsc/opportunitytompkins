@@ -7,6 +7,7 @@ import { Printer, Mail, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { EmploymentOpportunity } from "@/pages/Employment";
+import { getErrorMessage } from "@/lib/errors";
 
 interface ShareJobsDialogProps {
   jobs: EmploymentOpportunity[];
@@ -44,11 +45,11 @@ export const ShareJobsDialog = ({ jobs }: ShareJobsDialogProps) => {
       });
       setEmail("");
       setIsOpen(false);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error sending email:", error);
       toast({
         title: "Error Sending Email",
-        description: error.message || "Failed to send email. Please try again.",
+        description: getErrorMessage(error) || "Failed to send email. Please try again.",
         variant: "destructive",
       });
     } finally {

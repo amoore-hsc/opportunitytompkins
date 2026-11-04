@@ -20,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getErrorMessage } from "@/lib/errors";
 
 const addressSchema = z.string().min(1, "Address is required").refine(val => {
   const parts = val.split(',').map(p => p.trim()).filter(p => p.length > 0);
@@ -297,7 +298,7 @@ const EditOpportunity = () => {
       const adminContactName = sameContact ? null : formData.adminContactName;
       const adminEmail = sameContact ? null : formData.adminEmail;
 
-      const updates: Record<string, any> = {
+      const updates: Record<string, unknown> = {
         type: formData.type,
         description: formData.description,
         hours_available: formData.hoursAvailable,
@@ -349,10 +350,10 @@ const EditOpportunity = () => {
         description: "Your opportunity has been updated."
       });
       navigate("/opportunities");
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive"
       });
     } finally {
@@ -376,10 +377,10 @@ const EditOpportunity = () => {
         title: "Listing Reactivated",
         description: "Your listing is live again and visible to the community."
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive"
       });
     } finally {
@@ -424,10 +425,10 @@ const EditOpportunity = () => {
       });
       setShowRemoveDialog(false);
       navigate("/opportunities");
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive"
       });
     } finally {

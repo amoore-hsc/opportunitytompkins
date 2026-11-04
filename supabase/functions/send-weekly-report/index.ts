@@ -3,6 +3,7 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
 import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
+import { getErrorMessage } from "../_shared/errors.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -100,7 +101,12 @@ const handler = async (req: Request): Promise<Response> => {
     let totalApplications = 0;
 
     for (const record of counts || []) {
-      const opp = record.opportunities as any;
+      const opp = record.opportunities as unknown as {
+        position_title: string | null;
+        org_name: string;
+        role_classification: string | null;
+        type: string;
+      } | null;
       if (!opp) continue;
 
       const key = record.opportunity_id;
@@ -411,10 +417,10 @@ ${opp.program_components ? opp.program_components.split(',').map((c: string) => 
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in send-weekly-report function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: getErrorMessage(error) }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

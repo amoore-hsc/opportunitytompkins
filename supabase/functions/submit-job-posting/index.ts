@@ -2,24 +2,13 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
 import { normalizeWage } from "../_shared/wage.ts";
+import { categorizeJob } from "../_shared/jobCategory.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
-
-const JOB_CATEGORIES = [
-  "Education",
-  "Healthcare",
-  "Hospitality",
-  "Government",
-  "Technology",
-  "Trades/Labor",
-  "Administrative",
-  "Social Services",
-  "Other",
-];
 
 const BodySchema = z.object({
   posting_url: z.string().url().max(2048),
@@ -28,64 +17,6 @@ const BodySchema = z.object({
   // Honeypot: must be empty/absent. Bots typically fill every field.
   website: z.string().max(0).optional().nullable(),
 });
-
-async function classifyJob(
-  job_title: string,
-  employer: string,
-): Promise<string | null> {
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) return null;
-  try {
-    const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
-        messages: [
-          {
-            role: "system",
-            content: `You classify a single job listing into exactly one category. Categories: ${JOB_CATEGORIES.join(
-              ", ",
-            )}.`,
-          },
-          {
-            role: "user",
-            content: `Classify this job:\n"${job_title}" at "${employer}"`,
-          },
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "classify",
-              parameters: {
-                type: "object",
-                properties: {
-                  category: { type: "string", enum: JOB_CATEGORIES },
-                },
-                required: ["category"],
-                additionalProperties: false,
-              },
-            },
-          },
-        ],
-        tool_choice: { type: "function", function: { name: "classify" } },
-      }),
-    });
-    if (!r.ok) return null;
-    const data = await r.json();
-    const args = data.choices?.[0]?.message?.tool_calls?.[0]?.function
-      ?.arguments;
-    if (!args) return null;
-    const parsed = JSON.parse(args);
-    return JOB_CATEGORIES.includes(parsed.category) ? parsed.category : null;
-  } catch (_e) {
-    return null;
-  }
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -200,7 +131,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const job_category = await classifyJob(job_title, finalEmployer);
+    const job_category = categorizeJob(job_title, finalEmployer);
 
     const { data: inserted, error: insertErr } = await supabase
       .from("employment_opportunities")

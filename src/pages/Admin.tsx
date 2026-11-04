@@ -34,6 +34,7 @@ import { ClientErrorsCard } from "@/components/admin/ClientErrorsCard";
 import { FeedbackCard } from "@/components/admin/FeedbackCard";
 import { DashboardExport } from "@/components/admin/DashboardExport";
 import { siteConfig } from "@/config";
+import { getErrorMessage } from "@/lib/errors";
 
 type DaySchedule = {
   [key: string]: {
@@ -196,7 +197,7 @@ const StaleListingsAlert = ({
         description: `"Your Listing Needs Attention" email resent${data?.recipient ? ` to ${data.recipient}` : ""}.`,
       });
       onReminderSent();
-    } catch (err: any) {
+    } catch (err) {
       toast({
         title: "Failed to send reminder",
         description: err?.message || "Please try again.",
@@ -435,10 +436,10 @@ const Admin = () => {
 
       setOpportunities(oppsResult.data || []);
       setApplicationCounts(countsResult.data || []);
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     }
@@ -489,10 +490,10 @@ const Admin = () => {
         }
         // Don't set loading to false on success - let checkAdminRole handle it via onAuthStateChange
       }
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       setLoading(false);
@@ -521,10 +522,10 @@ const Admin = () => {
           description: "Check your inbox for a link to reset your password.",
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -574,10 +575,10 @@ const Admin = () => {
       setIsResetPassword(false);
       setNewPassword("");
       setConfirmNewPassword("");
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -621,11 +622,11 @@ const Admin = () => {
         title: "Email Sent",
         description: `Confirmation email resent to ${opp.admin_email || opp.org_email}`,
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error resending email:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to resend email",
+        description: getErrorMessage(error) || "Failed to resend email",
         variant: "destructive",
       });
     } finally {
@@ -650,11 +651,11 @@ const Admin = () => {
       });
 
       await fetchAllOpportunities();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error confirming listing:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to confirm listing",
+        description: getErrorMessage(error) || "Failed to confirm listing",
         variant: "destructive",
       });
     } finally {
@@ -768,10 +769,10 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
         description: "Opportunity deleted successfully",
       });
       fetchAllOpportunities();
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     }
@@ -875,10 +876,10 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
       setEditingOpportunity(null);
       fetchAllOpportunities();
 
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     }

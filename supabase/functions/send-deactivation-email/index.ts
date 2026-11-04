@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
 import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
+import { getErrorMessage } from "../_shared/errors.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -169,10 +170,10 @@ const handler = async (req: Request): Promise<Response> => {
       html,
     });
 
-    if ((emailResponse as any)?.error) {
-      console.error("Resend rejected deactivation email:", (emailResponse as any).error);
+    if (emailResponse?.error) {
+      console.error("Resend rejected deactivation email:", emailResponse.error);
       return new Response(
-        JSON.stringify({ error: "Email provider rejected the message", details: (emailResponse as any).error }),
+        JSON.stringify({ error: "Email provider rejected the message", details: emailResponse.error }),
         { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } },
       );
     }
@@ -200,9 +201,9 @@ const handler = async (req: Request): Promise<Response> => {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in send-deactivation-email function:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: getErrorMessage(error) }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
