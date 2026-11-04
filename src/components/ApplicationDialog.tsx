@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/pages/Opportunities";
-import { FunctionsHttpError } from "@supabase/supabase-js";
+import { getFunctionErrorMessage } from "@/lib/errors";
 
 interface ApplicationDialogProps {
   opportunity: Opportunity;
@@ -73,15 +73,8 @@ export const ApplicationDialog = ({
         },
       });
 
-      if (error) {
-        // Show the server's explanation (e.g. daily limit reached) when there is one.
-        let message = error.message;
-        if (error instanceof FunctionsHttpError) {
-          const body = await error.context.json().catch(() => null);
-          if (body?.error) message = body.error;
-        }
-        throw new Error(message);
-      }
+      // Show the server's explanation (e.g. daily limit reached) when there is one.
+      if (error) throw new Error(await getFunctionErrorMessage(error));
 
       triggerConfetti();
       

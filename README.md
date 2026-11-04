@@ -44,7 +44,8 @@ npm install
 
 1. Create a new project at [supabase.com](https://supabase.com).
 2. Run the schema migration: `supabase/schema.sql` (in the SQL editor).
-3. Optionally run the cron seed: `supabase/seed_cron.sql`.
+3. Run the cron seed: `supabase/seed_cron.sql` (set the two values at the top first;
+   see **Cron schedules** below).
 4. Copy your project URL, anon key, and project ID from Settings → API.
 
 ### 3. Configure environment variables
@@ -73,7 +74,14 @@ In your Supabase dashboard (Project Settings → Edge Functions → Secrets), ad
 `RESEND_API_KEY`, `FIRECRAWL_API_KEY`, `INTERNAL_TASK_SECRET`,
 `FROM_EMAIL`, `FROM_NAME`, `SUPPORT_EMAIL`, `ALERT_RECIPIENTS`, `SITE_NAME`,
 `SITE_URL`, `COUNTY_PLACES`, `OUT_OF_COUNTY_BLOCKLIST`, `OUT_OF_STATE_REGIONS`,
-and optionally `GOOGLE_CHAT_WEBHOOK_URL`.
+and optionally `GOOGLE_CHAT_WEBHOOK_URL` and `ADMIN_TASK_SECRET` (only needed for
+the developer "test mode" of the reminder and interest emails).
+
+`SITE_URL` is used for every link in outgoing emails, so set it to the exact address
+visitors use (e.g. `https://your-site.org`, no trailing slash).
+
+`INTERNAL_TASK_SECRET` must equal the `internal_task_secret` value that
+`seed_cron.sql` creates in Supabase Vault (Integrations → Vault).
 
 ### 6. Deploy Edge Functions
 
@@ -101,7 +109,7 @@ src/
   pages/            # Route pages (Index, Opportunities, Employment, Admin, etc.)
   components/        # Reusable UI components
   lib/              # Utilities (jobLocation, confetti, errorReporting)
-  integrations/      # Supabase client (auto-generated)
+  integrations/      # Supabase client and generated database types
 
 supabase/
   functions/         # Edge Functions (emails, scraping, feedback, health check)
@@ -128,8 +136,11 @@ Set `verificationForms` in `site.config.local.ts` with your own Adobe Acrobat /
 Google Form / portal links.
 
 ### Cron schedules
-Edit `supabase/seed_cron.sql` to set your own schedule, then run it
-in the Supabase SQL editor. Requires the `pg_cron` extension.
+Set `project_url` and `anon_key` at the top of `supabase/seed_cron.sql`, then run it
+in the Supabase SQL editor. It creates the shared secret in Vault, schedules the
+email/health jobs, and adds one daily scraper per active `scrape_sources` row.
+Afterwards copy the Vault secret into the `INTERNAL_TASK_SECRET` Edge Function
+secret. Requires `pg_cron`, `pg_net` and `supabase_vault` (enabled by default).
 
 ## License
 

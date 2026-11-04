@@ -1,3 +1,4 @@
+import { normalizeWebsite } from "@/lib/url";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Plus, X } from "lucide-react";
@@ -221,7 +222,7 @@ const ListOpportunity = () => {
         ? {
             ...baseData,
             program_name: formData.programName || null,
-            website: formData.website,
+            website: normalizeWebsite(formData.website),
             program_components: formData.programComponents.length > 0 ? formData.programComponents.join(", ") : null,
             location: "N/A",
             on_bus_route: false,
@@ -265,12 +266,11 @@ const ListOpportunity = () => {
         hoursAvailable: formData.hoursAvailable,
         daysTimesAvailable: daysTimesAvailable,
         opportunityId: data.id,
-        siteUrl: window.location.origin,
       };
 
       if (isEducation) {
         emailBody.programName = formData.programName || null;
-        emailBody.website = formData.website || null;
+        emailBody.website = normalizeWebsite(formData.website) || null;
         emailBody.programComponents = formData.programComponents.length > 0 ? formData.programComponents.join(", ") : null;
       }
 
@@ -516,14 +516,19 @@ const ListOpportunity = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="website">Website *</Label>
+                <Label htmlFor="website">
+                  Website <span aria-hidden="true" className="text-destructive">*</span>
+                  <span className="sr-only">(required)</span>
+                </Label>
                 <Input
                   id="website"
-                  type="url"
+                  type="text"
+                  inputMode="url"
+                  autoComplete="url"
                   required
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  placeholder="e.g., https://www.example.org/program"
+                  placeholder="e.g., www.example.org/program"
                 />
               </div>
             </>

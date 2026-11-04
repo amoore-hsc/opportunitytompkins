@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.23.8";
+import { fetchActiveByIds, MAX_SHARED_LISTINGS } from "../_shared/fetchByIds.ts";
 import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
 import { getErrorMessage } from "../_shared/errors.ts";
 
@@ -23,10 +26,21 @@ interface Job {
   updated_at: string;
 }
 
-interface JobsEmailRequest {
-  email: string;
-  jobs: Job[];
-}
+// The browser sends only listing ids; content is loaded from the database so
+// this endpoint can't be used to email arbitrary text or links.
+const BodySchema = z.object({
+  email: z.string().trim().email().max(320),
+  jobIds: z.array(z.string().uuid()).min(1).max(MAX_SHARED_LISTINGS),
+});
+
+const JOB_COLUMNS =
+  "id, job_title, employer, employment_type, wage, location, posting_url, source_site, job_category, updated_at";
+
+const jsonResponse = (body: unknown, status: number) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", ...corsHeaders },
+  });
 
 const escapeHtml = (s: string | null | undefined): string => {
   if (!s) return "";
@@ -49,7 +63,23 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, jobs }: JobsEmailRequest = await req.json();
+    const parsed = BodySchema.safeParse(await req.json().catch(() => ({})));
+    if (!parsed.success) {
+      return jsonResponse(
+        { error: `Please enter a valid email address. Up to ${MAX_SHARED_LISTINGS} jobs can be emailed at once.` },
+        400,
+      );
+    }
+    const { email, jobIds } = parsed.data;
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const jobs = await fetchActiveByIds<Job>(supabase, "employment_opportunities", JOB_COLUMNS, jobIds);
+    if (jobs.length === 0) {
+      return jsonResponse({ error: "Those job listings are no longer available." }, 404);
+    }
 
     console.log(`Sending jobs email to: ${email}`);
     console.log(`Number of jobs: ${jobs.length}`);

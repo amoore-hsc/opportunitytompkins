@@ -1,7 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
-import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName, getSiteUrl } from "../_shared/emailConfig.ts";
+import { isAdminOrServiceCaller } from "../_shared/auth.ts";
 import { getErrorMessage } from "../_shared/errors.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
@@ -31,11 +32,10 @@ interface DeactivationEmailRequest {
   removalReason?: string | null;
   deactivatedAt?: string | null;
   editToken: string;
-  siteUrl?: string;
 }
 
 export const buildDeactivationEmail = (body: DeactivationEmailRequest) => {
-  const siteUrl = body.siteUrl || Deno.env.get("SITE_URL") || "https://example.com";
+  const siteUrl = getSiteUrl();
   const reactivateUrl = `${siteUrl}/edit-opportunity/${body.editToken}`;
   const isEducation = body.opportunityType === "education";
   const listingName = (isEducation ? body.programName : body.positionTitle) || "Your listing";
@@ -142,6 +142,14 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Only admins (Admin page) and other edge functions may send this email.
+    if (!(await isAdminOrServiceCaller(req))) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
     const body: DeactivationEmailRequest = await req.json();
 
     const recipients = (body.to || [])

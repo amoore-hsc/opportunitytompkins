@@ -36,6 +36,9 @@ export function getSiteName(): string {
   return Deno.env.get("SITE_NAME") || "Opportunity Board";
 }
 
+/** Public site URL used for every link in emails. Never taken from the request. */
 export function getSiteUrl(): string {
-  return (Deno.env.get("SITE_URL") || "https://example.com").trim().replace(/\/+$/, "");
+  const raw = (Deno.env.get("SITE_URL") || "https://example.com").trim();
+  const withScheme = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  return withScheme.replace(/\/+$/, "");
 }

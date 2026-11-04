@@ -7,7 +7,7 @@ import { Printer, Mail, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Opportunity } from "@/pages/Opportunities";
-import { getErrorMessage } from "@/lib/errors";
+import { getFunctionErrorMessage } from "@/lib/errors";
 interface ShareOpportunitiesDialogProps {
   opportunities: Opportunity[];
 }
@@ -40,7 +40,7 @@ export const ShareOpportunitiesDialog = ({
       } = await supabase.functions.invoke("send-opportunities-email", {
         body: {
           email,
-          opportunities
+          opportunityIds: opportunities.map((opportunity) => opportunity.id)
         }
       });
       if (error) throw error;
@@ -54,7 +54,7 @@ export const ShareOpportunitiesDialog = ({
       console.error("Error sending email:", error);
       toast({
         title: "Error Sending Email",
-        description: getErrorMessage(error) || "Failed to send email. Please try again.",
+        description: (await getFunctionErrorMessage(error)) || "Failed to send email. Please try again.",
         variant: "destructive"
       });
     } finally {

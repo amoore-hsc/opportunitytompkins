@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { notifyGoogleChat } from "../_shared/googleChat.ts";
-import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName } from "../_shared/emailConfig.ts";
+import { getFromEmail, getSupportEmail, getAlertRecipients, getSiteName, getSiteUrl } from "../_shared/emailConfig.ts";
 import { getErrorMessage } from "../_shared/errors.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
@@ -234,7 +234,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
 
-    const siteUrl = Deno.env.get("SITE_URL") || "https://oosxopnxaivfdtksrvam.lovableproject.com";
+    const siteUrl = getSiteUrl();
 
     // Initialize Supabase client with service role for full access
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

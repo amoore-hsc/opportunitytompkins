@@ -267,7 +267,6 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(false);
@@ -450,46 +449,22 @@ const Admin = () => {
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/admin`
-          }
-        });
+      // Admin accounts are created by invitation from the Supabase dashboard;
+      // public sign-up is disabled.
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) {
-          toast({
-            title: "Sign Up Failed",
-            description: error.message,
-            variant: "destructive",
-          });
-          setLoading(false);
-        } else {
-          toast({
-            title: "Account Created",
-            description: "You can now sign in. Note: You won't have admin access until an administrator grants it.",
-          });
-          setIsSignUp(false);
-          setLoading(false);
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+      if (error) {
+        toast({
+          title: "Login Failed",
+          description: error.message,
+          variant: "destructive",
         });
-
-        if (error) {
-          toast({
-            title: "Login Failed",
-            description: error.message,
-            variant: "destructive",
-          });
-          setLoading(false);
-        }
-        // Don't set loading to false on success - let checkAdminRole handle it via onAuthStateChange
+        setLoading(false);
       }
+      // Don't set loading to false on success - let checkAdminRole handle it via onAuthStateChange
     } catch (error) {
       toast({
         title: "Error",
@@ -595,8 +570,6 @@ const Admin = () => {
     setSendingEmailId(opp.id);
 
     try {
-      const siteUrl = window.location.origin;
-
       const { error } = await supabase.functions.invoke("send-confirmation-email", {
         body: {
           orgName: opp.org_name,
@@ -612,7 +585,6 @@ const Admin = () => {
           hoursAvailable: opp.hours_available,
           daysTimesAvailable: opp.days_times_available,
           editToken: opp.edit_token,
-          siteUrl,
         },
       });
 
@@ -1166,10 +1138,10 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
           <div className="mb-6 text-center">
             <img src="/favicon.png" alt="" aria-hidden="true" className="mx-auto h-12 w-12 mb-4" />
             <h1 className="text-2xl font-bold text-foreground">
-              {isSignUp ? "Create Admin Account" : "Admin Login"}
+              Admin Login
             </h1>
             <p className="text-sm text-muted-foreground mt-2">
-              {isSignUp ? "Sign up for an admin account" : "Sign in with your admin account"}
+              Sign in with your admin account
             </p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -1207,25 +1179,15 @@ ${opp.additional_requirements ? `<p style="margin:0 0 0 0;"><strong>Standard Req
               </div>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (isSignUp ? "Creating account..." : "Signing in...") : (isSignUp ? "Sign Up" : "Sign In")}
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
-            {!isSignUp && (
-              <Button
-                type="button"
-                variant="link"
-                className="w-full text-sm"
-                onClick={() => setIsForgotPassword(true)}
-              >
-                Forgot your password?
-              </Button>
-            )}
             <Button
               type="button"
-              variant="ghost"
-              className="w-full"
-              onClick={() => setIsSignUp(!isSignUp)}
+              variant="link"
+              className="w-full text-sm"
+              onClick={() => setIsForgotPassword(true)}
             >
-              {isSignUp ? "Already have an account? Sign In" : "Need an account? Sign Up"}
+              Forgot your password?
             </Button>
             <Link to="/">
               <Button variant="outline" className="w-full">
