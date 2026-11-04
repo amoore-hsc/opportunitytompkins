@@ -1,6 +1,7 @@
 // Shared Google Chat notifier.
 // If GOOGLE_CHAT_WEBHOOK_URL is not configured, every call is a silent no-op,
 // so existing email notifications keep working unchanged.
+import { getSiteName } from "./emailConfig.ts";
 
 export interface ChatField {
   label: string;
