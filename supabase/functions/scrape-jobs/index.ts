@@ -58,7 +58,7 @@ const MAX_WAGE_ENRICHMENTS_PER_RUN = 10;
 const FULL_SCRAPE_MAX_AGE_MS = 6.5 * 24 * 60 * 60 * 1000;
 
 // Free detail-page reads per run (Workday / Oracle job descriptions).
-const MAX_WORKDAY_DETAILS_PER_RUN = 200;
+const MAX_WORKDAY_DETAILS_PER_RUN = 300;
 const MAX_ORACLE_DETAILS_PER_RUN = 60;
 const DETAIL_CONCURRENCY = 6;
 
@@ -138,6 +138,20 @@ async function scrapeWorkdaySource(
   } catch { /* fall through to the check below */ }
   const tenant = typeof cfg.tenant === "string" ? cfg.tenant : host.split(".")[0];
   const employer = typeof cfg.employer === "string" ? cfg.employer : source.name;
+  // Optional allow-list of in-county place names (lowercase). Health systems
+  // and other multi-county employers label some sites without a town (e.g.
+  // "L.D. Clute Building"), so for them we only keep locations that name a
+  // listed place, instead of excluding only known out-of-county places.
+  const allowPlaces = Array.isArray(cfg.location_allow)
+    ? (cfg.location_allow as unknown[])
+      .filter((x): x is string => typeof x === "string" && x.trim() !== "")
+      .map((x) => x.trim().toLowerCase())
+    : null;
+  const inArea = (loc: string | null | undefined): boolean => {
+    if (!allowPlaces) return !isOutsideCounty(loc);
+    const l = (loc ?? "").toLowerCase();
+    return allowPlaces.some((place) => l.includes(place));
+  };
   if (!host || !site || !tenant) {
     result.errors.push("workday config needs host, tenant and site");
     return;
@@ -171,8 +185,9 @@ async function scrapeWorkdaySource(
       const title = typeof p?.title === "string" ? p.title.trim() : "";
       const bullets: unknown[] = Array.isArray(p?.bulletFields) ? p.bulletFields : [];
       const sourceId =
-        (bullets.find((b) => typeof b === "string" && /^[A-Z]+-\d+$/.test(b)) as string | undefined) ??
-        path.match(/_([A-Z]+-\d+)(?:-\d+)?$/)?.[1];
+        // Requisition IDs look like "WDR-00062116" (Cornell) or "R348879" (Cayuga).
+        (bullets.find((b) => typeof b === "string" && /^[A-Z]{1,5}-?\d+$/.test(b)) as string | undefined) ??
+        path.match(/_([A-Z]{1,5}-?\d+)(?:-\d+)?$/)?.[1];
       if (!path || !title || !sourceId) continue;
       postings.push({
         sourceId,
@@ -195,9 +210,12 @@ async function scrapeWorkdaySource(
     (existingRows ?? []).map((r) => [String(r.source_id), r]),
   );
 
-  // 3. Read the full posting for new jobs (and any never checked for pay).
+  // 3. Read the full posting for new jobs (and any never checked for pay),
+  //    skipping ones whose single listed location is already out of area.
+  const isMultiple = (p: WorkdayPosting) => /^\d+\s+locations?$/i.test(p.locationsText ?? ""); // "2 Locations"
   const needDetail = postings
     .filter((p) => {
+      if (!isMultiple(p) && !inArea(p.locationsText)) return false;
       const row = bySourceId.get(p.sourceId);
       return !row || (!row.wage && !row.wage_checked_at);
     })
@@ -234,10 +252,10 @@ async function scrapeWorkdaySource(
   for (const p of postings) {
     const detail = details.get(p.sourceId);
     const row = bySourceId.get(p.sourceId);
-    const multiple = /^\d+\s+locations?$/i.test(p.locationsText ?? ""); // e.g. "2 Locations"
+    const multiple = isMultiple(p);
     let location: string | null;
     if (detail && detail.locations.length > 0) {
-      location = detail.locations.find((l) => !isOutsideCounty(l)) ?? null;
+      location = detail.locations.find((l) => inArea(l)) ?? null;
       if (!location) {
         skippedOutOfCounty++;
         continue;
@@ -246,7 +264,7 @@ async function scrapeWorkdaySource(
       location = row?.location ?? null; // keep what we knew; can't tell from the list
     } else {
       location = p.locationsText;
-      if (isOutsideCounty(location)) {
+      if (!inArea(location)) {
         skippedOutOfCounty++;
         continue;
       }
