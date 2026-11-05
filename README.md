@@ -127,9 +127,25 @@ Edit HSL tokens in `src/index.css` (`--primary`, `--secondary`, `--highlight`, e
 Edit `src/config/site.config.local.ts`.
 
 ### Job scraper sources
-The scraper in `supabase/functions/scrape-jobs/index.ts` has source-specific
-fetchers (ApplicantPro sitemaps, Oracle REST APIs, Firecrawl page scrapes).
-Adapt these for your local employers, or remove sources you don't need.
+The scraper in `supabase/functions/scrape-jobs/index.ts` picks a fetcher from
+each `scrape_sources.scrape_config.api_type`:
+
+| `api_type` | Used for | Cost |
+|---|---|---|
+| `workday` | Workday career sites (`{"host","tenant","site","employer"}`) | free (public JSON API) |
+| `oracle_hcm` | Oracle HCM Cloud career sites | free (public REST API) |
+| `applicantpro` | ApplicantPro career sites | free (sitemap + JSON-LD) |
+| *(none)* | any other listings page, via Firecrawl AI extraction | 5 Firecrawl credits per full scrape |
+
+Pay for Workday and Oracle jobs is read from each posting's description, also free.
+
+To fit Firecrawl's free plan (1,000 credits/month), Firecrawl page scrapes first
+check whether the listings page changed since the last full scrape (a free plain
+request, or a 1-credit Firecrawl read when the site blocks plain requests) and
+skip the AI extraction when it hasn't, with a full scrape at least weekly.
+Wage lookups and re-checks of user-submitted jobs only spend credits left over
+after reserving enough for the daily scrapes (`_shared/firecrawlBudget.ts`).
+Send `{"source_id": "...", "force": true}` to `scrape-jobs` to force a full scrape.
 
 ### Verification forms
 Set `verificationForms` in `site.config.local.ts` with your own Adobe Acrobat /

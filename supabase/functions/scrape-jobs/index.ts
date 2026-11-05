@@ -1,7 +1,8 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { normalizeWage } from "../_shared/wage.ts";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { extractWageFromText, normalizeWage } from "../_shared/wage.ts";
 import { categorizeJob } from "../_shared/jobCategory.ts";
 import { isOutsideCounty } from "../_shared/jobLocation.ts";
+import { fingerprintViaPlainFetch, fingerprintWithFirecrawl } from "../_shared/pageFingerprint.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,6 +16,17 @@ interface ScrapeSource {
   url: string;
   scrape_config: Record<string, unknown> | null;
   active: boolean;
+  /** Fingerprint of the listings page at the last full (AI) scrape. */
+  content_fingerprint: string | null;
+  /** When the last full (AI) scrape started. */
+  last_full_scrape_at: string | null;
+}
+
+interface SourceResult {
+  scraped: number;
+  errors: string[];
+  /** True when the page hadn't changed, so the paid extraction was skipped. */
+  unchanged?: boolean;
 }
 
 interface JobListing {
@@ -38,7 +50,308 @@ function classifyJobs(
   return out;
 }
 
-const MAX_WAGE_ENRICHMENTS_PER_RUN = 25;
+// Firecrawl free plan = 1,000 credits/month, so paid work is rationed:
+// - wage lookups are capped per run (enrich-job-wages also checks the balance);
+// - an unchanged listings page skips the 5-credit AI extraction, but a full
+//   extraction still runs at least this often as a safety net.
+const MAX_WAGE_ENRICHMENTS_PER_RUN = 10;
+const FULL_SCRAPE_MAX_AGE_MS = 6.5 * 24 * 60 * 60 * 1000;
+
+// Free detail-page reads per run (Workday / Oracle job descriptions).
+const MAX_WORKDAY_DETAILS_PER_RUN = 200;
+const MAX_ORACLE_DETAILS_PER_RUN = 60;
+const DETAIL_CONCURRENCY = 6;
+
+/** Runs `fn` over `items` with at most `limit` in flight. */
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const i = next++;
+      out[i] = await fn(items[i]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return out;
+}
+
+/**
+ * Starts wage enrichment for a source without delaying this response.
+ * EdgeRuntime.waitUntil keeps the request alive after we return.
+ */
+function triggerWageEnrichment(supabaseUrl: string, serviceKey: string, sourceName: string) {
+  const request = fetch(`${supabaseUrl}/functions/v1/enrich-job-wages`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${serviceKey}`,
+      "Content-Type": "application/json",
+      "x-internal-task-secret": Deno.env.get("INTERNAL_TASK_SECRET") ?? "",
+    },
+    body: JSON.stringify({ source_site: sourceName, limit: MAX_WAGE_ENRICHMENTS_PER_RUN }),
+  }).catch((e) => console.warn(`enrich-job-wages trigger failed: ${e}`));
+  const runtime = (globalThis as { EdgeRuntime?: { waitUntil(p: Promise<unknown>): void } })
+    .EdgeRuntime;
+  runtime?.waitUntil(request);
+}
+
+// ── Workday (e.g. Cornell) ────────────────────────────────────────────────
+// Workday career sites are JavaScript apps, but they're backed by a public
+// JSON API: one endpoint lists every posting, another returns a posting's
+// full description (which includes pay). Reading it directly is free and
+// returns the complete list, unlike a page scrape.
+
+const WORKDAY_TIME_TYPES: Record<string, string> = {
+  "full time": "Full-Time",
+  "part time": "Part-Time",
+};
+
+interface WorkdayPosting {
+  sourceId: string;
+  title: string;
+  path: string;
+  locationsText: string | null;
+}
+
+interface WorkdayDetail {
+  locations: string[];
+  employmentType: string | null;
+  wage: string | null;
+}
+
+async function scrapeWorkdaySource(
+  supabase: SupabaseClient,
+  source: ScrapeSource,
+  result: SourceResult,
+): Promise<void> {
+  const cfg = (source.scrape_config ?? {}) as Record<string, unknown>;
+  let host = typeof cfg.host === "string" ? cfg.host : "";
+  let site = typeof cfg.site === "string" ? cfg.site : "";
+  try {
+    const u = new URL(source.url);
+    host ||= u.host;
+    site ||= u.pathname.split("/").filter(Boolean).pop() ?? "";
+  } catch { /* fall through to the check below */ }
+  const tenant = typeof cfg.tenant === "string" ? cfg.tenant : host.split(".")[0];
+  const employer = typeof cfg.employer === "string" ? cfg.employer : source.name;
+  if (!host || !site || !tenant) {
+    result.errors.push("workday config needs host, tenant and site");
+    return;
+  }
+  const api = `https://${host}/wday/cxs/${tenant}/${site}`;
+  const jsonHeaders = { "Content-Type": "application/json", Accept: "application/json" };
+
+  // 1. List every posting (Workday pages are 20 at a time; `total` is only
+  //    reported on the first page).
+  const postings: WorkdayPosting[] = [];
+  let total = -1;
+  let fetched = 0;
+  for (let page = 0; page < 60 && (total < 0 || fetched < total); page++) {
+    const res = await fetch(`${api}/jobs`, {
+      method: "POST",
+      headers: jsonHeaders,
+      body: JSON.stringify({ appliedFacets: {}, limit: 20, offset: fetched, searchText: "" }),
+      signal: AbortSignal.timeout(20_000),
+    });
+    if (!res.ok) {
+      result.errors.push(`Workday list error: ${res.status}`);
+      break;
+    }
+    const data = await res.json();
+    if (total < 0) total = Number(data?.total) || 0;
+    const list = Array.isArray(data?.jobPostings) ? data.jobPostings : [];
+    if (list.length === 0) break;
+    fetched += list.length;
+    for (const p of list) {
+      const path = typeof p?.externalPath === "string" ? p.externalPath : "";
+      const title = typeof p?.title === "string" ? p.title.trim() : "";
+      const bullets: unknown[] = Array.isArray(p?.bulletFields) ? p.bulletFields : [];
+      const sourceId =
+        (bullets.find((b) => typeof b === "string" && /^[A-Z]+-\d+$/.test(b)) as string | undefined) ??
+        path.match(/_([A-Z]+-\d+)(?:-\d+)?$/)?.[1];
+      if (!path || !title || !sourceId) continue;
+      postings.push({
+        sourceId,
+        title,
+        path,
+        locationsText: typeof p?.locationsText === "string" ? p.locationsText.trim() : null,
+      });
+    }
+  }
+  const complete = total >= 0 && fetched >= total && result.errors.length === 0;
+  console.log(`Workday ${source.name}: ${postings.length} postings (total ${total}, complete=${complete})`);
+
+  // 2. What we already have for this source.
+  const { data: existingRows, error: existingErr } = await supabase
+    .from("employment_opportunities")
+    .select("id, source_id, wage, wage_checked_at, employment_type, location")
+    .eq("source_site", source.name);
+  if (existingErr) throw existingErr;
+  const bySourceId = new Map(
+    (existingRows ?? []).map((r) => [String(r.source_id), r]),
+  );
+
+  // 3. Read the full posting for new jobs (and any never checked for pay).
+  const needDetail = postings
+    .filter((p) => {
+      const row = bySourceId.get(p.sourceId);
+      return !row || (!row.wage && !row.wage_checked_at);
+    })
+    .slice(0, MAX_WORKDAY_DETAILS_PER_RUN);
+  const details = new Map<string, WorkdayDetail>();
+  await mapWithConcurrency(needDetail, DETAIL_CONCURRENCY, async (p) => {
+    try {
+      const res = await fetch(`${api}${p.path}`, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(20_000),
+      });
+      if (!res.ok) return;
+      const info = (await res.json())?.jobPostingInfo;
+      if (!info) return;
+      const locations = [info.location, ...(Array.isArray(info.additionalLocations) ? info.additionalLocations : [])]
+        .filter((l): l is string => typeof l === "string" && l.trim() !== "")
+        .map((l) => l.trim());
+      const timeType = typeof info.timeType === "string" ? info.timeType.trim() : "";
+      details.set(p.sourceId, {
+        locations,
+        employmentType: WORKDAY_TIME_TYPES[timeType.toLowerCase()] ?? (timeType || null),
+        wage: extractWageFromText(typeof info.jobDescription === "string" ? info.jobDescription : ""),
+      });
+    } catch (e) {
+      console.warn(`Workday detail failed for ${p.path}: ${e}`);
+    }
+  });
+  console.log(`Workday ${source.name}: read ${details.size}/${needDetail.length} posting details`);
+
+  // 4. Keep in-county (or remote/unknown) jobs and save them.
+  const nowIso = new Date().toISOString();
+  const keptIds: string[] = [];
+  let skippedOutOfCounty = 0;
+  for (const p of postings) {
+    const detail = details.get(p.sourceId);
+    const row = bySourceId.get(p.sourceId);
+    const multiple = /^\d+\s+locations?$/i.test(p.locationsText ?? ""); // e.g. "2 Locations"
+    let location: string | null;
+    if (detail && detail.locations.length > 0) {
+      location = detail.locations.find((l) => !isOutsideCounty(l)) ?? null;
+      if (!location) {
+        skippedOutOfCounty++;
+        continue;
+      }
+    } else if (multiple) {
+      location = row?.location ?? null; // keep what we knew; can't tell from the list
+    } else {
+      location = p.locationsText;
+      if (isOutsideCounty(location)) {
+        skippedOutOfCounty++;
+        continue;
+      }
+    }
+
+    const job = {
+      job_title: p.title,
+      employer,
+      employment_type: detail?.employmentType ?? row?.employment_type ?? null,
+      wage: detail?.wage ?? null,
+      location,
+      posting_url: `https://${host}/en-US/${site}${p.path}`,
+      source_site: source.name,
+      source_id: p.sourceId,
+      job_category: categorizeJob(p.title, employer),
+    };
+    if (row) {
+      await supabase
+        .from("employment_opportunities")
+        .update({
+          job_title: job.job_title,
+          employer: job.employer,
+          employment_type: job.employment_type,
+          ...(job.wage ? { wage: job.wage } : {}),
+          ...(job.location ? { location: job.location } : {}),
+          posting_url: job.posting_url,
+          active: true,
+          job_category: job.job_category,
+          updated_at: nowIso,
+          // We read the full posting, so a paid wage lookup can't add anything.
+          ...(detail ? { wage_checked_at: nowIso } : {}),
+        })
+        .eq("id", row.id);
+    } else {
+      await supabase
+        .from("employment_opportunities")
+        .insert({ ...job, active: true, is_manual: false, ...(detail ? { wage_checked_at: nowIso } : {}) });
+    }
+    keptIds.push(p.sourceId);
+    result.scraped++;
+  }
+  if (skippedOutOfCounty > 0) {
+    console.log(`Skipped ${skippedOutOfCounty} out-of-county jobs from ${source.name}`);
+  }
+
+  // 5. The list is complete, so anything not in it has been filled or removed.
+  if (complete && keptIds.length > 0) {
+    await supabase
+      .from("employment_opportunities")
+      .update({ active: false })
+      .eq("source_site", source.name)
+      .eq("is_manual", false)
+      .eq("active", true)
+      .not("source_id", "in", `(${keptIds.map((s) => `"${s}"`).join(",")})`);
+  }
+}
+
+// ── Oracle HCM (e.g. Ithaca College): free pay lookup ─────────────────────
+// The listing API has no pay, but each requisition's details endpoint
+// includes the full description, which states compensation.
+
+async function fillOracleWages(
+  supabase: SupabaseClient,
+  source: ScrapeSource,
+  apiBase: string,
+  siteNumber: string,
+): Promise<void> {
+  const { data: rows, error } = await supabase
+    .from("employment_opportunities")
+    .select("id, source_id")
+    .eq("source_site", source.name)
+    .eq("active", true)
+    .is("wage", null)
+    .is("wage_checked_at", null)
+    .not("source_id", "is", null)
+    .limit(MAX_ORACLE_DETAILS_PER_RUN);
+  if (error) throw error;
+  if (!rows || rows.length === 0) return;
+
+  const detailsBase = apiBase.replace(/recruitingCEJobRequisitions\b/, "recruitingCEJobRequisitionDetails");
+  let found = 0;
+  await mapWithConcurrency(rows, DETAIL_CONCURRENCY, async (row) => {
+    try {
+      const url = `${detailsBase}?expand=all&onlyData=true&finder=ById;Id=%22${encodeURIComponent(String(row.source_id))}%22,siteNumber=${encodeURIComponent(siteNumber)}`;
+      const res = await fetch(url, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(20_000) });
+      if (!res.ok) return; // try again next run
+      const item = (await res.json())?.items?.[0] ?? {};
+      const text = [
+        item.ExternalDescriptionStr,
+        item.ExternalResponsibilitiesStr,
+        item.ExternalQualificationsStr,
+        item.ShortDescriptionStr,
+      ].filter((s) => typeof s === "string").join("\n");
+      const wage = extractWageFromText(text);
+      if (wage) found++;
+      await supabase
+        .from("employment_opportunities")
+        .update({ ...(wage ? { wage } : {}), wage_checked_at: new Date().toISOString() })
+        .eq("id", row.id);
+    } catch (e) {
+      console.warn(`Oracle detail failed for ${row.source_id}: ${e}`);
+    }
+  });
+  console.log(`Oracle ${source.name}: found pay for ${found}/${rows.length} postings`);
+}
 
 const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
   FULL_TIME: "Full-time",
@@ -180,10 +493,9 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
-    if (!FIRECRAWL_API_KEY) {
-      throw new Error("FIRECRAWL_API_KEY is not configured");
-    }
+    // Only the page-scrape sources need Firecrawl; API-based sources (Workday,
+    // Oracle, ApplicantPro) keep working without it.
+    const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY") ?? "";
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -192,6 +504,8 @@ Deno.serve(async (req) => {
     let body: Record<string, unknown> = {};
     try { body = await req.json(); } catch { /* no body */ }
     const sourceId = body?.source_id as string | undefined;
+    // {"force": true} runs the full extraction even if the page looks unchanged.
+    const force = body?.force === true;
 
     let query = supabase.from("scrape_sources").select("*").eq("active", true);
     if (sourceId) {
@@ -207,10 +521,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    const results: Record<string, { scraped: number; errors: string[] }> = {};
+    const results: Record<string, SourceResult> = {};
 
     for (const source of sources as ScrapeSource[]) {
-      const sourceResult = { scraped: 0, errors: [] as string[] };
+      const sourceResult: SourceResult = { scraped: 0, errors: [] };
       results[source.name] = sourceResult;
 
       try {
@@ -296,6 +610,16 @@ Deno.serve(async (req) => {
             .update({ last_scraped_at: new Date().toISOString() })
             .eq("id", source.id);
 
+          continue;
+        }
+
+        // Special path: Workday career sites (e.g. Cornell) — public JSON API.
+        if (apiType === "workday") {
+          await scrapeWorkdaySource(supabase, source, sourceResult);
+          await supabase
+            .from("scrape_sources")
+            .update({ last_scraped_at: new Date().toISOString() })
+            .eq("id", source.id);
           continue;
         }
 
@@ -387,7 +711,8 @@ Deno.serve(async (req) => {
                   job_title: job.job_title,
                   employer: job.employer,
                   employment_type: job.employment_type,
-                  wage: job.wage,
+                  // The listing API never has pay; keep any wage found earlier.
+                  ...(job.wage ? { wage: job.wage } : {}),
                   location: job.location,
                   posting_url: job.posting_url,
                   active: true,
@@ -413,11 +738,51 @@ Deno.serve(async (req) => {
               .not("source_id", "in", `(${seenIds.map((s) => `"${s}"`).join(",")})`);
           }
 
+          await fillOracleWages(supabase, source, apiBase, siteNumber);
+
           await supabase
             .from("scrape_sources")
             .update({ last_scraped_at: new Date().toISOString() })
             .eq("id", source.id);
 
+          continue;
+        }
+
+        // ── Page scrape via Firecrawl AI extraction (5 credits) ──
+        if (!FIRECRAWL_API_KEY) {
+          sourceResult.errors.push("FIRECRAWL_API_KEY is not configured");
+          continue;
+        }
+
+        // Check whether the page changed since the last full scrape: free
+        // when the page loads with a plain request, otherwise 1 credit.
+        const runStartedAt = new Date().toISOString();
+        const fingerprint =
+          (await fingerprintViaPlainFetch(source.url)) ??
+          (await fingerprintWithFirecrawl(source.url, FIRECRAWL_API_KEY));
+        const lastFullMs = source.last_full_scrape_at ? Date.parse(source.last_full_scrape_at) : 0;
+        const fullScrapeDue = Date.now() - lastFullMs > FULL_SCRAPE_MAX_AGE_MS;
+        if (
+          !force && !fullScrapeDue && fingerprint &&
+          fingerprint === source.content_fingerprint && source.last_full_scrape_at
+        ) {
+          // Unchanged: the jobs seen in the last full scrape are still listed,
+          // so mark them as seen today (this keeps the 7-day stale rule below
+          // from retiring them) and skip the paid extraction.
+          await supabase
+            .from("employment_opportunities")
+            .update({ updated_at: runStartedAt })
+            .eq("source_site", source.name)
+            .eq("is_manual", false)
+            .eq("active", true)
+            .gte("updated_at", source.last_full_scrape_at);
+          await supabase
+            .from("scrape_sources")
+            .update({ last_scraped_at: runStartedAt })
+            .eq("id", source.id);
+          sourceResult.unchanged = true;
+          console.log(`${source.name}: page unchanged since last full scrape; skipped AI extraction`);
+          triggerWageEnrichment(supabaseUrl, supabaseServiceKey, source.name);
           continue;
         }
 
@@ -651,38 +1016,22 @@ Deno.serve(async (req) => {
             .lt("updated_at", staleCutoff);
         }
 
+        // Wage enrichment runs as a separate edge function call so the
+        // detail-page scrapes don't block this function's time budget. It
+        // picks up active jobs from this source that still have no wage.
+        triggerWageEnrichment(supabaseUrl, supabaseServiceKey, source.name);
 
-
-
-
-        // Wage enrichment runs as a separate, fire-and-forget edge function
-        // call so the long-running detail-page scrapes don't block this
-        // function's wall-clock budget. It will pick up any active jobs from
-        // this source that still have wage = null.
-        try {
-          const enrichUrl = `${supabaseUrl}/functions/v1/enrich-job-wages`;
-          // Don't await — let it run independently.
-          fetch(enrichUrl, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${supabaseServiceKey}`,
-              "Content-Type": "application/json",
-              "x-internal-task-secret": Deno.env.get("INTERNAL_TASK_SECRET") ?? "",
-            },
-            body: JSON.stringify({
-              source_site: source.name,
-              limit: MAX_WAGE_ENRICHMENTS_PER_RUN,
-            }),
-          }).catch((e) =>
-            console.warn(`enrich-job-wages trigger failed: ${e}`)
-          );
-        } catch (enrichErr) {
-          console.warn("enrich-job-wages trigger error:", enrichErr);
-        }
-
+        // Remember what the page looked like, so tomorrow's run can skip the
+        // paid extraction if nothing changed. Only after a scrape that found
+        // jobs; an empty result is retried in full next time.
         await supabase
           .from("scrape_sources")
-          .update({ last_scraped_at: new Date().toISOString() })
+          .update({
+            last_scraped_at: new Date().toISOString(),
+            ...(jobs.length > 0
+              ? { content_fingerprint: fingerprint, last_full_scrape_at: runStartedAt }
+              : {}),
+          })
           .eq("id", source.id);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);

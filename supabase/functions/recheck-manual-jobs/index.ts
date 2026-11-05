@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { normalizeWage } from "../_shared/wage.ts";
+import { CREDITS_PER_JSON_SCRAPE, optionalCreditAllowance } from "../_shared/firecrawlBudget.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -47,15 +48,26 @@ Deno.serve(async (req) => {
       .select("id, posting_url, job_title, employer")
       .eq("is_manual", true)
       .eq("source_site", "user-submitted")
-      .eq("active", true);
+      .eq("active", true)
+      // Least recently checked first, in case the credit budget runs short.
+      .order("updated_at", { ascending: true });
     if (onlyId) q = q.eq("id", onlyId);
 
     const { data: jobs, error } = await q;
     if (error) throw error;
 
+    // Each re-check is a 5-credit Firecrawl scrape. Only use credits left over
+    // after reserving enough for the daily job scrapes (free plan).
+    const allowance = await optionalCreditAllowance(FIRECRAWL_API_KEY);
+    const budgeted = ((jobs || []) as JobRow[]).slice(0, Math.floor(allowance / CREDITS_PER_JSON_SCRAPE));
+    const deferred = (jobs || []).length - budgeted.length;
+    if (deferred > 0) {
+      console.log(`recheck-manual-jobs: deferring ${deferred} job(s) to save Firecrawl credits`);
+    }
+
     const results: Array<{ id: string; status: string; reason?: string }> = [];
 
-    for (const job of (jobs || []) as JobRow[]) {
+    for (const job of budgeted) {
       try {
         const res = await fetch("https://api.firecrawl.dev/v2/scrape", {
           method: "POST",
@@ -91,11 +103,20 @@ Deno.serve(async (req) => {
           }),
         });
 
-        const data = await res.json();
+        const data = await res.json().catch(() => null);
+
+        // A Firecrawl failure (out of credits, bad key, outage) says nothing
+        // about the job itself: leave it active and try again next time.
+        if (!res.ok) {
+          console.warn(`recheck skipped for ${job.id}: Firecrawl HTTP ${res.status}`);
+          results.push({ id: job.id, status: "error", reason: `firecrawl_${res.status}` });
+          continue;
+        }
+
         const httpStatus = data?.data?.metadata?.statusCode || data?.metadata?.statusCode;
 
         // Page completely gone
-        if (!res.ok || httpStatus === 404 || httpStatus === 410) {
+        if (httpStatus === 404 || httpStatus === 410) {
           await supabase
             .from("employment_opportunities")
             .update({ active: false })
@@ -137,7 +158,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, checked: (jobs || []).length, results }),
+      JSON.stringify({ success: true, checked: budgeted.length, deferred, results }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (err) {

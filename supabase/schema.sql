@@ -98,6 +98,9 @@ CREATE TABLE public.scrape_sources (
   scrape_config JSONB,
   active BOOLEAN NOT NULL DEFAULT true,
   last_scraped_at TIMESTAMPTZ,
+  -- Change detection for Firecrawl page scrapes (see scrape-jobs):
+  content_fingerprint TEXT,        -- fingerprint of the page at the last full scrape
+  last_full_scrape_at TIMESTAMPTZ, -- when that full (AI extraction) scrape started
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
