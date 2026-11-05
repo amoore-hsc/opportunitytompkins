@@ -11,12 +11,20 @@ const corsHeaders = {
 // Each lookup is a 5-credit Firecrawl scrape; the free plan has 1,000/month.
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 10;
-const CONCURRENCY = 3;
+// Firecrawl's free plan allows 2 requests at a time, and scrapes may be
+// running alongside this, so look up one posting at a time.
+const CONCURRENCY = 1;
+
+/** `checked` is false when Firecrawl failed, so the job should be retried. */
+interface LookupResult {
+  wage: string | null;
+  checked: boolean;
+}
 
 async function enrichWageFromPostingUrl(
   url: string,
   firecrawlKey: string
-): Promise<string | null> {
+): Promise<LookupResult> {
   try {
     const res = await fetch("https://api.firecrawl.dev/v2/scrape", {
       method: "POST",
@@ -50,15 +58,17 @@ async function enrichWageFromPostingUrl(
     });
 
     if (!res.ok) {
+      // Rate limit (429), out of credits (402), outage, …: says nothing about
+      // the posting, so don't mark it as checked.
       console.warn(`Wage enrich HTTP ${res.status} for ${url}`);
-      return null;
+      return { wage: null, checked: false };
     }
     const data = await res.json();
     const json = data?.data?.json || data?.json;
-    return normalizeWage(json?.wage);
+    return { wage: normalizeWage(json?.wage), checked: true };
   } catch (err) {
     console.warn(`Wage enrich error for ${url}:`, err);
-    return null;
+    return { wage: null, checked: false };
   }
 }
 
@@ -144,13 +154,14 @@ Deno.serve(async (req) => {
         batch.map(async (row) => ({
           id: row.id as string,
           source_site: row.source_site as string,
-          wage: await enrichWageFromPostingUrl(
+          ...(await enrichWageFromPostingUrl(
             row.posting_url as string,
             FIRECRAWL_API_KEY
-          ),
+          )),
         }))
       );
       for (const r of results) {
+        if (!r.checked) continue; // retry on a later run
         attempted++;
         if (!perSource[r.source_site]) perSource[r.source_site] = { attempted: 0, enriched: 0 };
         perSource[r.source_site].attempted++;
