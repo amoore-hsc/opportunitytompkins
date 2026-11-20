@@ -21,6 +21,20 @@ export const localConfig: SiteConfig = {
 
   exemptionFormUrl:
     "https://docs.google.com/forms/d/e/1FAIpQLSfXDths0eQwRcWRMrqVdjjhILjLpi5qz7lMyn27VyhdKTt6nw/viewform",
+  // Flip to true once the parity report is signed off. Until then the SNAP
+  // buttons keep opening the Google Form; /snap-screener still works directly.
+  snapScreenerEnabled: false,
+
+  // All Medicaid questions go to the Human Services Coalition, never DSS.
+  medicaidContactName: "Human Services Coalition",
+  medicaidContactUrl: "https://hsctc.org/stayinsured/",
+  medicaidContactPhone: "(607) 211-8667",
+
+  nysohPhone: "1-855-355-5777",
+  medicaidToolUrl: "https://info.nystateofhealth.ny.gov/medicaid-requirements-tool",
+
+  snapApplyUrl: "https://www.mybenefits.ny.gov/mybenefits/begin",
+  nyDocSubmitUrl: "https://otda.ny.gov/programs/nydocsubmit",
 
   fromEmail: "hello@tompkins-opportunity.org",
   fromName: "Tompkins Opportunity",
@@ -39,6 +53,7 @@ export const localConfig: SiteConfig = {
       icon: "GraduationCap",
     },
     {
+      id: "abawd_medical",
       label: "ABAWD Medical Statement",
       url: "https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:700e7380-20bf-4309-9061-51a05eef9eaf",
       icon: "Stethoscope",
@@ -49,6 +64,7 @@ export const localConfig: SiteConfig = {
       icon: "Search",
     },
     {
+      id: "caregiver",
       label: "Caregiver Verification",
       url: "https://acrobat.adobe.com/id/urn:aaid:sc:VA6C2:8fe26071-4bad-49e1-aaea-71184206bdca",
       icon: "Heart",

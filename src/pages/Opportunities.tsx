@@ -8,8 +8,8 @@ import { OpportunityFilters } from "@/components/OpportunityFilters";
 import { ShareOpportunitiesDialog } from "@/components/ShareOpportunitiesDialog";
 import { PrintableOpportunities } from "@/components/PrintableOpportunities";
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
-import { SkipNavigation } from "@/components/SkipNavigation";
 import { siteConfig } from "@/config";
+import { ExemptionNotice } from "@/components/benefits/ExemptionNotice";
 import { ApplicationDialog } from "@/components/ApplicationDialog";
 import { useToast } from "@/hooks/use-toast";
 import { getErrorMessage } from "@/lib/errors";
@@ -81,31 +81,8 @@ const Opportunities = () => {
 
   return (
     <div className="min-h-dvh bg-background">
-      <SkipNavigation />
       
-      <aside aria-label="Exemption status notice" className="py-3 px-4 text-center font-medium transition-colors text-primary-foreground bg-primary">
-
-        You may be exempt from new work requirements.<br />
-        <a 
-          href={siteConfig.exemptionFormUrl} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="underline hover:no-underline"
-        >
-          Click Here to Check your Exemption Status.
-        </a>
-        <br />
-        Questions? Contact{" "}
-        <a 
-          href={siteConfig.dssUrl} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="underline hover:no-underline"
-        >
-          {siteConfig.dssName}
-        </a>{" "}
-        {siteConfig.dssPhone}
-      </aside>
+      <ExemptionNotice />
 
 
       <header className="border-b border-border bg-card">

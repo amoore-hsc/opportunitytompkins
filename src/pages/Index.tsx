@@ -5,14 +5,17 @@ import { Search, ListPlus, Briefcase } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
-import { SkipNavigation } from "@/components/SkipNavigation";
 import { siteConfig } from "@/config";
+import { BenefitChooser } from "@/components/benefits/BenefitChooser";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { telHref } from "@/lib/siteSettings";
 
 import workforceNYLogo from "@/assets/workforce-ny-logo.png";
 import chrnLogo from "@/assets/chrn-logo.jpg";
 import foodbankLogo from "@/assets/foodbank-logo.png";
 const Index = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const { snapContact, medicaidContact } = useSiteSettings();
   useEffect(() => {
     // Show popup after a short delay when page loads
     const timer = setTimeout(() => {
@@ -21,35 +24,39 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, []);
   return <div className="min-h-dvh bg-background">
-      <SkipNavigation />
 
-      {/* Exemption Status Popup */}
+      {/* Exemption popup: choose SNAP (on this site) or Medicaid (NY State of Health) */}
       <Dialog open={showPopup} onOpenChange={setShowPopup}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{"\n"}</DialogTitle>
-            <DialogDescription>
-              {"\n"}
-            </DialogDescription>
+        <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader className="text-center sm:text-center">
+            <DialogTitle className="text-2xl leading-tight">You may be exempt from new work requirements.</DialogTitle>
+            <DialogDescription className="text-base">What would you like to check?</DialogDescription>
           </DialogHeader>
-          <div className="text-center space-y-4 py-2">
-            <p className="text-lg font-medium text-foreground">
-              You may be exempt from new work requirements.
-            </p>
-            <a href={siteConfig.exemptionFormUrl} target="_blank" rel="noopener noreferrer" className="inline-block">
-              <Button className="text-base">
-                Click Here to Check your Exemption Status
-              </Button>
-            </a>
-            <p className="text-muted-foreground text-base">
-              Questions?
-              <br />
-              Contact{" "}
-              <a href={siteConfig.dssUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
-                {siteConfig.dssName}
+          <div className="text-center">
+            <BenefitChooser layout="popup" onSnapNavigate={() => setShowPopup(false)} />
+          </div>
+          <div className="border-t border-border pt-4 text-center text-muted-foreground">
+            <p>
+              <strong>SNAP questions?</strong>{" "}
+              <a href={snapContact.url} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
+                {snapContact.label}
+                <span className="sr-only"> (opens in a new tab)</span>
               </a>
-              <br />
-              <span className="text-primary">{siteConfig.dssPhone}</span>
+              ,{" "}
+              <a href={telHref(snapContact.phone)} className="whitespace-nowrap hover:underline">
+                {snapContact.phone}
+              </a>
+            </p>
+            <p>
+              <strong>Medicaid questions?</strong>{" "}
+              <a href={medicaidContact.url} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
+                {medicaidContact.label}
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+              ,{" "}
+              <a href={telHref(medicaidContact.phone)} className="whitespace-nowrap hover:underline">
+                {medicaidContact.phone}
+              </a>
             </p>
           </div>
         </DialogContent>
@@ -60,7 +67,16 @@ const Index = () => {
       <main id="main-content" className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="mb-6 text-4xl font-bold text-foreground sm:text-5xl">Connect to Opportunities that Count</h2>
-          <p className="mb-12 text-lg text-muted-foreground sm:text-xl">Find volunteer, training or educational opportunities that count toward the federally mandated SNAP ABAWD work requirement, or post one if you're a community organization.</p>
+          <p className="mb-12 text-lg text-muted-foreground sm:text-xl">Find volunteer, training or educational opportunities that count toward SNAP and Medicaid work requirements, or post one if you're a community organization.</p>
+
+          {/* Work-requirement chooser */}
+          <section aria-labelledby="check-heading" className="mb-6 rounded-xl border-2 border-primary bg-muted p-6 sm:p-8">
+            <h3 id="check-heading" className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
+              Check whether work requirements apply to you
+            </h3>
+            <p className="mb-6 text-muted-foreground">Takes about two minutes. Choose the benefit you want to check.</p>
+            <BenefitChooser layout="band" />
+          </section>
 
           {/* Main CTAs */}
           <div className="grid gap-6 sm:grid-cols-2">

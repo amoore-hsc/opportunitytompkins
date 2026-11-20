@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Index from "./pages/Index";
 import { FeedbackBubble } from "@/components/FeedbackBubble";
+import { SkipNavigation } from "@/components/SkipNavigation";
+import { ContactStrip } from "@/components/benefits/ContactStrip";
 
 // Pages other than the home page are loaded on demand, so visitors don't
 // download admin-only code (charts, PDF/Excel export) just to browse listings.
@@ -16,6 +18,7 @@ const ConfirmListing = lazy(() => import("./pages/ConfirmListing"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Employment = lazy(() => import("./pages/Employment"));
 const EmploymentResources = lazy(() => import("./pages/EmploymentResources"));
+const SnapScreener = lazy(() => import("./pages/SnapScreener"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const PageLoading = () => (
@@ -33,6 +36,9 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        {/* Skip link first, then the site-wide SNAP / Medicaid contact strip. */}
+        <SkipNavigation />
+        <ContactStrip />
         <Suspense fallback={<PageLoading />}>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -42,6 +48,7 @@ const App = () => (
             <Route path="/confirm-listing/:token" element={<ConfirmListing />} />
             <Route path="/employment" element={<Employment />} />
             <Route path="/employment-resources" element={<EmploymentResources />} />
+            <Route path="/snap-screener" element={<SnapScreener />} />
 
             <Route path="/admin" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

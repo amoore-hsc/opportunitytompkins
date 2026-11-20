@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { ElectronicVerificationForms } from "@/components/ElectronicVerificationForms";
-import { SkipNavigation } from "@/components/SkipNavigation";
 import { VisuallyHidden } from "@/components/VisuallyHidden";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -303,7 +302,6 @@ const ListOpportunity = () => {
 
   return (
     <div className="min-h-dvh bg-background">
-      <SkipNavigation />
       
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">

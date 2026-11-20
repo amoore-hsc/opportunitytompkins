@@ -17,7 +17,6 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { SkipNavigation } from "@/components/SkipNavigation";
 import { siteConfig, type ResourceLink, type CareerCenterService } from "@/config";
 
 const SERVICE_ICON_MAP: Record<CareerCenterService["icon"], LucideIcon> = {
@@ -47,7 +46,6 @@ const EmploymentResources = () => {
   const cc = siteConfig.careerCenter;
   return (
     <div className="min-h-dvh bg-background">
-      <SkipNavigation />
 
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
