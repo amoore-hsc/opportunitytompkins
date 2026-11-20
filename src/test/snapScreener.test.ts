@@ -34,16 +34,16 @@ describe("SNAP screener questions (data)", () => {
       "snap_enrolled",
       "age_65_plus",
       "age_16_17",
-      "working",
-      "child_under_14",
-      "health_condition",
-      "caregiver",
       "ssi_ssdi",
-      "pregnant",
-      "unemployment",
-      "substance_treatment",
       "nys_disability",
       "ihs",
+      "child_under_14",
+      "working",
+      "unemployment",
+      "pregnant",
+      "substance_treatment",
+      "caregiver",
+      "health_condition",
     ]);
   });
 
@@ -110,11 +110,18 @@ describe("SNAP screener rules engine", () => {
 
   it("16-17 branch: No continues to the next question", () => {
     const state = evaluateSnap({ snap_enrolled: true, age_65_plus: false, age_16_17: false });
-    expect(state.status === "question" && state.question.key).toBe("working");
+    expect(state.status === "question" && state.question.key).toBe("ssi_ssdi");
   });
 
   it("first Yes wins when several apply (working beats health condition)", () => {
     expect(outcomeOf({ ...allNo(), working: true, health_condition: true })).toBe("exempt");
+  });
+
+  it("asks every no-paperwork exemption before any form-based one", () => {
+    const formBased = (q: (typeof SNAP_QUESTIONS)[number]) => q.onYes === "medical" || q.onYes === "caregiver";
+    const firstForm = SNAP_QUESTIONS.findIndex(formBased);
+    expect(SNAP_QUESTIONS.slice(firstForm).every(formBased)).toBe(true);
+    expect(SNAP_QUESTIONS.at(-1)?.key).toBe("health_condition");
   });
 });
 
@@ -146,6 +153,13 @@ describe("Parity with the old Google Form", () => {
     const diffs = enrolled.filter((c) => c.newOutcome !== c.oldOutcome);
     expect(diffs.length).toBeGreaterThan(0);
     for (const c of diffs) expect(c.yesKeys.length).toBeGreaterThan(2);
+  });
+
+  it("never sends someone a form the old Google Form would not have", () => {
+    const needsForm = (o: string) => o === "medical" || o === "caregiver";
+    for (const c of enrolled) {
+      if (needsForm(c.newOutcome)) expect(needsForm(c.oldOutcome)).toBe(true);
+    }
   });
 
   it("old form evaluation follows the Google Form order", () => {

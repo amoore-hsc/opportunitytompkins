@@ -52,9 +52,15 @@ export interface SnapQuestion {
 export const SNAP_DEFAULT_OUTCOME: SnapOutcome = "action_needed";
 
 /**
- * Asked in this order. Order is an estimate of how many people each
- * exemption resolves, with no-paperwork exemptions ahead of form-based ones
- * where the numbers are similar.
+ * Asked in this order. Because the screener stops at the first Yes, the
+ * order decides which result someone with several exemptions sees. Following
+ * SNAP guidance (when more than one exemption applies, use the one that lasts
+ * longest; "unfit for work" is checked last, for people who don't qualify any
+ * other way), the order is:
+ *   1. receiving SNAP (screens people out)
+ *   2. long-lasting exemptions that need no paperwork
+ *   3. shorter-term exemptions that need no paperwork
+ *   4. exemptions that need a form, with the health condition question last
  */
 export const SNAP_QUESTIONS: SnapQuestion[] = [
   {
@@ -82,68 +88,12 @@ export const SNAP_QUESTIONS: SnapQuestion[] = [
     oldFormOrder: 3,
   },
   {
-    key: "working",
-    text: "Are you working 30 or more hours a week OR earning at least $217.50 per week?",
-    onYes: "exempt",
-    onNo: "continue",
-    oldFormId: "1307935201",
-    oldFormOrder: 11,
-  },
-  {
-    key: "child_under_14",
-    text: "Do you live with a child under 14 years old?",
-    onYes: "exempt",
-    onNo: "continue",
-    oldFormId: "1468055151",
-    oldFormOrder: 4,
-  },
-  {
-    key: "health_condition",
-    text: "Do you have a physical or mental condition that makes it hard for you to work?",
-    onYes: "medical",
-    onNo: "continue",
-    oldFormId: "1126178568",
-    oldFormOrder: 8,
-  },
-  {
-    key: "caregiver",
-    text: "Are you caring for someone who cannot care for themselves?",
-    onYes: "caregiver",
-    onNo: "continue",
-    oldFormId: "1750238696",
-    oldFormOrder: 10,
-  },
-  {
     key: "ssi_ssdi",
     text: "Do you receive SSI or SSD/SSDI?",
     onYes: "exempt",
     onNo: "continue",
     oldFormId: "1245219036",
     oldFormOrder: 6,
-  },
-  {
-    key: "pregnant",
-    text: "Are you pregnant?",
-    onYes: "exempt",
-    onNo: "continue",
-    oldFormId: "217028634",
-    oldFormOrder: 7,
-  },
-  {
-    key: "unemployment",
-    text: "Are you receiving unemployment benefits?",
-    onYes: "exempt",
-    onNo: "continue",
-    oldFormId: "1614966714",
-    oldFormOrder: 12,
-  },
-  {
-    key: "substance_treatment",
-    text: "Are you currently in a drug or alcohol treatment program?",
-    onYes: "medical",
-    onNo: "continue",
-    oldFormId: "677354061",
-    oldFormOrder: 9,
   },
   {
     key: "nys_disability",
@@ -160,5 +110,61 @@ export const SNAP_QUESTIONS: SnapQuestion[] = [
     onNo: "continue",
     oldFormId: "1567455980",
     oldFormOrder: 13,
+  },
+  {
+    key: "child_under_14",
+    text: "Do you live with a child under 14 years old?",
+    onYes: "exempt",
+    onNo: "continue",
+    oldFormId: "1468055151",
+    oldFormOrder: 4,
+  },
+  {
+    key: "working",
+    text: "Are you working 30 or more hours a week OR earning at least $217.50 per week?",
+    onYes: "exempt",
+    onNo: "continue",
+    oldFormId: "1307935201",
+    oldFormOrder: 11,
+  },
+  {
+    key: "unemployment",
+    text: "Are you receiving unemployment benefits?",
+    onYes: "exempt",
+    onNo: "continue",
+    oldFormId: "1614966714",
+    oldFormOrder: 12,
+  },
+  {
+    key: "pregnant",
+    text: "Are you pregnant?",
+    onYes: "exempt",
+    onNo: "continue",
+    oldFormId: "217028634",
+    oldFormOrder: 7,
+  },
+  {
+    key: "substance_treatment",
+    text: "Are you currently in a drug or alcohol treatment program?",
+    onYes: "medical",
+    onNo: "continue",
+    oldFormId: "677354061",
+    oldFormOrder: 9,
+  },
+  {
+    key: "caregiver",
+    text: "Are you caring for someone who cannot care for themselves?",
+    onYes: "caregiver",
+    onNo: "continue",
+    oldFormId: "1750238696",
+    oldFormOrder: 10,
+  },
+  {
+    key: "health_condition",
+    text: "Do you have a physical or mental condition that makes it hard for you to work?",
+    onYes: "medical",
+    onNo: "continue",
+    oldFormId: "1126178568",
+    oldFormOrder: 8,
   },
 ];

@@ -16,7 +16,7 @@ on different questions and show a different page.
 | "Not receiving SNAP" result matches | Yes, in every case |
 | Exempt vs. not exempt matches | Yes, in every case |
 | Same page when 0 or 1 exemption applies | Yes, in every case |
-| Combinations (SNAP = Yes) where the page differs | 204 of 4,096 |
+| Combinations (SNAP = Yes) where the page differs | 50 of 4,096 |
 
 Nobody is told they're exempt by one tool and "action needed" by the other. The only differences are
 **which exempt page** someone sees, which decides whether they're asked to send in a form.
@@ -25,11 +25,9 @@ Nobody is told they're exempt by one tool and "action needed" by the other. The 
 
 | Old form page → New screener page | Combinations |
 |---|---|
-| Exempt (nothing to do) → Medical Exemption (medical form) | 114 |
-| Exempt (nothing to do) → Caregiver Exemption (caregiver form) | 56 |
-| Medical Exemption (medical form) → Exempt (nothing to do) | 26 |
-| Caregiver Exemption (caregiver form) → Exempt (nothing to do) | 4 |
-| Medical Exemption (medical form) → Caregiver Exemption (caregiver form) | 4 |
+| Medical Exemption (medical form) → Exempt (nothing to do) | 42 |
+| Caregiver Exemption (caregiver form) → Exempt (nothing to do) | 7 |
+| Medical Exemption (medical form) → Caregiver Exemption (caregiver form) | 1 |
 
 ## Two exemptions at once: every pair that differs
 
@@ -37,32 +35,31 @@ Someone answered Yes to exactly these two questions (and No to the rest):
 
 | Yes to | And yes to | Old form shows | New screener shows |
 |---|---|---|---|
-| working 30 or more hours a week OR earning at least $217.50 per week | have a physical or mental condition that makes it hard for you to work | Medical Exemption (medical form) | Exempt (nothing to do) |
-| working 30 or more hours a week OR earning at least $217.50 per week | caring for someone who cannot care for themselves | Caregiver Exemption (caregiver form) | Exempt (nothing to do) |
+| eligible for Indian Health Services | in a drug or alcohol treatment program | Medical Exemption (medical form) | Exempt (nothing to do) |
+| eligible for Indian Health Services | caring for someone who cannot care for themselves | Caregiver Exemption (caregiver form) | Exempt (nothing to do) |
+| eligible for Indian Health Services | have a physical or mental condition that makes it hard for you to work | Medical Exemption (medical form) | Exempt (nothing to do) |
 | working 30 or more hours a week OR earning at least $217.50 per week | in a drug or alcohol treatment program | Medical Exemption (medical form) | Exempt (nothing to do) |
-| have a physical or mental condition that makes it hard for you to work | receive SSI or SSD/SSDI | Exempt (nothing to do) | Medical Exemption (medical form) |
-| have a physical or mental condition that makes it hard for you to work | pregnant | Exempt (nothing to do) | Medical Exemption (medical form) |
-| have a physical or mental condition that makes it hard for you to work | receive NYS Disability Benefits | Exempt (nothing to do) | Medical Exemption (medical form) |
-| caring for someone who cannot care for themselves | receive SSI or SSD/SSDI | Exempt (nothing to do) | Caregiver Exemption (caregiver form) |
-| caring for someone who cannot care for themselves | pregnant | Exempt (nothing to do) | Caregiver Exemption (caregiver form) |
-| caring for someone who cannot care for themselves | in a drug or alcohol treatment program | Medical Exemption (medical form) | Caregiver Exemption (caregiver form) |
-| caring for someone who cannot care for themselves | receive NYS Disability Benefits | Exempt (nothing to do) | Caregiver Exemption (caregiver form) |
+| working 30 or more hours a week OR earning at least $217.50 per week | caring for someone who cannot care for themselves | Caregiver Exemption (caregiver form) | Exempt (nothing to do) |
+| working 30 or more hours a week OR earning at least $217.50 per week | have a physical or mental condition that makes it hard for you to work | Medical Exemption (medical form) | Exempt (nothing to do) |
 | receiving unemployment benefits | in a drug or alcohol treatment program | Medical Exemption (medical form) | Exempt (nothing to do) |
-| in a drug or alcohol treatment program | receive NYS Disability Benefits | Exempt (nothing to do) | Medical Exemption (medical form) |
+| receiving unemployment benefits | caring for someone who cannot care for themselves | Caregiver Exemption (caregiver form) | Exempt (nothing to do) |
+| receiving unemployment benefits | have a physical or mental condition that makes it hard for you to work | Medical Exemption (medical form) | Exempt (nothing to do) |
+| caring for someone who cannot care for themselves | have a physical or mental condition that makes it hard for you to work | Medical Exemption (medical form) | Caregiver Exemption (caregiver form) |
 
-Main patterns:
+What changed and why:
 
-- **Working 30+ hours or $217.50/week** is asked 4th now (11th in the old form). Someone who works
-  *and* has a health condition, is in treatment, or is a caregiver now sees "Exempt (nothing to do)"
-  instead of being sent a medical or caregiver form.
-- **Health condition** and **caregiving** are now asked before SSI/SSDI, pregnancy and NYS Disability
-  Benefits (the old form asked those first). Someone with one of those *and* a health condition or
-  caregiving duties is now sent a medical or caregiver form, where the old form told them they had
-  nothing to do. This works against the plan's goal of not sending people to forms they may not need.
-  Moving SSI/SSDI, pregnancy and NYS Disability ahead of the health-condition question would avoid it.
+- The new order follows SNAP guidance: when someone qualifies for more than one exemption, the one
+  that lasts longest is applied, and New York checks "unfit for work" last, for people who don't
+  qualify any other way. So the screener asks long-lasting, no-paperwork exemptions first and the
+  form-based ones (treatment program, caregiving, health condition) last.
+- Every difference above is someone who also has a no-paperwork exemption (working, unemployment
+  benefits, or Indian Health Services eligibility, which the old form asked after the form-based
+  questions). The new screener tells them they have nothing to do instead of sending them a form.
+- One pair (caregiving plus a health condition) now shows the Caregiver page instead of the Medical
+  page, because the health-condition question is asked last.
+- No one is sent a form by the new screener that the old form would not have sent them.
 
-**Owner decision needed:** confirm these differences are acceptable, or reorder `SNAP_QUESTIONS` in
-`src/config/snapScreener.ts` and re-run this report.
+**Owner sign-off:** confirm these differences are acceptable before turning on `snapScreenerEnabled`.
 
 ## Question order
 
@@ -71,15 +68,15 @@ Main patterns:
 | 1 | Are you currently receiving SNAP (food assistance)? | 1 |
 | 2 | Are you 65 or over? | 2 |
 | 3 | Are you 16-17 years old, not the head of household, and not attending school or training? | 3 |
-| 4 | Are you working 30 or more hours a week OR earning at least $217.50 per week? | 11 |
-| 5 | Do you live with a child under 14 years old? | 4 |
-| 6 | Do you have a physical or mental condition that makes it hard for you to work? | 8 |
-| 7 | Are you caring for someone who cannot care for themselves? | 10 |
-| 8 | Do you receive SSI or SSD/SSDI? | 6 |
-| 9 | Are you pregnant? | 7 |
-| 10 | Are you receiving unemployment benefits? | 12 |
+| 4 | Do you receive SSI or SSD/SSDI? | 6 |
+| 5 | Do you receive NYS Disability Benefits? | 5 |
+| 6 | Are you eligible for Indian Health Services? | 13 |
+| 7 | Do you live with a child under 14 years old? | 4 |
+| 8 | Are you working 30 or more hours a week OR earning at least $217.50 per week? | 11 |
+| 9 | Are you receiving unemployment benefits? | 12 |
+| 10 | Are you pregnant? | 7 |
 | 11 | Are you currently in a drug or alcohol treatment program? | 9 |
-| 12 | Do you receive NYS Disability Benefits? | 5 |
-| 13 | Are you eligible for Indian Health Services? | 13 |
+| 12 | Are you caring for someone who cannot care for themselves? | 10 |
+| 13 | Do you have a physical or mental condition that makes it hard for you to work? | 8 |
 
 Old form order: 1. receiving SNAP (food assistance); 2. 65 or over; 3. 16-17 years old, not the head of household, and not attending school or training; 4. live with a child under 14 years old; 5. receive NYS Disability Benefits; 6. receive SSI or SSD/SSDI; 7. pregnant; 8. have a physical or mental condition that makes it hard for you to work; 9. in a drug or alcohol treatment program; 10. caring for someone who cannot care for themselves; 11. working 30 or more hours a week OR earning at least $217.50 per week; 12. receiving unemployment benefits; 13. eligible for Indian Health Services.

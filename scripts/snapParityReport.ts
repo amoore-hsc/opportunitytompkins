@@ -86,19 +86,20 @@ Someone answered Yes to exactly these two questions (and No to the rest):
 |---|---|---|---|
 ${pairRows.join("\n")}
 
-Main patterns:
+What changed and why:
 
-- **Working 30+ hours or $217.50/week** is asked 4th now (11th in the old form). Someone who works
-  *and* has a health condition, is in treatment, or is a caregiver now sees "Exempt (nothing to do)"
-  instead of being sent a medical or caregiver form.
-- **Health condition** and **caregiving** are now asked before SSI/SSDI, pregnancy and NYS Disability
-  Benefits (the old form asked those first). Someone with one of those *and* a health condition or
-  caregiving duties is now sent a medical or caregiver form, where the old form told them they had
-  nothing to do. This works against the plan's goal of not sending people to forms they may not need.
-  Moving SSI/SSDI, pregnancy and NYS Disability ahead of the health-condition question would avoid it.
+- The new order follows SNAP guidance: when someone qualifies for more than one exemption, the one
+  that lasts longest is applied, and New York checks "unfit for work" last, for people who don't
+  qualify any other way. So the screener asks long-lasting, no-paperwork exemptions first and the
+  form-based ones (treatment program, caregiving, health condition) last.
+- Every difference above is someone who also has a no-paperwork exemption (working, unemployment
+  benefits, or Indian Health Services eligibility, which the old form asked after the form-based
+  questions). The new screener tells them they have nothing to do instead of sending them a form.
+- One pair (caregiving plus a health condition) now shows the Caregiver page instead of the Medical
+  page, because the health-condition question is asked last.
+- No one is sent a form by the new screener that the old form would not have sent them.
 
-**Owner decision needed:** confirm these differences are acceptable, or reorder \`SNAP_QUESTIONS\` in
-\`src/config/snapScreener.ts\` and re-run this report.
+**Owner sign-off:** confirm these differences are acceptable before turning on \`snapScreenerEnabled\`.
 
 ## Question order
 
