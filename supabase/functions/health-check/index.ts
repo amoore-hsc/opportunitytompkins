@@ -69,6 +69,51 @@ async function checkPage(url: string, name: string): Promise<CheckResult> {
   }
 }
 
+// Outside links the site sends visitors to (Medicaid tool, contacts, etc.).
+// Defaults match the site's built-in fallbacks; live values come from the
+// public site_settings table when it's readable.
+const DEFAULT_EXTERNAL_LINKS: Record<string, string> = {
+  medicaid_tool: "https://info.nystateofhealth.ny.gov/medicaid-requirements-tool",
+};
+
+async function externalLinks(supabaseUrl: string, anonKey: string): Promise<Record<string, string>> {
+  const links = { ...DEFAULT_EXTERNAL_LINKS };
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/site_settings?select=key,url&url=not.is.null`, {
+      headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` },
+    });
+    if (res.ok) {
+      for (const row of (await res.json()) as { key: string; url: string }[]) {
+        if (typeof row.url === "string" && row.url.startsWith("https://")) links[row.key] = row.url;
+      }
+    }
+  } catch {
+    // Table missing or unreachable: the site falls back to built-in values, so just check the defaults.
+  }
+  return links;
+}
+
+/**
+ * Third-party pages can move. Alert on "not found", server errors or no
+ * response. A 403/429 means the site is up but refuses automated checks.
+ */
+async function checkExternalLink(url: string, name: string): Promise<CheckResult> {
+  try {
+    const res = await fetch(url, {
+      redirect: "follow",
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; site-link-check)" },
+      signal: AbortSignal.timeout(15000),
+    });
+    await res.body?.cancel();
+    if (res.ok || res.status === 403 || res.status === 429) {
+      return { name, ok: true, detail: `HTTP ${res.status}` };
+    }
+    return { name, ok: false, detail: `HTTP ${res.status} for ${url}` };
+  } catch (e) {
+    return { name, ok: false, detail: `Request failed for ${url}: ${(e as Error).message}` };
+  }
+}
+
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -89,6 +134,8 @@ Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
+  const links = await externalLinks(supabaseUrl, anonKey);
+
   const checks: CheckResult[] = await Promise.all([
     checkPublicRead(
       supabaseUrl,
@@ -104,6 +151,7 @@ Deno.serve(async (req) => {
     ),
     checkPage(`${SITE_URL}/opportunities`, "Opportunities page"),
     checkPage(`${SITE_URL}/employment`, "Employment page"),
+    ...Object.entries(links).map(([key, url]) => checkExternalLink(url, `Outside link: ${key}`)),
   ]);
 
   const failures = checks.filter((c) => !c.ok);
@@ -136,7 +184,8 @@ Deno.serve(async (req) => {
               <td style="padding:24px;">
                 <p style="margin:0 0 16px;color:#111827;">
                   The automated health check found ${failures.length} problem${failures.length === 1 ? "" : "s"} with
-                  <a href="${SITE_URL}">${escapeHtml(SITE_URL)}</a>. Visitors may be unable to see listings.
+                  <a href="${SITE_URL}">${escapeHtml(SITE_URL)}</a>. Visitors may be unable to see listings,
+                  or an outside link (such as the NY State of Health Medicaid tool) may have moved.
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:14px;">
                   ${rows}

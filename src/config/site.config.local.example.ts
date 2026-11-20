@@ -21,6 +21,11 @@ export const localConfig: SiteConfig = {
   dssPhone: "(000) 000-0000",
 
   exemptionFormUrl: "https://forms.example.com/exemption-check",
+  snapScreenerEnabled: false,
+
+  medicaidContactName: "Your Medicaid navigator organization",
+  medicaidContactUrl: "https://example.org/medicaid-help",
+  medicaidContactPhone: "(000) 000-0000",
 
   fromEmail: "hello@your-site.org",
   fromName: "Your County Opportunity",

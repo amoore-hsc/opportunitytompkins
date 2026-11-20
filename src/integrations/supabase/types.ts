@@ -275,6 +275,30 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          key: string
+          label: string
+          phone: string | null
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          key: string
+          label: string
+          phone?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          key?: string
+          label?: string
+          phone?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       scrape_sources: {
         Row: {
           active: boolean

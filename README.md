@@ -151,6 +151,21 @@ Send `{"source_id": "...", "force": true}` to `scrape-jobs` to force a full scra
 Set `verificationForms` in `site.config.local.ts` with your own Adobe Acrobat /
 Google Form / portal links.
 
+### SNAP screener, Medicaid link-out and contact strip
+- **SNAP Work Rules Screener** lives at `/snap-screener`. Questions, order and results are data in
+  `src/config/snapScreener.ts`; reorder that list to change the order, then run
+  `npm run parity-report` to regenerate `docs/snap-parity-report.md`. Answers stay in the
+  visitor's browser memory only and are never stored or sent anywhere.
+- **Feature flag:** `snapScreenerEnabled` in `site.config.local.ts`. While `false`, the SNAP buttons
+  open `exemptionFormUrl` (the old Google Form); set it to `true` to send them to `/snap-screener`.
+- **Medicaid** is a link-out to the NY State of Health tool. Medicaid questions go to the Medicaid
+  contact (`medicaidContact*` in site config), never DSS.
+- **Contacts and outside links** (header strip, popup, results) are read from the public
+  `site_settings` table (migration `20261120120000_site_settings.sql`) and can be edited in the
+  Supabase table editor. The site-config values are the fallback if the table is unreachable.
+  Only `https://` links are accepted.
+- `npm test` runs the rules, parity, copy and privacy checks.
+
 ### Cron schedules
 Set `project_url` and `anon_key` at the top of `supabase/seed_cron.sql`, then run it
 in the Supabase SQL editor. It creates the shared secret in Vault, schedules the

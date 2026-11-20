@@ -9,6 +9,12 @@
  */
 
 export interface VerificationForm {
+  /**
+   * Optional stable id so other features can find a specific form without
+   * matching on its label. The SNAP screener uses "abawd_medical" and
+   * "caregiver" to link to the existing medical and caregiver forms.
+   */
+  id?: "abawd_medical" | "caregiver";
   label: string;
   url: string;
   /** Lucide icon name, resolved in ElectronicVerificationForms */
@@ -53,6 +59,31 @@ export interface SiteConfig {
   /** Google Form (or other) URL for the exemption-status check */
   exemptionFormUrl: string;
 
+  /**
+   * When true, the "SNAP work requirements" buttons open the built-in SNAP
+   * screener at /snap-screener. When false they open `exemptionFormUrl`
+   * (the old Google Form) in a new tab. The screener page works either way.
+   */
+  snapScreenerEnabled: boolean;
+
+  /**
+   * Medicaid contact shown in the header strip, popup and screener results.
+   * Medicaid questions never go to DSS.
+   */
+  medicaidContactName: string;
+  medicaidContactUrl: string;
+  medicaidContactPhone: string;
+
+  /** NY State of Health phone for Medicaid work-requirement questions */
+  nysohPhone: string;
+  /** NY State of Health Medicaid work requirements tool (external link-out) */
+  medicaidToolUrl: string;
+
+  /** Where people who don't get SNAP yet can apply */
+  snapApplyUrl: string;
+  /** NYDocSubmit information page */
+  nyDocSubmitUrl: string;
+
   /** From-address for all outgoing transactional email */
   fromEmail: string;
   fromName: string;
@@ -93,6 +124,17 @@ export const defaultConfig: SiteConfig = {
   dssPhone: "(000) 000-0000",
 
   exemptionFormUrl: "https://forms.example.com/exemption-check",
+  snapScreenerEnabled: false,
+
+  medicaidContactName: "Medicaid Navigator",
+  medicaidContactUrl: "https://example.org/medicaid-help",
+  medicaidContactPhone: "(000) 000-0000",
+
+  nysohPhone: "1-855-355-5777",
+  medicaidToolUrl: "https://info.nystateofhealth.ny.gov/medicaid-requirements-tool",
+
+  snapApplyUrl: "https://www.mybenefits.ny.gov/mybenefits/begin",
+  nyDocSubmitUrl: "https://otda.ny.gov/programs/nydocsubmit",
 
   fromEmail: "noreply@example.gov",
   fromName: "Opportunity Board",
@@ -102,9 +144,9 @@ export const defaultConfig: SiteConfig = {
   verificationForms: [
     { label: "Volunteer Work Experience Verification Form", url: "https://example.com/volunteer-form", icon: "Briefcase" },
     { label: "Training / Educational Program Verification Form", url: "https://example.com/training-form", icon: "GraduationCap" },
-    { label: "ABAWD Medical Statement", url: "https://example.com/medical-statement", icon: "Stethoscope" },
+    { id: "abawd_medical", label: "ABAWD Medical Statement", url: "https://example.com/medical-statement", icon: "Stethoscope" },
     { label: "Monthly WIOA Job Search Activity Record", url: "https://example.com/wioa-search", icon: "Search" },
-    { label: "Caregiver Verification", url: "https://example.com/caregiver-form", icon: "Heart" },
+    { id: "caregiver", label: "Caregiver Verification", url: "https://example.com/caregiver-form", icon: "Heart" },
     { label: "Submit Documentation to DSS via NYDocSubmit", url: "https://otda.ny.gov/programs/nydocsubmit", icon: "Send" },
   ],
 

@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { SkipNavigation } from "@/components/SkipNavigation";
 import { ShareJobsDialog } from "@/components/ShareJobsDialog";
 import { SubmitJobDialog } from "@/components/SubmitJobDialog";
 import { useToast } from "@/hooks/use-toast";
@@ -237,7 +236,6 @@ const Employment = () => {
 
   return (
     <div className="min-h-dvh bg-background">
-      <SkipNavigation />
 
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-6">
