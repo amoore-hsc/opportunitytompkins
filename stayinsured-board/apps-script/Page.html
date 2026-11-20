@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Stay Insured Navigator Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one capacity table, sorted by soonest opening; clicking a navigator opens a detail sheet. */
+:root {
+  --bg: #f3f6f5; --surface: #ffffff; --sunk: #e7eeec; --ink: #12283a; --muted: #566a74; --line: #d3dedb;
+  --accent: #0b6f6a; --accent-ink: #ffffff; --row-hover: #eef5f3;
+  --open: #1d7f47; --open-bg: #e0f2e7; --limited: #9a6400; --limited-bg: #fbefd6;
+  --full: #b4352a; --full-bg: #f9e1de; --away: #5e6b73; --away-bg: #e6eaec; --sample: #7a5ab8;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1a20; --surface: #15252d; --sunk: #1b2f38; --ink: #e4eef0; --muted: #9db1b8; --line: #2a414b;
+  --accent: #4cc2b8; --accent-ink: #062320; --row-hover: #1a2e37;
+  --open: #6fd69a; --open-bg: #183b2a; --limited: #f0bd5c; --limited-bg: #3d3018;
+  --full: #f28b80; --full-bg: #43221f; --away: #a9b6bd; --away-bg: #26353c; --sample: #b9a0ec; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e1a20; --surface: #15252d; --sunk: #1b2f38; --ink: #e4eef0; --muted: #9db1b8; --line: #2a414b;
+  --accent: #4cc2b8; --accent-ink: #062320; --row-hover: #1a2e37;
+  --open: #6fd69a; --open-bg: #183b2a; --limited: #f0bd5c; --limited-bg: #3d3018;
+  --full: #f28b80; --full-bg: #43221f; --away: #a9b6bd; --away-bg: #26353c; --sample: #b9a0ec; color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font-body); }
+.wrap { max-width: 1160px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 22px 48px; display: grid; gap: 16px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); line-height: 1.15; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-family: var(--font-body); }
+a { color: var(--accent); }
+button, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.muted { color: var(--muted); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+header p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
+.sample-flag { display: inline-block; font-size: .78rem; font-weight: 600; color: var(--sample); border: 1px dashed var(--sample); border-radius: 999px; padding: 1px 10px; margin-bottom: 6px; }
+.sample-tag { color: var(--sample); font-weight: 600; font-size: .78rem; }
+.banner { border-radius: 10px; padding: 10px 14px; background: var(--full-bg); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; }
+.filters label { display: grid; gap: 2px; font-size: .8rem; font-weight: 600; color: var(--muted); }
+.filters select { padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); min-width: 140px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 11px; cursor: pointer; font-weight: 600; font-size: .84rem; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.count { margin-left: auto; font-size: .85rem; color: var(--muted); align-self: center; }
+
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); background: var(--sunk); }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--row-hover); }
+tbody tr:last-child td { border-bottom: 0; }
+td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
+th.num { text-align: right; }
+.who { background: none; border: 0; padding: 0; text-align: left; cursor: pointer; display: grid; }
+.who b { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.small { font-size: .8rem; }
+.phone { font-family: var(--font-mono); white-space: nowrap; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .78rem; border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill.open { color: var(--open); background: var(--open-bg); }
+.pill.limited { color: var(--limited); background: var(--limited-bg); }
+.pill.full { color: var(--full); background: var(--full-bg); }
+.pill.away, .pill.check { color: var(--away); background: var(--away-bg); }
+.note-inline { display: block; font-size: .82rem; margin-top: 3px; max-width: 28ch; }
+@media (max-width: 760px) { .hide-sm { display: none; } table { font-size: .88rem; } th, td { padding: 9px 8px; } }
+.empty { padding: 22px; text-align: center; color: var(--muted); }
+
+dialog { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); padding: 0; width: min(640px, calc(100vw - 24px)); max-height: calc(100vh - 32px); }
+dialog::backdrop { background: rgb(10 20 25 / .5); }
+.d-body { padding: 20px; display: grid; gap: 18px; }
+.d-head { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.d-head > div { min-width: 0; }
+.close { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; width: 34px; height: 34px; cursor: pointer; font-size: 1.1rem; line-height: 1; flex: none; }
+.note { border-left: 3px solid var(--accent); padding: 6px 10px; background: var(--bg); border-radius: 0 6px 6px 0; }
+.slots { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.slot { background: var(--sunk); border-radius: 7px; padding: 4px 9px; font-size: .86rem; }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; margin: 6px 0 0; font-size: .92rem; }
+.facts dt { color: var(--muted); font-weight: 600; }
+.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; color: var(--ink); display: inline-flex; gap: 6px; align-items: center; font-size: .88rem; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+.sched { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 10px; font-size: .9rem; }
+.sched li { display: grid; }
+.sched .site { font-weight: 600; }
+.source { font-size: .8rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-weight: 600; z-index: 20; }
+footer { color: var(--muted); font-size: .8rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="sample-flag" id="sample-flag" hidden>Sample data · not yet connected to the navigator spreadsheet</span>
+    <h1>Stay Insured Navigator Board</h1>
+    <p>Free help signing up for or keeping health insurance. Navigators with the soonest openings are listed first. Select a name for hours, locations and contact details.</p>
+  </header>
+
+  <div class="banner" id="load-error" hidden role="status"></div>
+
+  <div class="filters">
+    <label for="f-county">County<select id="f-county"></select></label>
+    <label for="f-lang">Language<select id="f-lang"></select></label>
+    <div style="display:grid;gap:2px"><span style="font-size:.8rem;font-weight:600;color:var(--muted)">Help by</span><div class="chips" id="f-modes"></div></div>
+    <span class="count" id="count" aria-live="polite"></span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Navigator</th><th>Status</th><th class="num hide-sm">Openings, 7 days</th><th>Next opening</th><th class="hide-sm">Today</th><th class="hide-sm">Phone</th>
+      </tr></thead>
+      <tbody id="rows"><tr><td colspan="6" class="empty">Loading navigators…</td></tr></tbody>
+    </table>
+  </div>
+
+  <footer id="foot"></footer>
+</div>
+
+<dialog id="detail" aria-labelledby="d-name"><div class="d-body" id="d-body"></div></dialog>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+(() => {
+/* =====================================================================
+   SETTING: when this page is hosted outside the Google Sheet's script
+   (for example on Netlify), paste the web app address between the quotes.
+   Left blank, the page shows sample data.
+   ===================================================================== */
+const DATA_URL = "";
+const REFRESH_MS = 120000;
+
+/* ---------- Sample data (same layout as the Google Sheet) ---------- */
+const SAMPLE = {
+  settings: { open_threshold: "6", stale_after_days: "", help_line: "Human Services Coalition, 1.877.211.8667" },
+  closures: [{ date: "2026-11-26", navigator_id: "", reason: "Thanksgiving" }, { date: "2026-12-25", navigator_id: "", reason: "Christmas Day" }, { date: "2027-01-01", navigator_id: "", reason: "New Year's Day" }],
+  navigators: [
+    { id: "centralus", name: "Diane Gray", organization: "Cayuga Medical Center", short_name: "Centralus", phone: "607.252.3728", email: "dpgray@cayugamed.org", website: "https://centralushealth.org/billing/", website_text: "Billing / Centralus Health", counties: "Tompkins, Cortland", anywhere_in_ny: "no", languages: "English", help_by: "In person, Phone, Walk-in", feed_type: "Calendar feed (ICS)", slot_minutes: "30", status: "Automatic" },
+    { id: "fidelis-phillips", name: "Christy Phillips", organization: "Fidelis Care Health Benefit Rep", short_name: "Fidelis Care", phone: "607.201.4384", email: "christy.phillips@fideliscare.org", website: "https://www.fideliscare.org", website_text: "fideliscare.org", counties: "Tompkins", anywhere_in_ny: "yes", languages: "English", help_by: "In person, Phone, Walk-in", feed_type: "Cal.com", slot_minutes: "30", status: "Automatic" },
+    { id: "fidelis-scrivens", name: "Lindsay Scrivens", organization: "Fidelis Care Health Benefit Rep", short_name: "Fidelis Care", phone: "607.752.0023", email: "Lindsay.E.Scrivens@fideliscare.org", website: "https://www.fideliscare.org", website_text: "fideliscare.org", counties: "Tompkins", anywhere_in_ny: "yes", languages: "English", help_by: "In person, Phone, Walk-in", feed_type: "Cal.com", slot_minutes: "30", status: "Automatic" },
+    { id: "guthrie", name: "Danielle Williams", organization: "The Guthrie Clinic", short_name: "Guthrie", phone: "570.887.7168", email: "Danielle.Williams@guthrie.org", booking_link: "https://guthrie.org/form/financial-counselors", booking_link_text: "Request a financial counselor", website: "https://www.guthrie.org/changes-are-coming-medicaid", website_text: "Changes Are Coming to Medicaid", counties: "Tioga, Broome, Cortland, Tompkins, Chemung, Steuben, Bradford (PA), Tioga (PA), Sullivan (PA), Susquehanna (PA)", anywhere_in_ny: "no", languages: "English", help_by: "Phone", feed_type: "Booking form link", slot_minutes: "45", status: "Automatic" },
+    { id: "hsc", name: "Liz Hoyt", organization: "Human Services Coalition of Tompkins County", short_name: "Human Services Coalition", phone: "1.877.211.8667", email: "ehoyt@hsctc.org", booking_link: "https://hsctc.org/health-appointment-booking/", booking_link_text: "Book an appointment", counties: "Tompkins, Cortland", anywhere_in_ny: "no", languages: "English, 240+ languages by interpreter line", help_by: "In person, Phone, Community sites", feed_type: "SimplyBook.me", slot_minutes: "60", status: "Automatic" },
+    { id: "molina", name: "Alana Strope", organization: "Molina Healthcare Facilitated Enroller", short_name: "Molina Healthcare", phone: "585.736.8497", email: "alana.strope@molinahealthcare.com", counties: "Tompkins, Cortland, Broome, Tioga", anywhere_in_ny: "no", languages: "English, Hindi, Bengali, Urdu, Arabic, Interpreter services", help_by: "In person, Phone, Walk-in, Community sites", other_contact: "Muhammad Hasanuzzaman, 716.387.6469, Muhammad.Hasanuzzaman@molinahealthcare.com", feed_type: "Manual", slot_minutes: "30", status: "Automatic" },
+    { id: "stic", name: "Jerome James", organization: "Southern Tier Independence Center, Health Enrollment Programs", short_name: "STIC", phone: "607.724.2111, ext. 373", email: "jeromej@stic-cil.org", website: "https://www.stic-cil.org/medicaid/health-insurance-enrollment", website_text: "Health insurance enrollment", counties: "Broome, Chenango, Cortland, Delaware, Tioga, Tompkins", anywhere_in_ny: "no", languages: "English", help_by: "In person, Phone, Walk-in, Video, Home visit, Community sites", feed_type: "Calendar feed (ICS)", slot_minutes: "60", status: "Automatic" }
+  ],
+  // navigator_id, site, address, pattern, days, week_of_month, first_date, start_time, end_time, help_by, takes_appointments, main_hours, note
+  scheduleRows: [
+    ["centralus", "Cayuga Medical Center, Main Admissions", "101 Dates Drive, Ithaca, NY 14850", "Weekly", "Mon, Tue, Wed, Thu, Fri", "", "", "8:30 am", "5:00 pm", "In person, Phone, Walk-in", "yes", "yes", ""],
+    ["fidelis-phillips", "Catholic Charities", "324 W. Buffalo St., Ithaca, NY 14850", "Weekly", "Tue, Wed, Thu, Fri", "", "", "9:00 am", "2:00 pm", "In person, Phone, Walk-in", "yes", "yes", ""],
+    ["fidelis-phillips", "Catholic Charities", "324 W. Buffalo St., Ithaca, NY 14850", "Weekly", "Mon", "", "", "9:00 am", "2:00 pm", "In person, Phone", "yes", "yes", "By appointment only"],
+    ["fidelis-phillips", "Ithaca Free Clinic", "521 W. Seneca St., Ithaca, NY 14850", "Weekly", "Mon", "", "", "3:00 pm", "6:00 pm", "In person", "no", "no", "Varies with provider availability and holidays"],
+    ["fidelis-phillips", "Tompkins County Mental Health", "", "Nth weekday of month", "Thu", "3", "", "9:00 am", "2:00 pm", "Phone", "no", "no", "Not able to take in-person appointments or walk-ins"],
+    ["fidelis-phillips", "Tompkins County Whole Health", "55 Brown Rd, Ithaca, NY 14850", "Last weekday of month", "Fri", "", "", "9:00 am", "3:00 pm", "In person, Phone, Walk-in", "yes", "no", ""],
+    ["fidelis-scrivens", "Southern Tier AIDS Program (STAP)", "314 W. State St., Ithaca, NY 14850", "Weekly", "Mon", "", "", "12:00 pm", "3:00 pm", "In person, Walk-in", "yes", "no", ""],
+    ["fidelis-scrivens", "Cayuga Addiction Recovery Services (CARS)", "334 W. State St., Ithaca, NY 14850", "Every other week", "Wed", "", "2026-11-18", "", "", "In person", "no", "no", "Times not listed. Call to confirm."],
+    ["fidelis-scrivens", "Rodeway Inn", "654 Elmira Rd, Ithaca, NY 14850", "Every other week", "Fri", "", "2026-11-20", "10:00 am", "2:00 pm", "In person, Walk-in", "yes", "no", ""],
+    ["fidelis-scrivens", "Salvation Army Food Pantry", "150 N. Albany St., Ithaca, NY 14850", "Nth weekday of month", "Fri", "3", "", "1:00 pm", "2:30 pm", "In person, Walk-in", "yes", "no", ""],
+    ["fidelis-scrivens", "Enfield Food Pantry", "182 Enfield Main Rd, Ithaca, NY 14850", "Last weekday of month", "Mon", "", "", "9:30 am", "11:30 am", "In person, Walk-in", "yes", "no", ""],
+    ["hsc", "Main HSC Office", "118 N. Tioga St., Suite 304, Ithaca, NY 14850", "Weekly", "Mon", "", "", "9:00 am", "5:00 pm", "In person, Phone", "yes", "yes", ""],
+    ["hsc", "Main HSC Office", "118 N. Tioga St., Suite 304, Ithaca, NY 14850", "Weekly", "Tue, Wed, Thu, Fri", "", "", "8:00 am", "6:00 pm", "In person, Phone", "yes", "yes", ""],
+    ["hsc", "Seven Valleys Health Coalition", "10 Kennedy Parkway, Cortland, NY 13045", "Call for hours", "", "", "", "", "", "In person", "no", "no", "Call to schedule"],
+    ["molina", "Regular hours (phone or appointment)", "Call to arrange a meeting place", "Weekly", "Mon, Tue, Wed, Thu, Fri", "", "", "8:30 am", "5:00 pm", "Phone, In person", "yes", "yes", ""],
+    ["molina", "Cayuga Addiction Recovery Services (CARS)", "334 W. State St., Ithaca, NY 14850", "Weekly", "Fri", "", "", "9:30 am", "12:00 pm", "In person, Walk-in", "yes", "no", ""],
+    ["molina", "Southern Tier AIDS Program (STAP)", "314 W. State St., Ithaca, NY 14850", "Weekly", "Tue", "", "", "12:00 pm", "4:00 pm", "In person, Walk-in", "yes", "no", ""],
+    ["stic", "STIC Main Office", "135 E. Franklin St., Binghamton, NY 13904", "Weekly", "Mon, Tue, Wed, Thu", "", "", "8:00 am", "5:00 pm", "In person, Phone, Walk-in, Video", "yes", "yes", ""],
+    ["stic", "STIC Main Office", "135 E. Franklin St., Binghamton, NY 13904", "Weekly", "Fri", "", "", "9:00 am", "3:00 pm", "In person, Phone, Walk-in, Video", "yes", "yes", ""]
+  ]
+};
+const SCHED_COLS = ["navigator_id", "site", "address", "pattern", "days", "week_of_month", "first_date", "start_time", "end_time", "help_by", "takes_appointments", "main_hours", "note"];
+
+/* ---------- Vocabulary (matches the Google Sheet's dropdowns) ---------- */
+const MODE_KEYS = { "in person": "in-person", "phone": "phone", "walk-in": "walk-in", "walk in": "walk-in", "video": "video", "home visit": "home", "community sites": "outreach" };
+const MODE_LABEL = { "in-person": "In person", phone: "Phone", "walk-in": "Walk-in", video: "Video", home: "Home visit", outreach: "Community sites" };
+const STATUS_FROM_SHEET = { "accepting": "open", "limited openings": "limited", "full / waitlist": "full", "away": "away" };
+const STATUS_LABEL = { open: "Accepting", limited: "Limited openings", full: "Full / waitlist", away: "Away", check: "Call to confirm" };
+const SYNCED = ["Cal.com", "Calendar feed (ICS)", "SimplyBook.me"];
+const SHORT_SOURCE = { "Cal.com": "Cal.com", "Calendar feed (ICS)": "calendar feed", "SimplyBook.me": "SimplyBook.me", "Booking form link": "booking form", "Manual": "navigator" };
+const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const FULL_DAY = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+/* ---------- Helpers ---------- */
+const pad = n => String(n).padStart(2, "0");
+const dkey = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const addDays = (d, n) => { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() + n); return x; };
+const dayDiff = (a, b) => Math.round((addDays(b, 0) - addDays(a, 0)) / 864e5);
+const parseKey = k => { const m = String(k || "").match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? new Date(+m[1], m[2] - 1, +m[3]) : null; };
+const split = s => String(s || "").split(",").map(x => x.trim()).filter(Boolean);
+const yes = v => /^(y|yes|true|x)$/i.test(String(v || "").trim());
+const fmtT = m => { let h = Math.floor(m / 60); const mm = m % 60; const ap = h >= 12 ? "pm" : "am"; h = h % 12 || 12; return mm ? `${h}:${pad(mm)} ${ap}` : `${h} ${ap}`; };
+const fmtRange = (a, b) => `${fmtT(a)} – ${fmtT(b)}`;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const safeUrl = u => /^https?:\/\//i.test(String(u || "").trim()) ? String(u).trim() : "";
+function parseTime(s) {
+  const m = String(s || "").trim().toLowerCase().match(/^(\d{1,2})(?::(\d{2}))?(?::\d{2})?\s*(am|pm|a\.m\.|p\.m\.)?$/);
+  if (!m) return null;
+  let h = +m[1]; const min = +(m[2] || 0);
+  if (m[3] && m[3][0] === "p" && h < 12) h += 12;
+  if (m[3] && m[3][0] === "a" && h === 12) h = 0;
+  return h * 60 + min;
+}
+const parseDays = s => String(s || "").toLowerCase().split(/[,\s/]+/).map(x => ["sun", "mon", "tue", "wed", "thu", "fri", "sat"].indexOf(x.slice(0, 3))).filter(x => x >= 0);
+function hash01(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return ((h >>> 0) % 10000) / 10000; }
+function agoText(iso) {
+  if (!iso) return "";
+  const mins = Math.round((Date.now() - new Date(iso)) / 6e4);
+  if (isNaN(mins)) return "";
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} min ago`;
+  if (mins < 60 * 36) return `${Math.round(mins / 60)} hr ago`;
+  return `${Math.round(mins / 1440)} days ago`;
+}
+
+/* ---------- Schedule rules ---------- */
+function toRule(r) {
+  const days = parseDays(r.days);
+  const start = parseTime(r.start_time), end = parseTime(r.end_time);
+  const base = { days, start, end };
+  switch (r.pattern) {
+    case "Weekly": return { type: "weekly", ...base };
+    case "Every other week": return { type: "biweekly", anchor: parseKey(r.first_date), ...base };
+    case "Nth weekday of month": return { type: "nth", n: +r.week_of_month || 1, ...base };
+    case "Last weekday of month": return { type: "last", ...base };
+    default: return { type: "call", ...base };
+  }
+}
+function ruleHits(rule, d) {
+  if (!rule.days.includes(d.getDay())) return false;
+  switch (rule.type) {
+    case "weekly": return true;
+    case "nth": return Math.ceil(d.getDate() / 7) === rule.n;
+    case "last": return addDays(d, 7).getMonth() !== d.getMonth();
+    case "biweekly": return !!rule.anchor && Math.abs(dayDiff(rule.anchor, d)) % 14 === 0;
+    default: return false;
+  }
+}
+function ruleText(rule) {
+  const t = rule.start != null && rule.end != null ? `, ${fmtRange(rule.start, rule.end)}` : "";
+  const ds = rule.days;
+  const ord = ["", "First", "Second", "Third", "Fourth", "Fifth"];
+  switch (rule.type) {
+    case "weekly": {
+      const run = ds.length > 2 && ds.every((v, i) => i === 0 || v === ds[i - 1] + 1);
+      return (run ? `${FULL_DAY[ds[0]]} – ${FULL_DAY[ds[ds.length - 1]]}` : ds.map(x => FULL_DAY[x]).join(", ")) + t;
+    }
+    case "nth": return `${ord[rule.n] || rule.n + "th"} ${FULL_DAY[ds[0]]} of the month${t}`;
+    case "last": return `Last ${FULL_DAY[ds[0]]} of the month${t}`;
+    case "biweekly": return `Every other ${FULL_DAY[ds[0]]}${t}`;
+    default: return "Call for hours";
+  }
+}
+
+/* ---------- Model ---------- */
+let MODEL = null;
+
+function closedOn(nav, k) {
+  return MODEL.closures.some(c => c.date === k && (!c.navigator_id || c.navigator_id === nav.id)) || nav.outToday === k;
+}
+function sessionsFor(nav, d) {
+  if (closedOn(nav, dkey(d))) return [];
+  const hits = nav.sites.filter(s => ruleHits(s.rule, d));
+  const specific = hits.filter(s => !s.base).map(s => ({ ...s, start: s.rule.start, end: s.rule.end }));
+  const out = [...specific];
+  hits.filter(s => s.base && s.rule.start != null && s.rule.end != null).forEach(s => {
+    let segs = [[s.rule.start, s.rule.end]];
+    specific.filter(x => x.start != null && x.end != null).forEach(x => {
+      const next = [];
+      segs.forEach(([a, b]) => {
+        if (x.end <= a || x.start >= b) { next.push([a, b]); return; }
+        if (x.start > a) next.push([a, x.start]);
+        if (x.end < b) next.push([x.end, b]);
+      });
+      segs = next;
+    });
+    segs.filter(([a, b]) => b - a >= 30).forEach(([a, b]) => out.push({ ...s, start: a, end: b }));
+  });
+  return out.sort((a, b) => (a.start ?? 9999) - (b.start ?? 9999));
+}
+
+function buildModel(data, isSample) {
+  const sched = data.schedule || (data.scheduleRows || []).map(r => Object.fromEntries(SCHED_COLS.map((c, i) => [c, r[i]])));
+  const navs = (data.navigators || []).map(r => ({
+    id: r.id,
+    person: r.name,
+    org: r.organization,
+    label: r.short_name || r.organization,
+    phone: r.phone,
+    email: r.email,
+    book: safeUrl(r.booking_link) ? { href: safeUrl(r.booking_link), text: r.booking_link_text || "Book an appointment" } : null,
+    web: safeUrl(r.website) ? { href: safeUrl(r.website), text: r.website_text || r.website } : null,
+    counties: split(r.counties),
+    statewide: yes(r.anywhere_in_ny),
+    languages: split(r.languages),
+    modes: split(r.help_by).map(m => MODE_KEYS[m.toLowerCase()]).filter(Boolean),
+    also: r.other_contact || "",
+    feedType: r.feed_type || "Manual",
+    slotMin: +r.slot_minutes || 30,
+    statusSet: (r.status || "Automatic").trim(),
+    note: r.note || "",
+    outToday: r.out_today || "",
+    lastUpdated: r.last_updated || "",
+    lastSynced: r.last_synced || "",
+    sites: sched.filter(s => s.navigator_id === r.id).map(s => ({
+      site: s.site, addr: s.address, rule: toRule(s), note: s.note,
+      modes: split(s.help_by).map(m => MODE_KEYS[m.toLowerCase()]).filter(Boolean),
+      slots: yes(s.takes_appointments), base: yes(s.main_hours)
+    }))
+  }));
+  MODEL = { navs, closures: data.closures || [], settings: data.settings || {}, sample: isSample, generated: data.generated || new Date().toISOString(), openings: {} };
+  navs.forEach(n => { MODEL.openings[n.id] = []; });
+  if (isSample) {
+    // Sample openings: posted hours split into appointments, about a third left open, same for every viewer.
+    const busy = { centralus: .55, "fidelis-phillips": .7, "fidelis-scrivens": .5, hsc: .6, stic: .85 };
+    const fakeAgo = { centralus: 6, "fidelis-phillips": 3, "fidelis-scrivens": 11, hsc: 4, stic: 9 };
+    const today = addDays(new Date(), 0);
+    navs.forEach(n => {
+      if (!SYNCED.includes(n.feedType)) return;
+      n.lastSynced = new Date(Date.now() - (fakeAgo[n.id] || 5) * 6e4).toISOString();
+      for (let i = 0; i < 14; i++) {
+        const d = addDays(today, i);
+        sessionsFor(n, d).forEach(s => {
+          if (!s.slots || s.start == null) return;
+          for (let t = s.start; t + n.slotMin <= s.end; t += n.slotMin) {
+            if (hash01(`${n.id}|${dkey(d)}|${t}`) < (busy[n.id] ?? .6)) continue;
+            const when = new Date(d); when.setMinutes(t);
+            MODEL.openings[n.id].push({ start: when, site: s.site });
+          }
+        });
+      }
+    });
+  } else {
+    (data.openings || []).forEach(o => {
+      if (!MODEL.openings[o.navigator_id]) return;
+      const when = new Date(o.start);
+      if (!isNaN(when)) MODEL.openings[o.navigator_id].push({ start: when, site: o.site });
+    });
+  }
+  Object.values(MODEL.openings).forEach(list => list.sort((a, b) => a.start - b.start));
+}
+
+function compute(nav) {
+  const now = new Date();
+  const weekEnd = addDays(now, 7);
+  const tracked = SYNCED.includes(nav.feedType) && !!nav.lastSynced;
+  const opens = (MODEL.openings[nav.id] || []).filter(o => o.start > now && !closedOn(nav, dkey(o.start)));
+  const open7 = opens.filter(o => o.start < weekEnd).length;
+  const next = opens[0] || null;
+  const todaySess = sessionsFor(nav, addDays(now, 0));
+  const threshold = +MODEL.settings.open_threshold || 6;
+  let status, manual = false;
+  const set = STATUS_FROM_SHEET[nav.statusSet.toLowerCase()];
+  if (set) { status = set; manual = true; }
+  else if (tracked) status = open7 >= threshold ? "open" : open7 >= 1 ? "limited" : "full";
+  else status = "open";
+  const staleDays = +MODEL.settings.stale_after_days;
+  const stamp = tracked ? nav.lastSynced : nav.lastUpdated;
+  if (staleDays > 0 && status !== "away" && stamp && (Date.now() - new Date(stamp)) / 864e5 > staleDays) { status = "check"; manual = false; }
+  return { tracked, open7, next, todaySess, status, manual };
+}
+
+/* ---------- Filters ---------- */
+const filt = { county: "", lang: "", modes: new Set() };
+const store = { get(k, f) { try { const v = localStorage.getItem(k); return v == null ? f : v; } catch { return f; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+
+function buildFilters() {
+  const counties = new Set();
+  MODEL.navs.forEach(n => n.counties.forEach(c => { if (!/\(PA\)/.test(c)) counties.add(c); }));
+  const order = ["Tompkins", "Cortland"];
+  const list = [...order.filter(c => counties.has(c)), ...[...counties].filter(c => !order.includes(c)).sort()];
+  const hasPA = MODEL.navs.some(n => n.counties.some(c => /\(PA\)/.test(c)));
+  const hasNY = MODEL.navs.some(n => n.statewide);
+  const c = document.getElementById("f-county");
+  c.innerHTML = `<option value="">Any county</option>` + list.map(x => `<option>${esc(x)}</option>`).join("") +
+    (hasNY ? `<option>Elsewhere in New York</option>` : "") + (hasPA ? `<option>Pennsylvania</option>` : "");
+  const langs = new Set();
+  MODEL.navs.forEach(n => n.languages.forEach(l => { if (!/^english$/i.test(l) && !/interpret/i.test(l)) langs.add(l); }));
+  const l = document.getElementById("f-lang");
+  l.innerHTML = `<option value="">Any</option>` + [...langs].sort().map(x => `<option>${esc(x)}</option>`).join("") + `<option value="interpreter">Other (interpreter)</option>`;
+  const savedC = store.get("nb-county", ""), savedL = store.get("nb-lang", "");
+  c.value = savedC; if (c.value !== savedC) c.value = "";
+  l.value = savedL; if (l.value !== savedL) l.value = "";
+  filt.county = c.value; filt.lang = l.value;
+  c.onchange = () => { filt.county = c.value; store.set("nb-county", c.value); render(); };
+  l.onchange = () => { filt.lang = l.value; store.set("nb-lang", l.value); render(); };
+  const m = document.getElementById("f-modes");
+  m.innerHTML = ["in-person", "phone", "walk-in", "video", "home"].map(k => `<button type="button" class="chip" aria-pressed="${filt.modes.has(k)}" data-mode="${k}">${MODE_LABEL[k]}</button>`).join("");
+  m.querySelectorAll("button").forEach(b => b.onclick = () => {
+    const k = b.dataset.mode; filt.modes.has(k) ? filt.modes.delete(k) : filt.modes.add(k);
+    b.setAttribute("aria-pressed", filt.modes.has(k)); render();
+  });
+}
+function matches(nav) {
+  if (filt.county) {
+    if (filt.county === "Elsewhere in New York") { if (!nav.statewide) return false; }
+    else if (filt.county === "Pennsylvania") { if (!nav.counties.some(c => /\(PA\)/.test(c))) return false; }
+    else if (!nav.counties.includes(filt.county) && !nav.statewide) return false;
+  }
+  if (filt.lang) {
+    if (filt.lang === "interpreter") { if (!nav.languages.some(l => /interpret/i.test(l))) return false; }
+    else if (!nav.languages.includes(filt.lang)) return false;
+  }
+  for (const m of filt.modes) if (!nav.modes.includes(m)) return false;
+  return true;
+}
+
+/* ---------- Render ---------- */
+function whenLabel(d) {
+  const i = dayDiff(new Date(), d);
+  const day = i === 0 ? "Today" : i === 1 ? "Tomorrow" : `${DOW[d.getDay()]} ${d.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+  return `${day}, ${fmtT(d.getHours() * 60 + d.getMinutes())}`;
+}
+const rank = s => ({ open: 0, limited: 1, check: 2, full: 3, away: 4 })[s];
+function byAvailability(a, b) {
+  if (rank(a.c.status) !== rank(b.c.status)) return rank(a.c.status) - rank(b.c.status);
+  if (a.c.next && b.c.next) return a.c.next.start - b.c.next.start;
+  return a.c.next ? -1 : b.c.next ? 1 : 0;
+}
+function todayText(n, c, nowMin, today) {
+  if (n.outToday === dkey(today)) return "Out today";
+  const nowSess = c.todaySess.find(s => s.start != null && nowMin >= s.start && nowMin < s.end);
+  if (nowSess) return `Now: ${nowSess.site} until ${fmtT(nowSess.end)}`;
+  const later = c.todaySess.find(s => s.start != null && s.start > nowMin);
+  if (later) return `${later.site} from ${fmtT(later.start)}`;
+  const vague = c.todaySess.find(s => s.start == null);
+  if (vague) return `${vague.site} (call for times)`;
+  return c.todaySess.length ? "Done for today" : "Not scheduled today";
+}
+function freshText(n, c) {
+  if (c.tracked) return `Synced from ${SHORT_SOURCE[n.feedType]} ${agoText(n.lastSynced)}`;
+  if (n.lastUpdated) return `Updated by navigator ${agoText(n.lastUpdated)}`;
+  return SYNCED.includes(n.feedType) ? `${SHORT_SOURCE[n.feedType]} not connected yet` : "Updated by navigator";
+}
+
+let ROWS = [];
+function render() {
+  if (!MODEL) return;
+  const now = new Date();
+  const today = addDays(now, 0);
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  ROWS = MODEL.navs.map(n => ({ n, c: compute(n) }));
+  document.getElementById("sample-flag").hidden = !MODEL.sample;
+
+  const visible = ROWS.filter(r => matches(r.n)).sort(byAvailability);
+  document.getElementById("count").textContent = visible.length === ROWS.length ? `${ROWS.length} navigators` : `${visible.length} of ${ROWS.length} navigators`;
+  const closure = MODEL.closures.find(c => c.date === dkey(today) && !c.navigator_id);
+
+  document.getElementById("rows").innerHTML = visible.length ? visible.map(({ n, c }) => {
+    const nextCell = c.status === "away" ? `<span class="muted">Not booking now</span>`
+      : c.next ? `${esc(whenLabel(c.next.start))}${MODEL.sample ? ` <span class="sample-tag">sample</span>` : ""}<br><span class="muted small">${esc(c.next.site)}</span>`
+      : c.tracked ? `<span class="muted">None in 2 weeks</span>`
+      : `<span class="muted">${n.book ? "Book online or call" : "Call to schedule"}</span>`;
+    return `<tr data-id="${esc(n.id)}">
+      <td><button type="button" class="who" data-open="${esc(n.id)}"><b>${esc(n.person)}</b><span class="muted small">${esc(n.label)}</span></button></td>
+      <td><span class="pill ${c.status}">${STATUS_LABEL[c.status]}</span>${n.note ? `<span class="note-inline">${esc(n.note)}</span>` : ""}</td>
+      <td class="num hide-sm">${c.tracked && c.status !== "away" ? c.open7 : "–"}</td>
+      <td>${nextCell}</td>
+      <td class="hide-sm">${esc(closure ? closure.reason : todayText(n, c, nowMin, today))}</td>
+      <td class="hide-sm"><span class="phone">${esc(n.phone)}</span></td></tr>`;
+  }).join("") : `<tr><td colspan="6" class="empty">No navigators match those filters. Try "Any county" or clear a "Help by" option.${MODEL.settings.help_line ? ` ${esc(MODEL.settings.help_line)} can also point you to the right person.` : ""}</td></tr>`;
+
+  document.getElementById("foot").innerHTML = MODEL.sample
+    ? `Navigator details and outreach schedules from hsctc.org/stayinsured. Openings are <span class="sample-tag">sample data</span> until this page is connected to the navigator spreadsheet.`
+    : `From the Stay Insured navigator spreadsheet, refreshed ${esc(agoText(MODEL.generated))}.${MODEL.settings.help_line ? ` Questions? ${esc(MODEL.settings.help_line)}.` : ""}`;
+
+  if (openId && document.getElementById("detail").open) fillDetail(openId);
+}
+
+/* ---------- Detail sheet ---------- */
+let openId = null;
+const dlg = document.getElementById("detail");
+function fillDetail(id) {
+  const row = ROWS.find(r => r.n.id === id); if (!row) return;
+  const { n, c } = row;
+  const now = new Date(), today = addDays(now, 0), nowMin = now.getHours() * 60 + now.getMinutes();
+  const upcoming = (MODEL.openings[n.id] || []).filter(o => o.start > now && !closedOn(n, dkey(o.start))).slice(0, 8);
+  const openingsHtml = c.status === "away" ? `<p style="margin:6px 0 0">Not booking new appointments right now. Call to leave a message.</p>`
+    : c.tracked ? (upcoming.length ? `<div class="slots">${upcoming.map(o => `<span class="slot">${esc(whenLabel(o.start))} · ${esc(o.site)}</span>`).join("")}</div>` : `<p style="margin:6px 0 0">No open appointments in the next 2 weeks. Call to ask about a waitlist or walk-in times.</p>`)
+    : `<p style="margin:6px 0 0">Openings aren't tracked online for this navigator. ${n.book ? "Use the booking link or call." : "Call or email to find a time."}</p>`;
+  const sched = n.sites.length ? `<ul class="sched">${n.sites.map(s => `<li><span class="site">${esc(s.site)}</span>${s.addr ? `<span class="muted">${esc(s.addr)}</span>` : ""}<span>${esc(ruleText(s.rule))}${s.modes.length ? ` · ${esc(s.modes.map(m => MODE_LABEL[m]).join(", "))}` : ""}</span>${s.note ? `<span class="muted small">${esc(s.note)}</span>` : ""}</li>`).join("")}</ul>` : `<p class="muted" style="margin:6px 0 0">No set locations. Call to arrange a time.</p>`;
+  document.getElementById("d-body").innerHTML = `
+    <div class="d-head"><div><h2 id="d-name">${esc(n.person)}</h2><div class="muted">${esc(n.org)}</div></div>
+      <button type="button" class="close" id="d-close" aria-label="Close">×</button></div>
+    <div><span class="pill ${c.status}">${STATUS_LABEL[c.status]}</span> <span class="muted small">${esc(todayText(n, c, nowMin, today))}</span></div>
+    ${n.note ? `<div class="note">${esc(n.note)}</div>` : ""}
+    <section><h3>Next openings${MODEL.sample && c.tracked ? ` <span class="sample-tag">sample</span>` : ""}</h3>${openingsHtml}</section>
+    <section><h3>Contact</h3>
+      <dl class="facts">
+        <dt>Phone</dt><dd><span class="phone" id="d-phone">${esc(n.phone)}</span> <button type="button" class="btn" data-copy="${esc(n.phone)}" style="padding:2px 8px;font-size:.8rem">Copy</button></dd>
+        ${n.email ? `<dt>Email</dt><dd><span style="user-select:all">${esc(n.email)}</span></dd>` : ""}
+        ${n.also ? `<dt>Also</dt><dd>${esc(n.also)}</dd>` : ""}
+        <dt>Help by</dt><dd>${esc(n.modes.map(m => MODE_LABEL[m]).join(", ") || "Call to ask")}</dd>
+        <dt>Serves</dt><dd>${esc(n.counties.join(", "))}${n.statewide ? ". Can help anyone living in New York State." : ""}</dd>
+        <dt>Languages</dt><dd>${esc(n.languages.join(", ") || "English")}</dd>
+      </dl>
+      ${n.book || n.web ? `<div class="actions">${n.book ? `<a class="btn primary" href="${esc(n.book.href)}" target="_blank" rel="noopener">${esc(n.book.text)}</a>` : ""}${n.web ? `<a class="btn" href="${esc(n.web.href)}" target="_blank" rel="noopener">${esc(n.web.text)}</a>` : ""}</div>` : ""}
+    </section>
+    <section><h3>Locations and hours</h3>${sched}</section>
+    <div class="source">${esc(freshText(n, c))}</div>`;
+  document.getElementById("d-close").onclick = () => dlg.close();
+}
+function openDetail(id) {
+  openId = id; fillDetail(id);
+  if (!dlg.open) { try { dlg.showModal(); } catch { dlg.setAttribute("open", ""); } }
+  if (VALID_HASH(id)) history.replaceState(null, "", "#" + id);
+}
+const VALID_HASH = id => /^[A-Za-z0-9-]+$/.test(id) && !["settings", "sidebar", "customize", "upgrade", "downloads"].includes(id);
+dlg.addEventListener("close", () => { openId = null; if (location.hash) history.replaceState(null, "", location.pathname + location.search); });
+dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
+document.getElementById("rows").addEventListener("click", e => {
+  const tr = e.target.closest("tr[data-id]"); if (!tr || e.target.closest("a")) return;
+  openDetail(tr.dataset.id);
+});
+
+/* ---------- Copy phone ---------- */
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => { t.hidden = true; }, 2400); }
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-copy]"); if (!b) return;
+  const fallback = () => { const s = document.getElementById("d-phone"); if (s) { const r = document.createRange(); r.selectNodeContents(s); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); } toast("Number selected. Copy it with your keyboard."); };
+  try { navigator.clipboard.writeText(b.dataset.copy).then(() => toast("Phone number copied"), fallback); } catch { fallback(); }
+});
+
+/* ---------- Loading ---------- */
+function loadLive() {
+  const gs = window.google && window.google.script && window.google.script.run;
+  if (gs) return new Promise((res, rej) => gs.withSuccessHandler(res).withFailureHandler(rej).getBoardData());
+  if (DATA_URL) return fetch(DATA_URL + (DATA_URL.includes("?") ? "&" : "?") + "format=json", { cache: "no-store" }).then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
+  return null;
+}
+let first = true;
+async function refresh() {
+  const live = loadLive();
+  const err = document.getElementById("load-error");
+  if (!live) { if (first) { buildModel(SAMPLE, true); buildFilters(); } }
+  else {
+    try {
+      buildModel(await live, false);
+      if (first) buildFilters();
+      err.hidden = true;
+    } catch (e) {
+      err.hidden = false;
+      err.textContent = MODEL
+        ? "Couldn't reach the navigator spreadsheet just now, so this may be a few minutes old. It will try again shortly."
+        : "Couldn't load the navigator list right now. Call Human Services Coalition at 1.877.211.8667 for help finding a navigator.";
+    }
+  }
+  render();
+  if (first) {
+    first = false;
+    const h = location.hash.slice(1);
+    if (h && MODEL && MODEL.navs.some(n => n.id === h)) openDetail(h);
+  }
+}
+refresh();
+setInterval(refresh, REFRESH_MS);
+})();
+</script>
+</body>
+</html>
